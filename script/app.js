@@ -1,126 +1,95 @@
-$(document).ready(function(){
-	//Parse para la Ani sintaxt
-	var aniParse = {},
-		AniJS = {};
+var AniJS = ( function(config){
+	var instance = this;
 
+	instance.initializer = function(){
 
-	//Declaration = (Sentence)*
-	//Ejemp "when: click, how: bounceOutLeft; when: hover, how: bounceIn"
-	aniParse.parseDeclaration = function(declaration){
-		var parsedDeclaration = [],
-			sentenceCollection,
-			parsedSentence;
+		//ATTRS inicialization
+		instance.rootNode = config.rootNode || 'body';
 
-		sentenceCollection = declaration.split(';');
+		instance.helperCollection = config.helperCollection || [];
 
-		$( sentenceCollection ).each(function( index ){
-			parsedSentence = aniParse.parseSentence(sentenceCollection[index]);
-			parsedDeclaration.push(parsedSentence);
-		});
-
-		return parsedDeclaration;
-
+		instance.parser = instance.createParser();
 	}
 
-	//Sentence = Event | Behavior | Target
-	//Ejemp "when: click, how: bounceOutLeft"
-	aniParse.parseSentence = function(sentence){
-		var parsedSentence = {},
-			definitionCollection,
-			parsedDefinition;
-
-		definitionCollection = sentence.split(',');
-
-		$( definitionCollection ).each(function( index ){
-			parsedDefinition = aniParse.parseDefinition(definitionCollection[index]);
-			parsedSentence[parsedDefinition.key] = parsedDefinition.value;
-		});
-
-		return parsedSentence;
-
+	instance.createParser = function(){
+		return new Parser();
 	}
 
-	aniParse.parseDefinition = function(definition){
-		var parsedDefinition = {},
-			definitionBody,
-			definitionKey,
-			definitionValue;
 
-		definitionBody = definition.split(':');
 
-		if(definitionBody.length > 1){
-			definitionKey = $.trim(definitionBody[0]);
-			definitionValue = $.trim(definitionBody[1]);
-			parsedDefinition.key = definitionKey;
-			parsedDefinition.value = definitionValue;
+	//Parser Class
+	var Parser = ( function(){
+
+		var parserInstance = this;
+
+		parserInstance.parse = function(aniJSDeclaration){
+
+			return parserInstance._parseDeclaration(aniJSDeclaration);
+
 		}
 
-		return parsedDefinition;
+		//Declaration = (Sentence)*
+		//Ejemp "when: click, how: bounceOutLeft; when: hover, how: bounceIn"
+		parserInstance._parseDeclaration = function(declaration){
+			var parsedDeclaration = [],
+				sentenceCollection,
+				parsedSentence;
 
-	}
+			sentenceCollection = declaration.split(';');
 
+			$( sentenceCollection ).each(function( index ){
+				parsedSentence = aniParse._parseSentence(sentenceCollection[index]);
+				parsedDeclaration.push(parsedSentence);
+			});
 
-	AniJS.run = function(){
-		var findIt = $( "*[data-ani]" ),
-			aniQuery;
+			return parsedDeclaration;
+		}
 
-		console.log(findIt);
-			
-		//take query
-		aniQuery = findIt.attr( "data-ani" );
+		//Sentence = Event | Behavior | Target
+		//Ejemp "when: click, how: bounceOutLeft"
+		parserInstance._parseSentence = function(sentence){
+			var parsedSentence = {},
+				definitionCollection,
+				parsedDefinition;
 
-		$( findIt ).each(function( index ) {
-			var aniDeclaration = $( this ).attr( "data-ani" );
-	  		//console.log( index + ": " + $( this ).attr( "data-ani" ) );
-	  		
-	  		//Convert human radeable query in system understand
-	  		var parsedDeclaration = aniParse.parseDeclaration(aniDeclaration);
+			definitionCollection = sentence.split(',');
 
-	  		AniJS.setupElementAnim($( this ), parsedDeclaration);
+			$( definitionCollection ).each(function( index ){
+				parsedDefinition = aniParse._parseDefinition(definitionCollection[index]);
+				parsedSentence[parsedDefinition.key] = parsedDefinition.value;
+			});
 
-	  		//console.log(parsedQuery);
-		});
-	}
+			return parsedSentence;
+		},
 
-	AniJS.setupElementAnim = function(element, parsedDeclaration){
-		AniJS.setupElementEvent(element, parsedDeclaration);
+		parserInstance._parseDefinition = function(definition){
+			var parsedDefinition = {},
+				definitionBody,
+				definitionKey,
+				definitionValue;
 
-		//Recorro la declaration y por cada una
-		$( parsedDeclaration ).each(function( index ){
-			//console.log(parsedDeclaration[index]);
-			AniJS.setupElementSentence(element, parsedDeclaration[index]);
-		});
-		
-	}
+			definitionBody = definition.split(':');
 
-	AniJS.setupElementSentence = function(element, parsedSentence){
-		//AniJS.setupElementEvent(element, parsedSentence);
-		console.log('setupElementSentence');
-		console.log(parsedSentence);
-		var definition,
-			when = parsedSentence.when || 'click',
-			how = parsedSentence.how || '',
-			what = parsedSentence.what || element;
+			if(definitionBody.length > 1){
+				definitionKey = $.trim(definitionBody[0]);
+				definitionValue = $.trim(definitionBody[1]);
+				parsedDefinition.key = definitionKey;
+				parsedDefinition.value = definitionValue;
+			}
 
-
-		how += ' animated';
-		$(element).on(when, function(event){
-			$(what).addClass( how ).one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function(){
-				$(this).removeClass('animated');
-		    });
-		});
-	}
-
-	AniJS.setupElementEvent = function(element, parsedDeclaration){
-	}
+			return parsedDefinition;
+		}
+	} ); 
 
 
-	AniJS.run();
+	instance.initializer();
+	
+} );
 
-	// $('.go').click(function(){
-	// 	$('.animatecss').addClass('animated bounceOutLeft').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function(){
-	// 		$(this).removeClass('animated bounceOutLeft');
-	//     });
-	// });
+AniJS.setupParser = function(){
 
-});
+}
+
+var MyAniJS = new AniJS({});
+
+console.log(MyAniJS);
