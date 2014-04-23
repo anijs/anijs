@@ -7,21 +7,18 @@
 	<link rel="stylesheet" href="assets/styles/main.css">
 </head>
 <body>
-	<div class="animatecss" data-ani="when: click, how:flip; when:hover, how: bounceIn">
+	<div class="animatecss" data-anijs="when: click, how:flip; when:mouseover, how: bounceIn">
 		Animate CSS
 	</div>
 	<input type="button" class="go" value="Go">
 	
-	<div class="animatecss" data-ani="when: click, how:bounceOutLeft; when:hover, how: bounceIn">
+	<div class="animatecss" data-anijs="when: click, how:bounceOutLeft; when:mouseout, how: bounceIn">
 		data-ani="when: click, how:bounceOutLeft; when:hover, how: bounceIn"
 	</div>
 
-	<div data-ani="when: onload, how: fadeIn; when: click, how: flip">
+	<div data-anijs="when: onload, how: fadeIn; when: click, how: flip">
 		data-ani="when: onload, how: fadeIn; when: hover, how: flip"
 	</div>
-	
-
-	<script src="lib/jquery/jquery.js"></script>
 	<script src="script/app.js"></script>
 </body>
 </html>

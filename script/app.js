@@ -4,16 +4,17 @@ var AniJS = ( function(config){
 	instance.initializer = function(){
 
 		//ATTRS inicialization
-		instance.rootNodeSelector = config.rootNodeSelector || 'body';
-
 		instance.helperCollection = config.helperCollection || [];
 
-		//Devuelve el DOM node from un selector
-		instance.rootNode = instance._one(instance.rootNodeSelector);
+		var rootNodeSelector = config.rootNodeSelector || 'body'; 
+		instance.rootNode = document.querySelector( rootNodeSelector );
 
-		console.log(instance.rootNode);
+		instance.Parser = instance._createParser();
 
-		instance.parser = instance._createParser();
+		//instance.animationEndEvent = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend';
+		
+		//TODO: Ver como saber cual es el apropiado de acuerdo al browser?
+		instance.animationEndEvent = 'webkitAnimationEnd';
 	}
 
 	instance._createParser = function(){
@@ -21,27 +22,91 @@ var AniJS = ( function(config){
 	}
 
 	instance.run = function(){
-		var findIt = $( "*[data-ani]" ),
-			aniQuery,
-			aniJSNodeCollection = [];
+		var aniJSNodeCollection = [],
+			aniJSParsedSentenceCollection = {};
 
 		aniJSNodeCollection = instance._findAniJSNodeCollection(instance.rootNode);
-
 		console.log(aniJSNodeCollection);
+
+		//Para cada nodo
+		var size  = aniJSNodeCollection.length,
+		    i = 0;
+		
+		for ( i; i < size; i++) {
+			item = aniJSNodeCollection[i];
+			console.log(item.getAttribute('data-anijs'));
+			
+			//Le parseo su declaracion
+			//IMPROVE: Debe venir por configuracion
+			aniJSParsedSentenceCollection = instance._getParsedAniJSSentenceCollection(item.getAttribute('data-anijs'));
+			console.log(aniJSParsedSentenceCollection);
+			
+			//Le seteo su animacion
+			instance._setupElementAnim(item, aniJSParsedSentenceCollection);
+		}
+
 	}
 
-	instance._one = function (nodeSelector) {
+	instance._setupElementAnim = function (element, aniJSParsedSentenceCollection) {
+		var size  = aniJSParsedSentenceCollection.length,
+		    i = 0;
+		
+		//Para cada una de las sentencias que componen la collecion
+		for ( i; i < size; i++) {
+			item = aniJSParsedSentenceCollection[i];
+			instance._setupElementSentenceAnim(element, item);
+		}
+	}
 
-		return document.querySelector( nodeSelector );
+	instance._setupElementSentenceAnim = function (element, aniJSParsedSentence) {
+		console.log('_setupElementSentenceAnim');
+		console.log(aniJSParsedSentence);
+		var definition,
+			when = aniJSParsedSentence.when || 'click',
+			how = aniJSParsedSentence.how || '',
+			what = aniJSParsedSentence.what || element;
+
+
+		how += ' animated';
+
+		element.addEventListener(when, function(event){
+
+			NodeHelper.addClass(element, how);
+
+		 	// create event
+		    element.addEventListener(instance.animationEndEvent, function(e) {
+		        console.log('Se ejecuta el callback');
+
+		        // remove event
+		        e.target.removeEventListener(e.type, arguments.callee);
+
+		        NodeHelper.removeClass(element, how);
+		        // call handler
+		        //return callback(e);
+		    });
+
+
+		}, false); 
+
+	}
+
+
+	instance._getParsedAniJSSentenceCollection = function(stringDeclaration){
+
+		return instance.Parser.parse(stringDeclaration);
+	
 	}
 
 	instance._findAniJSNodeCollection = function(rootNode){
+		//IMPROVE: Might a configuration option
+		var aniJSDataTagName = "[data-anijs]"
 
+		return rootNode.querySelectorAll( aniJSDataTagName );
 	} 
 
 	instance._registerHelper = function(){
-	}
 
+	}
 
 	//Parser Class
 	var Parser = ( function(){
@@ -63,10 +128,13 @@ var AniJS = ( function(config){
 
 			sentenceCollection = declaration.split(';');
 
-			$( sentenceCollection ).each(function( index ){
-				parsedSentence = aniParse._parseSentence(sentenceCollection[index]);
+			var size  = sentenceCollection.length,
+			    i = 0;
+			
+			for ( i; i < size; i++) {
+				parsedSentence = parserInstance._parseSentence(sentenceCollection[i]);
 				parsedDeclaration.push(parsedSentence);
-			});
+			}
 
 			return parsedDeclaration;
 		}
@@ -80,10 +148,13 @@ var AniJS = ( function(config){
 
 			definitionCollection = sentence.split(',');
 
-			$( definitionCollection ).each(function( index ){
-				parsedDefinition = aniParse._parseDefinition(definitionCollection[index]);
+			var size  = definitionCollection.length,
+			    i = 0;
+			
+			for ( i; i < size; i++) {
+			  	parsedDefinition = parserInstance._parseDefinition(definitionCollection[i]);
 				parsedSentence[parsedDefinition.key] = parsedDefinition.value;
-			});
+			}
 
 			return parsedSentence;
 		},
@@ -97,15 +168,53 @@ var AniJS = ( function(config){
 			definitionBody = definition.split(':');
 
 			if(definitionBody.length > 1){
-				definitionKey = $.trim(definitionBody[0]);
-				definitionValue = $.trim(definitionBody[1]);
+				definitionKey = definitionBody[0].trim();
+				definitionValue = definitionBody[1].trim();
 				parsedDefinition.key = definitionKey;
 				parsedDefinition.value = definitionValue;
 			}
 
 			return parsedDefinition;
 		}
-	} ); 
+	} );
+
+	//Node Helper
+	var NodeHelper = {
+
+		addClass: function(elem, string) {
+		  if (!(string instanceof Array)) {
+		    string = string.split(' ');
+		  }
+		  for(var i = 0, len = string.length; i < len; ++i) {
+		    if (string[i] && !new RegExp('(\\s+|^)' + string[i] + '(\\s+|$)').test(elem.className)) {
+		      elem.className = elem.className.trim() + ' ' + string[i];
+		    }
+		  }
+		},
+
+		removeClass: function(elem, string) {
+		  if (!(string instanceof Array)) {
+		    string = string.split(' ');
+		  }
+		  for(var i = 0, len = string.length; i < len; ++i) {
+		    elem.className = elem.className.replace(new RegExp('(\\s+|^)' + string[i] + '(\\s+|$)'), ' ').trim();
+		  }
+		},
+
+		toggleClass: function(elem, string) {
+		  if (string) {
+		    if (new RegExp('(\\s+|^)' + string + '(\\s+|$)').test(elem.className)) {
+		      elem.className = elem.className.replace(new RegExp('(\\s+|^)' + string + '(\\s+|$)'), ' ').trim();
+		    } else {
+		      elem.className = elem.className.trim() + ' ' + string;
+		    }
+		  }
+		},
+
+		hasClass: function(elem, string) {
+		  return string && new RegExp('(\\s+|^)' + string + '(\\s+|$)').test(elem.className);
+		}
+	}
 
 
 	instance.initializer();
@@ -119,133 +228,3 @@ AniJS.setupParser = function(){
 var MyAniJS = new AniJS({});
 
 MyAniJS.run();
-
-console.log(MyAniJS);
-
-
-// $(document).ready(function(){
-// 	//Parse para la Ani sintaxt
-// 	var aniParse = {},
-// 		AniJS = {};
-
-
-// 	//Declaration = (Sentence)*
-// 	//Ejemp "when: click, how: bounceOutLeft; when: hover, how: bounceIn"
-// 	aniParse.parseDeclaration = function(declaration){
-// 		var parsedDeclaration = [],
-// 			sentenceCollection,
-// 			parsedSentence;
-
-// 		sentenceCollection = declaration.split(';');
-
-// 		$( sentenceCollection ).each(function( index ){
-// 			parsedSentence = aniParse.parseSentence(sentenceCollection[index]);
-// 			parsedDeclaration.push(parsedSentence);
-// 		});
-
-// 		return parsedDeclaration;
-
-// 	}
-
-// 	//Sentence = Event | Behavior | Target
-// 	//Ejemp "when: click, how: bounceOutLeft"
-// 	aniParse.parseSentence = function(sentence){
-// 		var parsedSentence = {},
-// 			definitionCollection,
-// 			parsedDefinition;
-
-// 		definitionCollection = sentence.split(',');
-
-// 		$( definitionCollection ).each(function( index ){
-// 			parsedDefinition = aniParse.parseDefinition(definitionCollection[index]);
-// 			parsedSentence[parsedDefinition.key] = parsedDefinition.value;
-// 		});
-
-// 		return parsedSentence;
-
-// 	}
-
-// 	aniParse.parseDefinition = function(definition){
-// 		var parsedDefinition = {},
-// 			definitionBody,
-// 			definitionKey,
-// 			definitionValue;
-
-// 		definitionBody = definition.split(':');
-
-// 		if(definitionBody.length > 1){
-// 			definitionKey = $.trim(definitionBody[0]);
-// 			definitionValue = $.trim(definitionBody[1]);
-// 			parsedDefinition.key = definitionKey;
-// 			parsedDefinition.value = definitionValue;
-// 		}
-
-// 		return parsedDefinition;
-
-// 	}
-
-
-// 	AniJS.run = function(){
-// 		var findIt = $( "*[data-ani]" ),
-// 			aniQuery;
-
-// 		console.log(findIt);
-			
-// 		//take query
-// 		aniQuery = findIt.attr( "data-ani" );
-
-// 		$( findIt ).each(function( index ) {
-// 			var aniDeclaration = $( this ).attr( "data-ani" );
-// 	  		//console.log( index + ": " + $( this ).attr( "data-ani" ) );
-	  		
-// 	  		//Convert human radeable query in system understand
-// 	  		var parsedDeclaration = aniParse.parseDeclaration(aniDeclaration);
-
-// 	  		AniJS.setupElementAnim($( this ), parsedDeclaration);
-
-// 	  		//console.log(parsedQuery);
-// 		});
-// 	}
-
-// 	AniJS.setupElementAnim = function(element, parsedDeclaration){
-// 		AniJS.setupElementEvent(element, parsedDeclaration);
-
-// 		//Recorro la declaration y por cada una
-// 		$( parsedDeclaration ).each(function( index ){
-// 			//console.log(parsedDeclaration[index]);
-// 			AniJS.setupElementSentence(element, parsedDeclaration[index]);
-// 		});
-		
-// 	}
-
-// 	AniJS.setupElementSentence = function(element, parsedSentence){
-// 		//AniJS.setupElementEvent(element, parsedSentence);
-// 		console.log('setupElementSentence');
-// 		console.log(parsedSentence);
-// 		var definition,
-// 			when = parsedSentence.when || 'click',
-// 			how = parsedSentence.how || '',
-// 			what = parsedSentence.what || element;
-
-
-// 		how += ' animated';
-// 		$(element).on(when, function(event){
-// 			$(what).addClass( how ).one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function(){
-// 				$(this).removeClass('animated');
-// 		    });
-// 		});
-// 	}
-
-// 	AniJS.setupElementEvent = function(element, parsedDeclaration){
-// 	}
-
-
-// 	AniJS.run();
-
-// 	// $('.go').click(function(){
-// 	// 	$('.animatecss').addClass('animated bounceOutLeft').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function(){
-// 	// 		$(this).removeClass('animated bounceOutLeft');
-// 	//     });
-// 	// });
-
-// });
