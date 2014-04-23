@@ -26,7 +26,6 @@ var AniJS = ( function(config){
 			aniJSParsedSentenceCollection = {};
 
 		aniJSNodeCollection = instance._findAniJSNodeCollection(instance.rootNode);
-		console.log(aniJSNodeCollection);
 
 		//Para cada nodo
 		var size  = aniJSNodeCollection.length,
@@ -34,12 +33,10 @@ var AniJS = ( function(config){
 		
 		for ( i; i < size; i++) {
 			item = aniJSNodeCollection[i];
-			console.log(item.getAttribute('data-anijs'));
 			
 			//Le parseo su declaracion
 			//IMPROVE: Debe venir por configuracion
 			aniJSParsedSentenceCollection = instance._getParsedAniJSSentenceCollection(item.getAttribute('data-anijs'));
-			console.log(aniJSParsedSentenceCollection);
 			
 			//Le seteo su animacion
 			instance._setupElementAnim(item, aniJSParsedSentenceCollection);
@@ -59,34 +56,148 @@ var AniJS = ( function(config){
 	}
 
 	instance._setupElementSentenceAnim = function (element, aniJSParsedSentence) {
-		console.log('_setupElementSentenceAnim');
-		console.log(aniJSParsedSentence);
 		var definition,
 			when = aniJSParsedSentence.when || 'click',
 			how = aniJSParsedSentence.how || '',
 			what = aniJSParsedSentence.what || element;
 
 
+		var when = instance._whenHelper(element, aniJSParsedSentence),
+			whereList = instance._whereHelper(element, aniJSParsedSentence);
+			// what = '',
+			// how = '',
+			// after = '',
+			// helper = '';
+
 		how += ' animated';
 
-		element.addEventListener(when, function(event){
+		//Es obligatorio definir de where ATTR
+		if(when !== ''){
 
-			NodeHelper.addClass(element, how);
+			var size  = whereList.length,
+			    i = 0;
+			
+			for ( i; i < size; i++) {
+				whereItem = whereList[i];
 
-		 	// create event
-		    element.addEventListener(instance.animationEndEvent, function(e) {
-		        console.log('Se ejecuta el callback');
+				console.log(whereItem);
 
-		        // remove event
-		        e.target.removeEventListener(e.type, arguments.callee);
+				whereItem.addEventListener(when, function(event){
 
-		        NodeHelper.removeClass(element, how);
-		        // call handler
-		        //return callback(e);
-		    });
+					NodeHelper.addClass(element, how);
+
+				 	// create event
+				    element.addEventListener(instance.animationEndEvent, function(e) {
+				        console.log('Se ejecuta el callback');
+
+				        // remove event
+				        e.target.removeEventListener(e.type, arguments.callee);
+
+				        NodeHelper.removeClass(element, how);
+				        // call handler
+				        //return callback(e);
+				    });
 
 
-		}, false); 
+				}, false);
+
+
+			}
+		}
+
+
+
+
+
+
+
+		// element.addEventListener(when, function(event){
+
+		// 	NodeHelper.addClass(element, how);
+
+		//  	// create event
+		//     element.addEventListener(instance.animationEndEvent, function(e) {
+		//         console.log('Se ejecuta el callback');
+
+		//         // remove event
+		//         e.target.removeEventListener(e.type, arguments.callee);
+
+		//         NodeHelper.removeClass(element, how);
+		//         // call handler
+		//         //return callback(e);
+		//     });
+
+
+		// }, false); 
+
+	}
+
+	/**
+	 * Helper to setup the Event that trigger the animation from declaration
+	 * 	There 4 basics events:
+	 * 	 - input     (click, mouseover, mouseout)
+	 *   - browser   (onload)
+	 *   - instance  (attrChange)
+	 *   - complex	 ()
+	 *   
+	 *   - default    none
+	 *   
+	 * @method _whenHelper
+	 * @param {} element
+	 * @param {} aniJSParsedSentence
+	 * @return 
+	 */
+	instance._whenHelper = function (element, aniJSParsedSentence) {
+		var defaultValue = '',
+			when = aniJSParsedSentence.when || defaultValue;
+
+		return when;
+	}
+
+	/**
+	 * Helper to setup the Place from listen the trigger event of the animation
+	 * If is not specified one place, se asume que es himself
+	 * Take in account that where it's just a selector
+	 * @method _whereHelper
+	 * @param {} element
+	 * @param {} aniJSParsedSentence
+	 * @return NodeList
+	 */
+	instance._whereHelper = function (element, aniJSParsedSentence) {
+		var defaultValue = element,
+			whereNodeList = [defaultValue],
+			rootNode = instance.rootNode;
+
+		//TODO: Cambiar el where por when o parsear ambas
+
+		if(aniJSParsedSentence.where) {
+			if (aniJSParsedSentence.where === 'document'){
+				console.log('Encontro un document');
+				whereNodeList = [document];
+			} else if(aniJSParsedSentence.where === 'window'){
+				whereNodeList = [window];
+			}else {
+				whereNodeList = rootNode.querySelectorAll( aniJSParsedSentence.where );
+			}
+			
+		}
+		//Para el tema de los eventos onload del DOM hay que meter furrumaya
+		//Puede ser crear un evento uno mismo
+		console.log('whereNodeList');
+		console.log(whereNodeList);
+
+		return whereNodeList;
+	}
+
+	instance._whatHelper = function (element, aniJSParsedSentence) {
+
+	}
+
+	instance._afterHelper = function (element, aniJSParsedSentence) {
+
+	}
+
+	instance._helperHelper = function (element, aniJSParsedSentence) {
 
 	}
 
@@ -100,12 +211,10 @@ var AniJS = ( function(config){
 	instance._findAniJSNodeCollection = function(rootNode){
 		//IMPROVE: Might a configuration option
 		var aniJSDataTagName = "[data-anijs]"
-
 		return rootNode.querySelectorAll( aniJSDataTagName );
 	} 
 
 	instance._registerHelper = function(){
-
 	}
 
 	//Parser Class

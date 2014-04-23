@@ -7,7 +7,7 @@
 	<link rel="stylesheet" href="assets/styles/main.css">
 </head>
 <body>
-	<div class="animatecss" data-anijs="when: click, how:flip; when:mouseover, how: bounceIn">
+	<div class="animatecss" data-anijs="when: click, where: .go, how:flip; when:mouseover, how: hinge">
 		Animate CSS
 	</div>
 	<input type="button" class="go" value="Go">
@@ -16,8 +16,8 @@
 		data-ani="when: click, how:bounceOutLeft; when:hover, how: bounceIn"
 	</div>
 
-	<div data-anijs="when: onload, how: fadeIn; when: click, how: flip">
-		data-ani="when: onload, how: fadeIn; when: hover, how: flip"
+	<div data-anijs="when: resize, where: window, how: hinge">
+		when: resize, where: document, how: hinge
 	</div>
 	<script src="script/app.js"></script>
 </body>
