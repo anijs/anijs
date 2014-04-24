@@ -105,31 +105,6 @@ var AniJS = ( function(config){
 			}
 		}
 
-
-
-
-
-
-
-		// element.addEventListener(when, function(event){
-
-		// 	NodeHelper.addClass(element, how);
-
-		//  	// create event
-		//     element.addEventListener(instance.animationEndEvent, function(e) {
-		//         console.log('Se ejecuta el callback');
-
-		//         // remove event
-		//         e.target.removeEventListener(e.type, arguments.callee);
-
-		//         NodeHelper.removeClass(element, how);
-		//         // call handler
-		//         //return callback(e);
-		//     });
-
-
-		// }, false); 
-
 	}
 
 	/**
@@ -172,7 +147,6 @@ var AniJS = ( function(config){
 
 		if(aniJSParsedSentence.where) {
 			if (aniJSParsedSentence.where === 'document'){
-				console.log('Encontro un document');
 				whereNodeList = [document];
 			} else if(aniJSParsedSentence.where === 'window'){
 				whereNodeList = [window];
@@ -181,16 +155,20 @@ var AniJS = ( function(config){
 			}
 			
 		}
-		//Para el tema de los eventos onload del DOM hay que meter furrumaya
+		//TODO: Para el tema de los eventos onload del DOM hay que meter furrumaya
 		//Puede ser crear un evento uno mismo
-		console.log('whereNodeList');
-		console.log(whereNodeList);
-
 		return whereNodeList;
 	}
 
 	instance._whatHelper = function (element, aniJSParsedSentence) {
+		var defaultValue = element,
+			whatNodeList = [defaultValue],
+			rootNode = instance.rootNode;
 
+		if(aniJSParsedSentence.what) {
+			whereNodeList = rootNode.querySelectorAll( aniJSParsedSentence.where );
+		}
+		return whatNodeList;
 	}
 
 	instance._afterHelper = function (element, aniJSParsedSentence) {
