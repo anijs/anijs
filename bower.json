@@ -1,0 +1,25 @@
+{
+    "name": "AniJS",
+    "version": "0.1.0",
+    "description": "Declarative Animations .....",
+    "authors": [
+        "Dariel Noel <darielnoel@gmail.com>"
+    ],
+    "license": "MIT",
+    "main": "dist/anijs-min.js",
+    "keywords": [
+        "animation",
+        "declarative",
+        "javascript",
+        "html",
+        "easy",
+        "anim"
+    ],
+    "ignore": [
+        "**/.*",
+        "node_modules",
+        "bower_components"
+    ],
+    "dependencies": {
+    }
+}
