@@ -21,6 +21,11 @@ var AniJSLib = function(){
 		//ATTRS inicialization
 		instance.helperCollection = {};
 
+		//AniJS event Collection 
+		//TODO: Encapsulate this in another class
+		instance.eventCollection = {};
+		instance.eventIdCounter = 0;
+
 		//Registering an empty helper
 		instance.registerHelper(DEFAULT, {}); 
 
@@ -91,6 +96,14 @@ var AniJSLib = function(){
 		return new Parser();
 	}
 
+	instance.createAnimation = function(aniJSParsedSentenceCollection, element){
+		var nodeElement = element || '';
+
+		//BEAUTIFY: The params order migth be the same  
+		instance._setupElementAnim(element, aniJSParsedSentenceCollection);
+			
+	}
+
 	/**
 	 * Setup the animation of the some element
 	 * @method _setupElementAnim
@@ -135,7 +148,7 @@ var AniJSLib = function(){
 			for ( i; i < size; i++) {
 				whereItem = whereList[i];
 
-				whereItem.addEventListener(when, function(event){
+				var listener =  function(event){
 					//Para cada nodo target se le pone la animacion
 					var whatListSize  = whatList.length,
 					    j = 0;
@@ -168,12 +181,93 @@ var AniJSLib = function(){
 					    });
 
 					}
+				}
 
-				}, false);
+				whereItem.addEventListener(when, listener, false);
+
+				//Register event to feature handle
+				instance.registerEventHandle(whereItem, when, listener);
+		
 
 			}
 		}
 	}
+
+	/**
+	 * Create a handle to remove the listener when purge it
+	 * @method registerEventHandle
+	 * @param {} element
+	 * @param {} eventType
+	 * @param {} listener
+	 * @return 
+	 */
+	instance.registerEventHandle = function(element, eventType, listener){
+		var aniJSEventID = element._aniJSEventID,
+			eventCollection = instance.eventCollection,
+			elementEventHandle = {
+				eventType: eventType,
+				listener: listener				
+			};
+
+		if(aniJSEventID){
+			eventCollection[aniJSEventID].handleCollection.push(elementEventHandle);
+		} else {
+			var tempEventHandle = {
+				handleCollection: [elementEventHandle]
+			};
+
+			eventCollection[++instance.eventIdCounter] = tempEventHandle;
+			element._aniJSEventID = instance.eventIdCounter;
+		}		
+	}
+
+	/**
+	 * Detach all subscription of the selector Nodes
+	 * @method purge
+	 * @param {} selector
+	 * @return 
+	 */
+	instance.purge = function (selector) {
+		var purgeNodeCollection = document.querySelectorAll(selector),
+			size  = purgeNodeCollection.length,
+		    i = 0;
+		
+		for ( i; i < size; i++) {
+			instance._purgeNode(purgeNodeCollection[i]);
+		}
+	}	
+
+	/**
+	 * Detach all AniJS subscriptions to this element
+	 * @method _purgeNode
+	 * @param {} element
+	 * @return 
+	 */
+	instance._purgeNode = function (element) {
+		var aniJSEventID = element._aniJSEventID,
+			elementHandleCollection;
+
+		if(aniJSEventID) {
+
+			//Se le quitan todos los eventos a los que este suscrito
+			elementHandleCollection = instance.eventCollection[aniJSEventID].handleCollection;
+
+			var size  = elementHandleCollection.length,
+			    i = 0;
+			
+			for ( i; i < size; i++) {
+				item = elementHandleCollection[i];
+
+				//Para cada handle
+				element.removeEventListener(item.eventType, item.listener);
+				
+			}
+
+			instance.eventCollection[aniJSEventID] = null;
+			element._aniJSEventID = null;
+		}
+	}
+
 
 	/**
 	 * Helper to setup the Event that trigger the animation from declaration
@@ -424,6 +518,7 @@ var AniJSLib = function(){
 
 			return parsedDefinition;
 		}
+
 	} );
 
 	/**
@@ -492,7 +587,8 @@ var AniJSLib = function(){
 		 */
 		hasClass: function(elem, string) {
 		  return string && new RegExp('(\\s+|^)' + string + '(\\s+|$)').test(elem.className);
-		}
+		},
+
 	}
 
 
@@ -501,13 +597,6 @@ var AniJSLib = function(){
 };
 
 
-var CustomHelper = {
-	testcallback: function(e){
-		e.target.setAttribute('data-lolo', 'joder');
-	}
-}
-
-//Hay que hacer que no sea necesario pasar un helper
 var AniJS = new AniJSLib();
 
 AniJS.run();
