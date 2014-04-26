@@ -282,6 +282,10 @@ var AniJSLib = function(){
 		var defaultValue = '',
 			when = aniJSParsedSentence.when || defaultValue;
 
+		if(when === 'animationend'){
+			when = instance._animationEndPrefix();
+		}
+
 		return when;
 	}
 
