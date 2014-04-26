@@ -228,13 +228,17 @@ var AniJSLib = function(){
 	 * @return 
 	 */
 	instance.purge = function (selector) {
-		var purgeNodeCollection = document.querySelectorAll(selector),
-			size  = purgeNodeCollection.length,
-		    i = 0;
-		
-		for ( i; i < size; i++) {
-			instance._purgeNode(purgeNodeCollection[i]);
+
+		if(selector && selector !== ''){
+			var purgeNodeCollection = document.querySelectorAll(selector),
+				size  = purgeNodeCollection.length,
+			    i = 0;
+			
+			for ( i; i < size; i++) {
+				instance._purgeNode(purgeNodeCollection[i]);
+			}			
 		}
+
 	}	
 
 	/**
