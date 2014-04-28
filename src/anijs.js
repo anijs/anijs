@@ -9,7 +9,8 @@ var AniJSLib = function(){
 	var instance = this,
 		ANIJS_DATATAG_NAME = 'data-anijs',
 		DEFAULT = 'default',
-		BODY = 'body';
+		BODY = 'body',
+		ANIMATED = ' animated';
 
 	/**
 	 * Initializer Function
@@ -131,13 +132,7 @@ var AniJSLib = function(){
 	instance._setupElementSentenceAnim = function (element, aniJSParsedSentence) {
 		var definition,
 			when = instance._whenHelper(element, aniJSParsedSentence),
-			whereList = instance._whereHelper(element, aniJSParsedSentence),
-			whatList = instance._whatHelper(element, aniJSParsedSentence),
-			how = instance._howHelper(element, aniJSParsedSentence),
-			after = instance._afterHelper(element, aniJSParsedSentence),
-			helper = instance._helperHelper(element, aniJSParsedSentence);
-
-		how += ' animated';
+			whereList = instance._whereHelper(element, aniJSParsedSentence);
 
 		//Es obligatorio definir de where ATTR
 		if(when !== ''){
@@ -149,37 +144,35 @@ var AniJSLib = function(){
 				whereItem = whereList[i];
 
 				var listener =  function(event){
-					//Para cada nodo target se le pone la animacion
-					var whatListSize  = whatList.length,
-					    j = 0;
 
-					for ( j; j < whatListSize; j++) {
-						whatListItem = whatList[j];
+					//Si cambia algun parametro dinamicamente entonces hay que enterarse
+					var whatList = instance._whatHelper(element, aniJSParsedSentence),
+						how = instance._howHelper(element, aniJSParsedSentence),
+						before = instance._beforeHelper(element, aniJSParsedSentence),
+						after = instance._afterHelper(element, aniJSParsedSentence),
+						helper = instance._helperHelper(element, aniJSParsedSentence);
 
-						NodeHelper.addClass(whatListItem, how);
+					how += ANIMATED;					
 
-					 	// create event
-					    whatListItem.addEventListener(instance.animationEndEvent, function(e) {
+					//TODO: ejecutar function before
+					//antes de aqui 
+					
+					//Creo un nuevo animation context
+					var animationContextConfig = {
+							whatList: whatList,
+							nodeHelper: NodeHelper,
+							animationEndEvent: instance.animationEndEvent,
+							how: how,
+							after: after
+						},
 
-					        // remove event
-					        e.target.removeEventListener(e.type, arguments.callee);
+					animationContextInstance = new AnimationContext(animationContextConfig);
 
-					        //TODO: Could be necesary remove the class after animation finish?
-					        //      maybe we can specify this by configuration option
-					        NodeHelper.removeClass(e.target, how);
-
-					        // callback handler
-					        if (after) {
-					        	var helperCollection = instance.helperCollection,
-					        		helperInstance = helperCollection[helper];
-
-					        	if (helperInstance && helperInstance[after]) {
-					        		return helperInstance[after](e);
-					        	}
-					        }
-
-					    });
-
+					//Si before, le paso el animation context
+					if(before){
+						before(event, animationContextInstance);
+					} else {
+						animationContextInstance.run();
 					}
 				}
 
@@ -228,12 +221,15 @@ var AniJSLib = function(){
 	 * @return 
 	 */
 	instance.purge = function (selector) {
-		var purgeNodeCollection = document.querySelectorAll(selector),
-			size  = purgeNodeCollection.length,
-		    i = 0;
 		
-		for ( i; i < size; i++) {
-			instance._purgeNode(purgeNodeCollection[i]);
+		if(selector && selector !== ''){
+			var purgeNodeCollection = document.querySelectorAll(selector),
+				size  = purgeNodeCollection.length,
+			    i = 0;
+			
+			for ( i; i < size; i++) {
+				instance._purgeNode(purgeNodeCollection[i]);
+			}			
 		}
 	}	
 
@@ -358,7 +354,48 @@ var AniJSLib = function(){
 	 * @return defaultValue
 	 */
 	instance._afterHelper = function (element, aniJSParsedSentence) {
-		var defaultValue = aniJSParsedSentence.after || '';
+		var defaultValue = instance._callbackHelper(element, aniJSParsedSentence, aniJSParsedSentence.after)
+		return defaultValue;
+	}
+	/**
+	 * Helper to setup the after callback function
+	 * @method _afterHelper
+	 * @param {} element
+	 * @param {} aniJSParsedSentence
+	 * @return defaultValue
+	 */
+	instance._beforeHelper = function (element, aniJSParsedSentence) {
+		var defaultValue = instance._callbackHelper(element, aniJSParsedSentence, aniJSParsedSentence.before)
+		console.log('before function');
+		console.log(defaultValue);
+		return defaultValue;	
+	}
+
+	/**
+	 * Helper for before and after helpers refactoring
+	 * @method _callbackHelper
+	 * @param {} element
+	 * @param {} aniJSParsedSentence
+	 * @param {} callbackFunction
+	 * @return defaultValue
+	 */
+	instance._callbackHelper = function(element, aniJSParsedSentence, callbackFunction){
+		var defaultValue = callbackFunction || '',
+			helper = instance._helperHelper(element, aniJSParsedSentence);
+
+        if (defaultValue) {
+        	if(!instance.isFunction(defaultValue)) {
+	        	var helperCollection = instance.helperCollection,
+	        		helperInstance = helperCollection[helper];
+
+	        	if (helperInstance && helperInstance[defaultValue]){
+	        		defaultValue = helperInstance[defaultValue];
+	        	} else {
+	        		defaultValue = false;
+	        	}
+        	}
+        }
+
 		return defaultValue;	
 	}
 
@@ -424,6 +461,94 @@ var AniJSLib = function(){
 	        }
 	    };
 	}
+
+	/**
+	 * Thanks a lot to underscore guys
+	 * @method isFunction
+	 * @param {} obj
+	 * @return UnaryExpression
+	 */
+	instance.isFunction = function(obj) {
+		return !!(obj && obj.constructor && obj.call && obj.apply);
+	}
+
+
+
+	/**
+	* Encapsulate the animation Context
+	* @class animationContext
+	* @author @dariel_noel 
+	*/
+	var AnimationContext = ( function(config){
+
+		var animationContextInstance = this;
+
+		/**
+		 * Class constructor
+		 * @method initializer
+		 * @param {} config
+		 * @return 
+		 */
+		animationContextInstance.initializer = function(config){
+
+			//ATTRS
+			animationContextInstance.whatList = config.whatList || [];
+
+			animationContextInstance.nodeHelper = config.nodeHelper;
+
+			animationContextInstance.animationEndEvent = config.animationEndEvent;
+
+			animationContextInstance.how = config.how;
+
+			animationContextInstance.after = config.after;
+
+		},
+
+		/**
+		 * Execute an animation context instance
+		 * @method run
+		 * @return 
+		 */
+		animationContextInstance.run  = function(){
+			var whatList = animationContextInstance.whatList,
+				whatListSize  = whatList.length,
+				nodeHelper = animationContextInstance.nodeHelper,
+				how = animationContextInstance.how,
+				animationEndEvent = animationContextInstance.animationEndEvent,
+				after = animationContextInstance.after,
+				helperCollection = config.helperCollection,
+			    j = 0;
+
+			for ( j; j < whatListSize; j++) {
+				whatListItem = whatList[j];
+
+				nodeHelper.addClass(whatListItem, how);
+
+			 	// create event
+			    whatListItem.addEventListener(animationEndEvent, function(e) {
+
+			        // remove event
+			        e.target.removeEventListener(e.type, arguments.callee);
+
+			        //TODO: Could be necesary remove the class after animation finish?
+			        //      maybe we can specify this by configuration option
+			        nodeHelper.removeClass(e.target, how);
+
+			        // callback handler
+			        //El after deberia venir como mismo el before
+			        if (after) {
+			        	after(e, animationContextInstance);
+			        }
+
+			    });
+
+			}
+		}
+
+		animationContextInstance.initializer(config);
+
+
+	} );
 
 	/**
 	* Encapsulate the AnimJS sintax parser
@@ -600,7 +725,5 @@ var AniJSLib = function(){
 	
 };
 
-
 var AniJS = new AniJSLib();
-
 AniJS.run();
