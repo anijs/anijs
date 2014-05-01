@@ -10,7 +10,8 @@ var AniJSLib = function(){
 		ANIJS_DATATAG_NAME = 'data-anijs',
 		DEFAULT = 'default',
 		BODY = 'body',
-		ANIMATED = ' animated';
+		ANIMATED = ' animated',
+		MULTIPLE_CLASS_SEPARATOR = '$';
 
 	/**
 	 * Initializer Function
@@ -339,10 +340,14 @@ var AniJSLib = function(){
 	instance._whatHelper = function (element, aniJSParsedSentence) {
 		var defaultValue = element,
 			whatNodeList = [defaultValue],
-			rootDOMTravelScope = instance.rootDOMTravelScope;
+			rootDOMTravelScope = instance.rootDOMTravelScope,
+			what = aniJSParsedSentence.what;
 
-		if(aniJSParsedSentence.what) {
-			whatNodeList = rootDOMTravelScope.querySelectorAll( aniJSParsedSentence.what );
+		if(what) {
+			//Expression regular remplazar caracteres $ por comas
+			//TODO: Estudiar si este caracter no esta agarrado
+			what =  what.split(MULTIPLE_CLASS_SEPARATOR).join(',');
+			whatNodeList = rootDOMTravelScope.querySelectorAll( what );
 		}
 		return whatNodeList;
 	}
