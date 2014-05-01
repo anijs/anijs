@@ -127,7 +127,8 @@ var AniJSLib = function() {
      */
     instance.purge = function(selector) {
 
-        if (selector && selector !== '') {
+    	//TODO: Search a regular expression for a valid CSS selector
+        if (selector && selector !== '' && selector !== ' ') {
             var purgeNodeCollection = document.querySelectorAll(selector),
                 size = purgeNodeCollection.length,
                 i = 0;
