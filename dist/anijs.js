@@ -179,7 +179,7 @@ var AniJSLib = function(){
 				whereItem.addEventListener(when, listener, false);
 
 				//Register event to feature handle
-				instance.registerEventHandle(whereItem, when, listener);
+				instance._registerEventHandle(whereItem, when, listener);
 		
 
 			}
@@ -196,7 +196,7 @@ var AniJSLib = function(){
 	 * @param {} listener
 	 * @return 
 	 */
-	instance.registerEventHandle = function(element, eventType, listener){
+	instance._registerEventHandle = function(element, eventType, listener){
 		var aniJSEventID = element._aniJSEventID,
 			eventCollection = instance.eventCollection,
 			elementEventHandle = {
@@ -384,7 +384,7 @@ var AniJSLib = function(){
 			helper = instance._helperHelper(element, aniJSParsedSentence);
 
         if (defaultValue) {
-        	if(!instance.isFunction(defaultValue)) {
+        	if(!instance._isFunction(defaultValue)) {
 	        	var helperCollection = instance.helperCollection,
 	        		helperInstance = helperCollection[helper];
 
@@ -451,16 +451,40 @@ var AniJSLib = function(){
 	 * @return 
 	 */
 	instance._animationEndPrefix = function(){
-	    var el = document.createElement('fakeelement'),
-	    	animationBrowserDetection = ['animation', 'OAnimation', 'MozAnimation', 'webkitAnimation'],
+	    var endPrefixBrowserDetectionIndex = instance._endPrefixBrowserDetectionIndex(),
 	    	animationEndBrowserPrefix = ['animationend', 'oAnimationEnd', 'animationend', 'webkitAnimationEnd'];
+
+	    return animationEndBrowserPrefix[endPrefixBrowserDetectionIndex]
+	}
+
+	/**
+	 * Return the correct TransitionEnd Prefix according to the current browser
+	 * @method _transitionEndPrefix
+	 * @return 
+	 */
+	instance._transitionEndPrefix = function(){
+	    var endPrefixBrowserDetectionIndex = instance._endPrefixBrowserDetectionIndex(),
+	    	transitionEndBrowserPrefix = ['transitionend', 'oTransitionEnd', 'transitionend', 'webkitTransitionEnd'];
+
+	    return transitionEndBrowserPrefix[endPrefixBrowserDetectionIndex];
+	}
+
+	/**
+	 * Return the correct Transition and  Animation End Prefix helper according to the current browser
+	 * @method _transitionEndPrefix
+	 * @return index of the prefix acording to the browser
+	 */
+	instance._endPrefixBrowserDetectionIndex = function(){
+	    var el = document.createElement('fakeelement'),
+	    	animationBrowserDetection = ['animation', 'OAnimation', 'MozAnimation', 'webkitAnimation'];
 
 	    for (var i = 0; i < animationBrowserDetection.length; i++) {
 	        if( el.style[animationBrowserDetection[i]] !== undefined ){
-	            return animationEndBrowserPrefix[i];
+	            return i;
 	        }
 	    };
 	}
+
 
 	/**
 	 * Thanks a lot to underscore guys
@@ -468,7 +492,7 @@ var AniJSLib = function(){
 	 * @param {} obj
 	 * @return UnaryExpression
 	 */
-	instance.isFunction = function(obj) {
+	instance._isFunction = function(obj) {
 		return !!(obj && obj.constructor && obj.call && obj.apply);
 	}
 
@@ -532,7 +556,8 @@ var AniJSLib = function(){
 
 			        //TODO: Could be necesary remove the class after animation finish?
 			        //      maybe we can specify this by configuration option
-			        nodeHelper.removeClass(e.target, how);
+			       
+			       nodeHelper.removeClass(e.target, how);
 
 			        // callback handler
 			        //El after deberia venir como mismo el before

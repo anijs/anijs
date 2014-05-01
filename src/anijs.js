@@ -27,13 +27,14 @@ var AniJSLib = function(){
 		instance.eventCollection = {};
 		instance.eventIdCounter = 0;
 
+		var defaultHelper = instance._createDefaultHelper();
 		//Registering an empty helper
-		instance.registerHelper(DEFAULT, {}); 
+		instance.registerHelper(DEFAULT, defaultHelper); 
 
 		//Default Helper Index
 		instance.helperDefaultIndex = DEFAULT;
 
-		instance.setRootNode(BODY);
+		instance.setDOMRootTravelScope(BODY);
 		
 		//Initialize the Parser Object
 		instance.Parser = instance._createParser();
@@ -42,14 +43,24 @@ var AniJSLib = function(){
 		instance.animationEndEvent = instance._animationEndPrefix();
 	}
 
+	instance._createDefaultHelper = function(){
+		var defaultHelper = {
+			removeAnim: function(e, animationContext){
+				animationContext.nodeHelper.removeClass(e.target, animationContext.how);
+			}
+		}
+
+		return defaultHelper;
+	}
+
 	/**
 	 * You can use these to change the escope to run AniJS
-	 * @method setRootNode
+	 * @method setDOMRootTravelScope
 	 * @param {} selector
 	 * @return 
 	 */
-	instance.setRootNode = function(selector){
-		instance.rootNode = document.querySelector( selector );
+	instance.setDOMRootTravelScope = function(selector){
+		instance.rootDOMTravelScope = document.querySelector( selector );
 	}
 
 	/**
@@ -72,7 +83,7 @@ var AniJSLib = function(){
 		var aniJSNodeCollection = [],
 			aniJSParsedSentenceCollection = {};
 
-		aniJSNodeCollection = instance._findAniJSNodeCollection(instance.rootNode);
+		aniJSNodeCollection = instance._findAniJSNodeCollection(instance.rootDOMTravelScope);
 
 		var size  = aniJSNodeCollection.length,
 		    i = 0;
@@ -299,7 +310,7 @@ var AniJSLib = function(){
 	instance._whereHelper = function (element, aniJSParsedSentence) {
 		var defaultValue = element,
 			whereNodeList = [defaultValue],
-			rootNode = instance.rootNode;
+			rootDOMTravelScope = instance.rootDOMTravelScope;
 
 		//TODO: In some context (where) reserved word is not descriptive as (who)
 		//We parse 2 ? 
@@ -311,7 +322,7 @@ var AniJSLib = function(){
 			} else if(aniJSParsedSentence.where === 'window'){
 				whereNodeList = [window];
 			}else {
-				whereNodeList = rootNode.querySelectorAll( aniJSParsedSentence.where );
+				whereNodeList = rootDOMTravelScope.querySelectorAll( aniJSParsedSentence.where );
 			}
 			
 		}
@@ -328,10 +339,10 @@ var AniJSLib = function(){
 	instance._whatHelper = function (element, aniJSParsedSentence) {
 		var defaultValue = element,
 			whatNodeList = [defaultValue],
-			rootNode = instance.rootNode;
+			rootDOMTravelScope = instance.rootDOMTravelScope;
 
 		if(aniJSParsedSentence.what) {
-			whatNodeList = rootNode.querySelectorAll( aniJSParsedSentence.what );
+			whatNodeList = rootDOMTravelScope.querySelectorAll( aniJSParsedSentence.what );
 		}
 		return whatNodeList;
 	}
@@ -424,13 +435,13 @@ var AniJSLib = function(){
 	/**
 	 * Select all DOM nodes that have a AniJS declaration
 	 * @method _findAniJSNodeCollection
-	 * @param {} rootNode
+	 * @param {} rootDOMTravelScope
 	 * @return CallExpression
 	 */
-	instance._findAniJSNodeCollection = function(rootNode){
+	instance._findAniJSNodeCollection = function(rootDOMTravelScope){
 		//IMPROVE: Might a configuration option
 		var aniJSDataTagName = '[' + ANIJS_DATATAG_NAME + ']';
-		return rootNode.querySelectorAll( aniJSDataTagName );
+		return rootDOMTravelScope.querySelectorAll( aniJSDataTagName );
 	} 
 
 	/**
@@ -556,7 +567,8 @@ var AniJSLib = function(){
 
 			        //TODO: Could be necesary remove the class after animation finish?
 			        //      maybe we can specify this by configuration option
-			        nodeHelper.removeClass(e.target, how);
+			       
+			       //nodeHelper.removeClass(e.target, how);
 
 			        // callback handler
 			        //El after deberia venir como mismo el before
