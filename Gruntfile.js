@@ -4,7 +4,10 @@ module.exports = function(grunt) {
 		uglify: {
 			my_target: {
 				options: {
-      				mangle: true
+      				mangle: true,
+					compress: {
+						drop_console: true
+					}      				
     			},
 				files: {
 					'dist/anijs-min.js': ['src/anijs.js'],
