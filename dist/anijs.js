@@ -1,6 +1,19 @@
+/*!
+AniJS - http://anijs.github.io
+Licensed under the MIT license
+
+Copyright (c) 2014 Dariel Noel <darielnoel@gmail.com>
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+*/
+
 /**
  * AniJS is library for write declarative animations in your static html documents
- * @class AniJS
+ * @class AniJSit
  * @constructor initializer
  * @author @dariel_noel
  */
@@ -10,8 +23,12 @@ var AniJSLib = function() {
         ANIJS_DATATAG_NAME = 'data-anijs',
         DEFAULT = 'default',
         BODY = 'body',
-        ANIMATED = ' animated',
-        MULTIPLE_CLASS_SEPARATOR = '$';
+        ANIMATED = '',
+        MULTIPLE_CLASS_SEPARATOR = '$',
+        EVENT_RESERVED_WORD = 'if',
+        EVENT_TARGET_RESERVED_WORD = 'on',
+        BEHAVIOR_RESERVED_WORD = 'do',
+        BEHAVIOR_TARGET_RESERVED_WORD = 'to';
 
     /**
      * Initializer Function
@@ -127,7 +144,8 @@ var AniJSLib = function() {
      */
     instance.purge = function(selector) {
 
-        if (selector && selector !== '') {
+    	//TODO: Search a regular expression for a valid CSS selector
+        if (selector && selector !== '' && selector !== ' ') {
             var purgeNodeCollection = document.querySelectorAll(selector),
                 size = purgeNodeCollection.length,
                 i = 0;
@@ -178,7 +196,7 @@ var AniJSLib = function() {
              * @return
              */
             removeAnim: function(e, animationContext) {
-                animationContext.nodeHelper.removeClass(e.target, animationContext.how);
+                animationContext.nodeHelper.removeClass(e.target, animationContext.behavior);
             }
         }
 
@@ -220,38 +238,38 @@ var AniJSLib = function() {
      */
     instance._setupElementSentenceAnim = function(element, aniJSParsedSentence) {
         var definition,
-            when = instance._whenHelper(element, aniJSParsedSentence),
-            whereList = instance._whereHelper(element, aniJSParsedSentence);
+            event = instance._eventHelper(element, aniJSParsedSentence),
+            eventTargetList = instance._eventTargetHelper(element, aniJSParsedSentence);
 
-        //Es obligatorio definir de where ATTR
-        if (when !== '') {
+        //Es obligatorio definir de eventTarget ATTR
+        if (event !== '') {
 
-            var size = whereList.length,
+            var size = eventTargetList.length,
                 i = 0;
 
             for (i; i < size; i++) {
-                whereItem = whereList[i];
+                eventTargetItem = eventTargetList[i];
 
                 var listener = function(event) {
 
                     //Si cambia algun parametro dinamicamente entonces hay que enterarse
-                    var whatList = instance._whatHelper(element, aniJSParsedSentence),
-                        how = instance._howHelper(element, aniJSParsedSentence),
+                    var behaviorTargetList = instance._behaviorTargetHelper(element, aniJSParsedSentence),
+                        behavior = instance._behaviorHelper(element, aniJSParsedSentence),
                         before = instance._beforeHelper(element, aniJSParsedSentence),
                         after = instance._afterHelper(element, aniJSParsedSentence),
                         helper = instance._helperHelper(element, aniJSParsedSentence);
 
-                    how += ANIMATED;
+                    behavior += ANIMATED;
 
                     //TODO: ejecutar function before
                     //antes de aqui 
 
                     //Creo un nuevo animation context
                     var animationContextConfig = {
-                        whatList: whatList,
+                        behaviorTargetList: behaviorTargetList,
                         nodeHelper: NodeHelper,
                         animationEndEvent: instance.animationEndEvent,
-                        how: how,
+                        behavior: behavior,
                         after: after
                     },
 
@@ -265,10 +283,10 @@ var AniJSLib = function() {
                     }
                 }
 
-                whereItem.addEventListener(when, listener, false);
+                eventTargetItem.addEventListener(event, listener, false);
 
                 //Register event to feature handle
-                instance._registerEventHandle(whereItem, when, listener);
+                instance._registerEventHandle(eventTargetItem, event, listener);
 
 
             }
@@ -341,84 +359,81 @@ var AniJSLib = function() {
      * Helper to setup the Event that trigger the animation from declaration
      * https://developer.mozilla.org/en-US/docs/Web/Reference/Events
      * http://www.w3schools.com/tags/ref_eventattributes.asp
-     * @method _whenHelper
+     * @method _eventHelper
      * @param {} element
      * @param {} aniJSParsedSentence
-     * @return when
+     * @return event
      */
-    instance._whenHelper = function(element, aniJSParsedSentence) {
+    instance._eventHelper = function(element, aniJSParsedSentence) {
         var defaultValue = '',
-            when = aniJSParsedSentence.when || defaultValue;
+            event = aniJSParsedSentence.event || defaultValue;
 
-        if (when === 'animationend') {
-            when = instance._animationEndPrefix();
+        if (event === 'animationend') {
+            event = instance._animationEndPrefix();
         }
 
-        return when;
+        return event;
     }
 
     /**
      * Helper to setup the Place from listen the trigger event of the animation
      * If is not specified one place, se asume que es himself
      * Take in account that where it's just a selector
-     * @method _whereHelper
+     * @method _eventTargetHelper
      * @param {} element
      * @param {} aniJSParsedSentence
-     * @return whereNodeList
+     * @return eventTargetNodeList
      */
-    instance._whereHelper = function(element, aniJSParsedSentence) {
+    instance._eventTargetHelper = function(element, aniJSParsedSentence) {
         var defaultValue = element,
-            whereNodeList = [defaultValue],
+            eventTargetNodeList = [defaultValue],
             rootDOMTravelScope = instance.rootDOMTravelScope;
 
-        //TODO: In some context (where) reserved word is not descriptive as (who)
-        //We parse 2 ? 
-
         //TODO: We could add other non direct DOM Objects
-        if (aniJSParsedSentence.where) {
-            if (aniJSParsedSentence.where === 'document') {
-                whereNodeList = [document];
-            } else if (aniJSParsedSentence.where === 'window') {
-                whereNodeList = [window];
+        if (aniJSParsedSentence.eventTarget) {
+            if (aniJSParsedSentence.eventTarget === 'document') {
+                eventTargetNodeList = [document];
+            } else if (aniJSParsedSentence.eventTarget === 'window') {
+                eventTargetNodeList = [window];
             } else {
-                whereNodeList = rootDOMTravelScope.querySelectorAll(aniJSParsedSentence.where);
+                eventTargetNodeList = rootDOMTravelScope.querySelectorAll(aniJSParsedSentence.eventTarget);
             }
 
         }
-        return whereNodeList;
+        return eventTargetNodeList;
     }
 
     /**
      * Helper to setup the Node can be animated
-     * @method _whatHelper
+     * @method _behaviorTargetHelper
      * @param {} element
      * @param {} aniJSParsedSentence
-     * @return whatNodeList
+     * @return behaviorTargetNodeList
      */
-    instance._whatHelper = function(element, aniJSParsedSentence) {
+    instance._behaviorTargetHelper = function(element, aniJSParsedSentence) {
         var defaultValue = element,
-            whatNodeList = [defaultValue],
+            behaviorTargetNodeList = [defaultValue],
             rootDOMTravelScope = instance.rootDOMTravelScope,
-            what = aniJSParsedSentence.what;
+            behaviorTarget = aniJSParsedSentence.behaviorTarget;
 
-        if (what) {
+        if (behaviorTarget) {
             //Expression regular remplazar caracteres $ por comas
             //TODO: Estudiar si este caracter no esta agarrado
-            what = what.split(MULTIPLE_CLASS_SEPARATOR).join(',');
-            whatNodeList = rootDOMTravelScope.querySelectorAll(what);
+            behaviorTarget = behaviorTarget.split(MULTIPLE_CLASS_SEPARATOR).join(',');
+            behaviorTargetNodeList = rootDOMTravelScope.querySelectorAll(behaviorTarget);
         }
-        return whatNodeList;
+        return behaviorTargetNodeList;
     }
 
     /**
      * Helper to setup the Animation type
-     * @method _howHelper
+     * @method _behaviorHelper
      * @param {} element
      * @param {} aniJSParsedSentence
      * @return defaultValue
      */
-    instance._howHelper = function(element, aniJSParsedSentence) {
-        var defaultValue = aniJSParsedSentence.how || '';
+    instance._behaviorHelper = function(element, aniJSParsedSentence) {
+        var defaultValue = aniJSParsedSentence.behavior || '';
         return defaultValue;
     }
 
@@ -575,13 +590,13 @@ var AniJSLib = function() {
         animationContextInstance.initializer = function(config) {
 
             //ATTRS
-            animationContextInstance.whatList = config.whatList || [];
+            animationContextInstance.behaviorTargetList = config.behaviorTargetList || [];
 
             animationContextInstance.nodeHelper = config.nodeHelper;
 
             animationContextInstance.animationEndEvent = config.animationEndEvent;
 
-            animationContextInstance.how = config.how;
+            animationContextInstance.behavior = config.behavior;
 
             animationContextInstance.after = config.after;
 
@@ -593,22 +608,22 @@ var AniJSLib = function() {
          * @return
          */
         animationContextInstance.run = function() {
-            var whatList = animationContextInstance.whatList,
-                whatListSize = whatList.length,
+            var behaviorTargetList = animationContextInstance.behaviorTargetList,
+                behaviorTargetListSize = behaviorTargetList.length,
                 nodeHelper = animationContextInstance.nodeHelper,
-                how = animationContextInstance.how,
+                behavior = animationContextInstance.behavior,
                 animationEndEvent = animationContextInstance.animationEndEvent,
                 after = animationContextInstance.after,
                 helperCollection = config.helperCollection,
                 j = 0;
 
-            for (j; j < whatListSize; j++) {
-                whatListItem = whatList[j];
+            for (j; j < behaviorTargetListSize; j++) {
+                behaviorTargetListItem = behaviorTargetList[j];
 
-                nodeHelper.addClass(whatListItem, how);
+                nodeHelper.addClass(behaviorTargetListItem, behavior);
 
                 // create event
-                whatListItem.addEventListener(animationEndEvent, function(e) {
+                behaviorTargetListItem.addEventListener(animationEndEvent, function(e) {
 
                     // remove event
                     e.target.removeEventListener(e.type, arguments.callee);
@@ -675,8 +690,8 @@ var AniJSLib = function() {
 
         /**
          * Sentence Parse
-         * 	Sintax: Sentence -> when, where, what, how, after, helper
-         *  Example: "when: DOMContentLoaded, where: document, what: .animatecss, how:flip, after: testcallback"
+         * 	Sintax: Sentence -> if, on, do, to, after, helper
+         *  Example: "if: DOMContentLoaded, on: document, do:flip, to: .animatecss, after: testcallback"
          *  note: The order it's not important
          * @method _parseSentence
          * @param {} sentence
@@ -702,8 +717,8 @@ var AniJSLib = function() {
 
         /**
          * Parse definition
-         * 	Sintax: Definition -> when | where | what | how | after | helper
-         *  Example: "when: DOMContentLoaded, where: document, what: .animatecss, how:flip, after: testcallback"
+         * 	Sintax: Definition -> if | on | do | to | after | helper
+         *  Example: "if: DOMContentLoaded, on: document, do:flip, to: .animatecss,  after: testcallback"
          * @method _parseDefinition
          * @param {} definition
          * @return parsedDefinition
@@ -712,13 +727,31 @@ var AniJSLib = function() {
             var parsedDefinition = {},
                 definitionBody,
                 definitionKey,
-                definitionValue;
+                definitionValue,
+                EVENT_KEY = 'event',
+                EVENT_TARGET_KEY = 'eventTarget',
+                BEHAVIOR_KEY = 'behavior',
+                BEHAVIOR_TARGET_KEY = 'behaviorTarget';
+
+            //Performance reasons
 
             definitionBody = definition.split(':');
 
             if (definitionBody.length > 1) {
                 definitionKey = definitionBody[0].trim();
                 definitionValue = definitionBody[1].trim();
+
+                //Change by reserved words
+                if(definitionKey === EVENT_RESERVED_WORD){
+                    definitionKey = EVENT_KEY;
+                } else if(definitionKey === EVENT_TARGET_RESERVED_WORD){
+                    definitionKey = EVENT_TARGET_KEY;
+                } else if(definitionKey === BEHAVIOR_RESERVED_WORD){
+                    definitionKey = BEHAVIOR_KEY;
+                } else if(definitionKey === BEHAVIOR_TARGET_RESERVED_WORD){
+                    definitionKey = BEHAVIOR_TARGET_KEY;
+                }
+
                 parsedDefinition.key = definitionKey;
                 parsedDefinition.value = definitionValue;
             }

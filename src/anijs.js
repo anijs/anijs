@@ -13,7 +13,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 /**
  * AniJS is library for write declarative animations in your static html documents
- * @class AniJS
+ * @class AniJSit
  * @constructor initializer
  * @author @dariel_noel
  */
@@ -23,7 +23,7 @@ var AniJSLib = function() {
         ANIJS_DATATAG_NAME = 'data-anijs',
         DEFAULT = 'default',
         BODY = 'body',
-        ANIMATED = ' animated',
+        ANIMATED = '',
         MULTIPLE_CLASS_SEPARATOR = '$',
         EVENT_RESERVED_WORD = 'if',
         EVENT_TARGET_RESERVED_WORD = 'on',
