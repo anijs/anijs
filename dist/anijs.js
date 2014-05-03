@@ -59,6 +59,9 @@ var AniJSLib = function() {
 
         //AnimationEnd Correct Prefix Setup
         instance.animationEndEvent = instance._animationEndPrefix();
+
+        //Add this class names when anim
+        instance.classNamesWhenAnim = '';
     }
 
     /**
@@ -181,6 +184,10 @@ var AniJSLib = function() {
         }
     }
 
+    instance.setClassNamesWhenAnim = function(defaultClasses){
+        instance.classNamesWhenAnim = ' ' + defaultClasses;
+    }
+
     /**
      * Description
      * @method _createDefaultHelper
@@ -259,8 +266,10 @@ var AniJSLib = function() {
                         after = instance._afterHelper(element, aniJSParsedSentence),
                         helper = instance._helperHelper(element, aniJSParsedSentence);
 
-                    behavior += ANIMATED;
-
+                    if(instance.classNamesWhenAnim !== ''){
+                        behavior += instance.classNamesWhenAnim;
+                    }
+                    
                     //TODO: ejecutar function before
                     //antes de aqui 
 
