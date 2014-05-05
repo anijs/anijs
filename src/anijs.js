@@ -23,7 +23,6 @@ var AniJSLib = function() {
         ANIJS_DATATAG_NAME = 'data-anijs',
         DEFAULT = 'default',
         BODY = 'body',
-        ANIMATED = '',
         MULTIPLE_CLASS_SEPARATOR = '$',
         EVENT_RESERVED_WORD = 'if',
         EVENT_TARGET_RESERVED_WORD = 'on',
@@ -62,7 +61,7 @@ var AniJSLib = function() {
 
         //Add this class names when anim
         instance.classNamesWhenAnim = '';
-    }
+    };
 
     /**
      * You can use these to change the escope to run AniJS
@@ -72,7 +71,7 @@ var AniJSLib = function() {
      */
     instance.setDOMRootTravelScope = function(selector) {
         instance.rootDOMTravelScope = document.querySelector(selector);
-    }
+    };
 
     /**
      * Parse Declarations and setup Anim in a founded elements
@@ -89,7 +88,8 @@ var AniJSLib = function() {
         aniJSNodeCollection = instance._findAniJSNodeCollection(instance.rootDOMTravelScope);
 
         var size = aniJSNodeCollection.length,
-            i = 0;
+            i = 0,
+            item;
 
         for (i; i < size; i++) {
             item = aniJSNodeCollection[i];
@@ -100,7 +100,7 @@ var AniJSLib = function() {
             //Le seteo su animacion
             instance._setupElementAnim(item, aniJSParsedSentenceCollection);
         }
-    }
+    };
 
     /**
      * Create an animation from a aniJSParsedSentenceCollection
@@ -113,8 +113,8 @@ var AniJSLib = function() {
         var nodeElement = element || '';
 
         //BEAUTIFY: The params order migth be the same  
-        instance._setupElementAnim(element, aniJSParsedSentenceCollection);
-    }
+        instance._setupElementAnim(nodeElement, aniJSParsedSentenceCollection);
+    };
 
     /**
      * Return a Helper by ID, you can use this to attach callback to the Helper
@@ -125,7 +125,7 @@ var AniJSLib = function() {
     instance.getHelper = function(helperID) {
         var helperCollection = instance.helperCollection;
         return helperCollection[helperID] || helperCollection[DEFAULT];
-    }
+    };
 
     /**
      * A helper it's a callback function container
@@ -137,7 +137,7 @@ var AniJSLib = function() {
      */
     instance.registerHelper = function(helperName, helperInstance) {
         instance.helperCollection[helperName] = helperInstance;
-    }
+    };
 
     /**
      * Detach all subscription of the selector Nodes
@@ -147,7 +147,7 @@ var AniJSLib = function() {
      */
     instance.purge = function(selector) {
 
-    	//TODO: Search a regular expression for a valid CSS selector
+        //TODO: Search a regular expression for a valid CSS selector
         if (selector && selector !== '' && selector !== ' ') {
             var purgeNodeCollection = document.querySelectorAll(selector),
                 size = purgeNodeCollection.length,
@@ -157,7 +157,7 @@ var AniJSLib = function() {
                 instance._purgeNode(purgeNodeCollection[i]);
             }
         }
-    }
+    };
 
     /**
      * Purge all register elements handle
@@ -182,11 +182,11 @@ var AniJSLib = function() {
                 instance._purgeNode(eventObject.handleCollection[0].element);
             }
         }
-    }
+    };
 
-    instance.setClassNamesWhenAnim = function(defaultClasses){
+    instance.setClassNamesWhenAnim = function(defaultClasses) {
         instance.classNamesWhenAnim = ' ' + defaultClasses;
-    }
+    };
 
     /**
      * Description
@@ -205,10 +205,10 @@ var AniJSLib = function() {
             removeAnim: function(e, animationContext) {
                 animationContext.nodeHelper.removeClass(e.target, animationContext.behavior);
             }
-        }
+        };
 
         return defaultHelper;
-    }
+    };
 
     /**
      * Create a Parser Instance
@@ -217,7 +217,7 @@ var AniJSLib = function() {
      */
     instance._createParser = function() {
         return new Parser();
-    }
+    };
 
     /**
      * Setup the animation of the some element
@@ -228,13 +228,14 @@ var AniJSLib = function() {
      */
     instance._setupElementAnim = function(element, aniJSParsedSentenceCollection) {
         var size = aniJSParsedSentenceCollection.length,
-            i = 0;
+            i = 0,
+            item;
 
         for (i; i < size; i++) {
             item = aniJSParsedSentenceCollection[i];
             instance._setupElementSentenceAnim(element, item);
         }
-    }
+    };
 
     /**
      * Setup the element animation from a AniJS Sentence
@@ -244,15 +245,15 @@ var AniJSLib = function() {
      * @return
      */
     instance._setupElementSentenceAnim = function(element, aniJSParsedSentence) {
-        var definition,
-            event = instance._eventHelper(element, aniJSParsedSentence),
+        var event = instance._eventHelper(aniJSParsedSentence),
             eventTargetList = instance._eventTargetHelper(element, aniJSParsedSentence);
 
         //Es obligatorio definir de eventTarget ATTR
         if (event !== '') {
 
             var size = eventTargetList.length,
-                i = 0;
+                i = 0,
+                eventTargetItem;
 
             for (i; i < size; i++) {
                 eventTargetItem = eventTargetList[i];
@@ -261,15 +262,14 @@ var AniJSLib = function() {
 
                     //Si cambia algun parametro dinamicamente entonces hay que enterarse
                     var behaviorTargetList = instance._behaviorTargetHelper(element, aniJSParsedSentence),
-                        behavior = instance._behaviorHelper(element, aniJSParsedSentence),
+                        behavior = instance._behaviorHelper(aniJSParsedSentence),
                         before = instance._beforeHelper(element, aniJSParsedSentence),
-                        after = instance._afterHelper(element, aniJSParsedSentence),
-                        helper = instance._helperHelper(element, aniJSParsedSentence);
+                        after = instance._afterHelper(element, aniJSParsedSentence);
 
-                    if(instance.classNamesWhenAnim !== ''){
+                    if (instance.classNamesWhenAnim !== '') {
                         behavior += instance.classNamesWhenAnim;
                     }
-                    
+
                     //TODO: ejecutar function before
                     //antes de aqui 
 
@@ -290,7 +290,7 @@ var AniJSLib = function() {
                     } else {
                         animationContextInstance.run();
                     }
-                }
+                };
 
                 eventTargetItem.addEventListener(event, listener, false);
 
@@ -302,7 +302,7 @@ var AniJSLib = function() {
         } else {
             console.log('You must define some event');
         }
-    }
+    };
 
     /**
      * Create a handle to remove the listener when purge it
@@ -331,7 +331,7 @@ var AniJSLib = function() {
             eventCollection[++instance.eventIdCounter] = tempEventHandle;
             element._aniJSEventID = instance.eventIdCounter;
         }
-    }
+    };
 
     /**
      * Detach all AniJS subscriptions to this element
@@ -348,7 +348,8 @@ var AniJSLib = function() {
             elementHandleCollection = instance.eventCollection[aniJSEventID].handleCollection;
 
             var size = elementHandleCollection.length,
-                i = 0;
+                i = 0,
+                item;
 
             for (i; i < size; i++) {
                 item = elementHandleCollection[i];
@@ -361,7 +362,7 @@ var AniJSLib = function() {
             instance.eventCollection[aniJSEventID] = null;
             element._aniJSEventID = null;
         }
-    }
+    };
 
 
     /**
@@ -373,7 +374,7 @@ var AniJSLib = function() {
      * @param {} aniJSParsedSentence
      * @return event
      */
-    instance._eventHelper = function(element, aniJSParsedSentence) {
+    instance._eventHelper = function(aniJSParsedSentence) {
         var defaultValue = '',
             event = aniJSParsedSentence.event || defaultValue;
 
@@ -382,7 +383,7 @@ var AniJSLib = function() {
         }
 
         return event;
-    }
+    };
 
     /**
      * Helper to setup the Place from listen the trigger event of the animation
@@ -410,7 +411,7 @@ var AniJSLib = function() {
 
         }
         return eventTargetNodeList;
-    }
+    };
 
     /**
      * Helper to setup the Node can be animated
@@ -432,7 +433,7 @@ var AniJSLib = function() {
             behaviorTargetNodeList = rootDOMTravelScope.querySelectorAll(behaviorTarget);
         }
         return behaviorTargetNodeList;
-    }
+    };
 
     /**
      * Helper to setup the Animation type
@@ -441,10 +442,10 @@ var AniJSLib = function() {
      * @param {} aniJSParsedSentence
      * @return defaultValue
      */
-    instance._behaviorHelper = function(element, aniJSParsedSentence) {
+    instance._behaviorHelper = function(aniJSParsedSentence) {
         var defaultValue = aniJSParsedSentence.behavior || '';
         return defaultValue;
-    }
+    };
 
     /**
      * Helper to setup the after callback function
@@ -454,9 +455,9 @@ var AniJSLib = function() {
      * @return defaultValue
      */
     instance._afterHelper = function(element, aniJSParsedSentence) {
-        var defaultValue = instance._callbackHelper(element, aniJSParsedSentence, aniJSParsedSentence.after)
+        var defaultValue = instance._callbackHelper(element, aniJSParsedSentence, aniJSParsedSentence.after);
         return defaultValue;
-    }
+    };
     /**
      * Helper to setup the after callback function
      * @method _afterHelper
@@ -465,9 +466,9 @@ var AniJSLib = function() {
      * @return defaultValue
      */
     instance._beforeHelper = function(element, aniJSParsedSentence) {
-        var defaultValue = instance._callbackHelper(element, aniJSParsedSentence, aniJSParsedSentence.before)
+        var defaultValue = instance._callbackHelper(element, aniJSParsedSentence, aniJSParsedSentence.before);
         return defaultValue;
-    }
+    };
 
     /**
      * Helper for before and after helpers refactoring
@@ -479,7 +480,7 @@ var AniJSLib = function() {
      */
     instance._callbackHelper = function(element, aniJSParsedSentence, callbackFunction) {
         var defaultValue = callbackFunction || '',
-            helper = instance._helperHelper(element, aniJSParsedSentence);
+            helper = instance._helperHelper(aniJSParsedSentence);
 
         if (defaultValue) {
             if (!instance._isFunction(defaultValue)) {
@@ -495,7 +496,7 @@ var AniJSLib = function() {
         }
 
         return defaultValue;
-    }
+    };
 
     /**
      * Helper to setup the helper of the animation
@@ -504,10 +505,10 @@ var AniJSLib = function() {
      * @param {} aniJSParsedSentence
      * @return defaultValue
      */
-    instance._helperHelper = function(element, aniJSParsedSentence) {
+    instance._helperHelper = function(aniJSParsedSentence) {
         var defaultValue = aniJSParsedSentence.helper || instance.helperDefaultIndex;
         return defaultValue;
-    }
+    };
 
     /**
      * Parse an String Declaration
@@ -517,7 +518,7 @@ var AniJSLib = function() {
      */
     instance._getParsedAniJSSentenceCollection = function(stringDeclaration) {
         return instance.Parser.parse(stringDeclaration);
-    }
+    };
 
     /**
      * Select all DOM nodes that have a AniJS declaration
@@ -529,7 +530,7 @@ var AniJSLib = function() {
         //IMPROVE: Might a configuration option
         var aniJSDataTagName = '[' + ANIJS_DATATAG_NAME + ']';
         return rootDOMTravelScope.querySelectorAll(aniJSDataTagName);
-    }
+    };
 
     /**
      * Return the correct AnimationEnd Prefix according to the current browser
@@ -540,8 +541,8 @@ var AniJSLib = function() {
         var endPrefixBrowserDetectionIndex = instance._endPrefixBrowserDetectionIndex(),
             animationEndBrowserPrefix = ['animationend', 'oAnimationEnd', 'animationend', 'webkitAnimationEnd'];
 
-        return animationEndBrowserPrefix[endPrefixBrowserDetectionIndex]
-    }
+        return animationEndBrowserPrefix[endPrefixBrowserDetectionIndex];
+    };
 
     /**
      * Return the correct TransitionEnd Prefix according to the current browser
@@ -553,7 +554,7 @@ var AniJSLib = function() {
             transitionEndBrowserPrefix = ['transitionend', 'oTransitionEnd', 'transitionend', 'webkitTransitionEnd'];
 
         return transitionEndBrowserPrefix[endPrefixBrowserDetectionIndex];
-    }
+    };
 
     /**
      * Return the correct Transition and  Animation End Prefix helper according to the current browser
@@ -568,8 +569,8 @@ var AniJSLib = function() {
             if (el.style[animationBrowserDetection[i]] !== undefined) {
                 return i;
             }
-        };
-    }
+        }
+    };
 
     /**
      * Thanks a lot to underscore guys
@@ -579,7 +580,7 @@ var AniJSLib = function() {
      */
     instance._isFunction = function(obj) {
         return !!(obj && obj.constructor && obj.call && obj.apply);
-    }
+    };
 
     /**
      * Encapsulate the animation Context
@@ -623,8 +624,8 @@ var AniJSLib = function() {
                 behavior = animationContextInstance.behavior,
                 animationEndEvent = animationContextInstance.animationEndEvent,
                 after = animationContextInstance.after,
-                helperCollection = config.helperCollection,
-                j = 0;
+                j = 0,
+                behaviorTargetListItem;
 
             for (j; j < behaviorTargetListSize; j++) {
                 behaviorTargetListItem = behaviorTargetList[j];
@@ -645,7 +646,7 @@ var AniJSLib = function() {
                 });
 
             }
-        }
+        };
 
         animationContextInstance.initializer(config);
 
@@ -669,12 +670,12 @@ var AniJSLib = function() {
          */
         parserInstance.parse = function(aniJSDeclaration) {
             return parserInstance._parseDeclaration(aniJSDeclaration);
-        }
+        };
 
         /**
          * Declaration parse
-         * 	Sintax: Declaration -> Sentence; | *
-         * 	Example: SentenceA; SentenceB
+         *  Sintax: Declaration -> Sentence; | *
+         *  Example: SentenceA; SentenceB
          * @method _parseDeclaration
          * @param {} declaration
          * @return parsedDeclaration
@@ -695,11 +696,11 @@ var AniJSLib = function() {
             }
 
             return parsedDeclaration;
-        }
+        };
 
         /**
          * Sentence Parse
-         * 	Sintax: Sentence -> if, on, do, to, after, helper
+         *  Sintax: Sentence -> if, on, do, to, after, helper
          *  Example: "if: DOMContentLoaded, on: document, do:flip, to: .animatecss, after: testcallback"
          *  note: The order it's not important
          * @method _parseSentence
@@ -722,11 +723,11 @@ var AniJSLib = function() {
             }
 
             return parsedSentence;
-        }
+        };
 
         /**
          * Parse definition
-         * 	Sintax: Definition -> if | on | do | to | after | helper
+         *  Sintax: Definition -> if | on | do | to | after | helper
          *  Example: "if: DOMContentLoaded, on: document, do:flip, to: .animatecss,  after: testcallback"
          * @method _parseDefinition
          * @param {} definition
@@ -751,13 +752,13 @@ var AniJSLib = function() {
                 definitionValue = definitionBody[1].trim();
 
                 //Change by reserved words
-                if(definitionKey === EVENT_RESERVED_WORD){
+                if (definitionKey === EVENT_RESERVED_WORD) {
                     definitionKey = EVENT_KEY;
-                } else if(definitionKey === EVENT_TARGET_RESERVED_WORD){
+                } else if (definitionKey === EVENT_TARGET_RESERVED_WORD) {
                     definitionKey = EVENT_TARGET_KEY;
-                } else if(definitionKey === BEHAVIOR_RESERVED_WORD){
+                } else if (definitionKey === BEHAVIOR_RESERVED_WORD) {
                     definitionKey = BEHAVIOR_KEY;
-                } else if(definitionKey === BEHAVIOR_TARGET_RESERVED_WORD){
+                } else if (definitionKey === BEHAVIOR_TARGET_RESERVED_WORD) {
                     definitionKey = BEHAVIOR_TARGET_KEY;
                 }
 
@@ -766,7 +767,7 @@ var AniJSLib = function() {
             }
 
             return parsedDefinition;
-        }
+        };
 
     });
 
@@ -838,7 +839,7 @@ var AniJSLib = function() {
             return string && new RegExp('(\\s+|^)' + string + '(\\s+|$)').test(elem.className);
         },
 
-    }
+    };
 
     instance._initializer();
 

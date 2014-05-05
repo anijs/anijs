@@ -31,6 +31,7 @@ Put the AniJS file on your page.
 ```
 
 Include the CSS animation styles definition, we strongly recomend you  to use the amazing [animate.css library](http://daneden.github.io/animate.css/) as starting point, this library provides beautiful animations. Also, you can define your own animations.
+
 ```xml
 <head>
     <!-- Animate.css library -->
@@ -56,6 +57,15 @@ Start playing by adding **anijs-data** tag to any HTML element.
  </body>
 ```
 
+If you use [animate.css library](http://daneden.github.io/animate.css/) no olvide agregar en la definition **do** la clase **animated**. AniJS puede hacer esto por usted a traves de la function [**setClassNamesWhenAnim**](https://github.com/anijs/anijs/wiki/Add-default-class-names-while-Anim).
+
+```xml
+<body>
+    <header data-anijs="if: click, do: flipInY animated">
+     <!-- ... -->
+    </header>
+ </body>
+```
 
 ## Documentation
 
@@ -74,7 +84,7 @@ Documentation Topics can be founded in our [Wiki Pages](https://github.com/anijs
 
 
 ## Contributing
-AniJS is like a little girl, she needs [hungry and foolish](http://www.youtube.com/watch?v=7CeNIDWtlo0) community people to grow up healthy. All your [issues](https://github.com/anijs/anijs/issues), [pull requests](https://github.com/anijs/anijs) and [stars ;) ](https://github.com/anijs/anijs) are welcome.
+AniJS is like a little girl, she needs [hungry and foolish](http://www.youtube.com/watch?v=7CeNIDWtlo0) community people to grow up healthy. All your [issues](https://github.com/anijs/anijs/issues), [pull requests](https://github.com/anijs/anijs/pulls) and [stars ;) ](https://github.com/anijs/anijs) are welcome.
  
 1. Fork it!
 2. Create your feature branch: `git checkout -b my-new-feature`
