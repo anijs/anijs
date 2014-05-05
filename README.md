@@ -57,7 +57,8 @@ Start playing by adding **anijs-data** tag to any HTML element.
  </body>
 ```
 
-If you use [animate.css library](http://daneden.github.io/animate.css/) no olvide agregar en la definition **do** la clase **animated**. AniJS puede hacer esto por usted a traves de la function [**setClassNamesWhenAnim**](https://github.com/anijs/anijs/wiki/Add-default-class-names-while-Anim).
+If you use [animate.css library](http://daneden.github.io/animate.css/) don't forget to add  the **animated** class in the **do** definition. However, using the [**setClassNamesWhenAnim**](https://github.com/anijs/anijs/wiki/Add-default-class-names-while-Anim) function, AniJS can do that for you. 
+
 
 ```xml
 <body>
@@ -69,7 +70,7 @@ If you use [animate.css library](http://daneden.github.io/animate.css/) no olvid
 
 ## Documentation
 
-Documentation Topics can be founded in our [Wiki Pages](https://github.com/anijs/anijs/wiki).
+Documentation Topics can be founded in the [Wiki Pages](https://github.com/anijs/anijs/wiki).
 
 
 ## Advantages
@@ -84,7 +85,7 @@ Documentation Topics can be founded in our [Wiki Pages](https://github.com/anijs
 
 
 ## Contributing
-AniJS is like a little girl, she needs [hungry and foolish](http://www.youtube.com/watch?v=7CeNIDWtlo0) community people to grow up healthy. All your [issues](https://github.com/anijs/anijs/issues), [pull requests](https://github.com/anijs/anijs/pulls) and [stars ;) ](https://github.com/anijs/anijs) are welcome.
+AniJS is like a little girl, she needs [hungry and foolish](http://www.youtube.com/watch?v=7CeNIDWtlo0#t=774) community people to grow up healthy. All your [issues](https://github.com/anijs/anijs/issues), [pull requests](https://github.com/anijs/anijs/pulls) and [stars ;) ](https://github.com/anijs/anijs) are welcome.
  
 1. Fork it!
 2. Create your feature branch: `git checkout -b my-new-feature`
@@ -101,25 +102,26 @@ To [Ms. Ana Silvia Tellería](mailto:anisilv@gmail.com), [Mr. Yolier Galán](mai
  
 **Version 0.1.0**
 
-- Manejar animaciones de forma declarativa.
-	- Definir un evento desencadenador de la animación(if).
-	- Definir los nodos desde donde se escuchará el evento desencadenador(on).
-	- Definir un blanco para la animación.(to)
-	- Definir la manera en que ejecutará la animación.(do)
-	- Ejecutar una función antes de la animación, y poder deternerla.
-	- Ejecutar una función cuando se termine la animación.
-	- Definir en cada animación los objetos propietarios de sus funciones de retorno(before y after). (Llamados helpers.)
+- Define animations declaratively
+	- Define a trigger event for the animation (if).
+	- Define the elements from which the trigger event is launched (on).
+	- Animation behavior definition.(do)
+    - Animation elements target definition.(to)
+	- Execute a function before animation run.
+    - Stop animation execution before running it.
+	- Execute a function after animation run.
+	- Helpers instance definition.
 
-- Normalización de los eventos animationEnd y transitionEnd.
-- Poder escuchar eventos from window and the document objects.
+- animationEnd and transitionEnd normalization.
+- Attach events from window and document objects.
 
-- Running AniJS repetidamente.
-- Cambiar el ambito de ejecucion de AniJS.
-- Manejar animaciones usando JavaScript.
-- Limpiar los eventos asociados a un nodo determinado.
-- Registrar nuevos ayudantes.
-- Agregar nuevas funciones a determinado ayudante.
-- Funciones predeterminadas en el ayudante por defecto like removeAnim.
+- Running AniJS repeatedly.
+- Change the root DOM scope.
+- Manage animations using JavaScript.
+- Purge events from any node.
+- Register new helpers.
+- Attach new functions to the helpers.
+- removeAnim Default helper function.
 
 
 ## License
