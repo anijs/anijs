@@ -351,6 +351,83 @@ YUI().use('node', 'node-event-simulate', function (Y) {
 			});
 		});
 
+	    //---------------------------------------------------------------------
+	    // Execute a function before animation run
+	    //---------------------------------------------------------------------
+		describe("Execute a function before animation run", function() {
+			beforeEach(function() {
+	            //Aqui creo el nodo
+	            var htmlNode = '<div class="test">Test</div>';
+	            Y.one('#testzone').appendChild(htmlNode);
+			});
+
+			afterEach(function() {
+				Y.one('#testzone .test').remove();
+				Y.one('body').removeClass('bounce');
+			});
+
+			it("empty function", function() {
+	            var dataAnijJS = 'if: click, do: bounce, to: body, before: beforeFunction',
+	            	targetNode;
+
+	            AniJS.getHelper().beforeFunction = function(){
+	            	expect(true).toBeTruthy();
+	            };
+
+	            targetNode = Y.one('#testzone .test');
+
+	            targetNode.setAttribute('data-anijs', dataAnijJS);
+
+	            AniJS.run();
+
+	            targetNode.on('click', function(e){
+	                expect(Y.one('body').hasClass('bounce')).toBeFalsy();
+	            },this, true);
+
+	            targetNode.simulate("click");
+			});
+
+			//Se espera que no cree la funcion
+			it("non registered function", function() {
+	            var dataAnijJS = 'if: click, do: bounce, to: body, before: beforeNonRegistered',
+	            	targetNode;
+
+	            targetNode = Y.one('#testzone .test');
+
+	            targetNode.setAttribute('data-anijs', dataAnijJS);
+
+	            AniJS.run();
+
+	            expect(AniJS.getHelper['beforeNonRegistered']).toBeFalsy();
+
+	            targetNode.on('click', function(e){
+					expect(Y.one('body').hasClass('bounce')).toBeTruthy();               
+	            },this, true);
+
+	            targetNode.simulate("click");
+			});
+
+			//Registered var with same function name
+			it("registered var with same function name", function() {
+	            var dataAnijJS = 'if: click, do: bounce, to: body, before: beforeVarSameName',
+	            	targetNode;
+
+	            targetNode = Y.one('#testzone .test');
+
+	            targetNode.setAttribute('data-anijs', dataAnijJS);
+
+	            AniJS.getHelper().beforeVarSameName = '23';
+
+	            AniJS.run();
+
+	            targetNode.on('click', function(e){
+					expect(Y.one('body').hasClass('bounce')).toBeTruthy();               
+	            },this, true);
+
+	            targetNode.simulate("click");
+			});
+		});
+
 
 	});
 

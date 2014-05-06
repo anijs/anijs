@@ -285,7 +285,7 @@ var AniJSLib = function() {
                         animationContextInstance = new AnimationContext(animationContextConfig);
 
                     //Si before, le paso el animation context
-                    if (before) {
+                    if (before && instance._isFunction(before)) {
                         before(event, animationContextInstance);
                     } else {
                         animationContextInstance.run();
