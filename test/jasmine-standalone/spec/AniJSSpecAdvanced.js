@@ -29,8 +29,30 @@ YUI().use('node', 'node-event-simulate', function (Y) {
 
 			it("dont existed DOM Scope", function() {
 				AniJS.setDOMRootTravelScope('.dontExisted');
-				console.log(AniJS.rootDOMTravelScope );
 				expect(AniJS.rootDOMTravelScope == document).toBeTruthy();
+			});
+
+			it("empty DOM selector Scope", function() {
+				AniJS.setDOMRootTravelScope('');
+				expect(AniJS.rootDOMTravelScope == document).toBeTruthy();
+			});
+
+			it("new DOM selector Scope", function() {
+				AniJS.setDOMRootTravelScope('.test');
+				expect(AniJS.rootDOMTravelScope == document).toBeFalsy();
+
+				Y.one('body').appendChild('<div class="outsideselector">Outside Selector</div>');
+				var dataAnijJS = 'do: bounce, to: body',
+	            	targetNode;
+
+	            targetNode = Y.one('.outsideselector');
+	            targetNode.setAttribute('data-anijs', dataAnijJS);
+
+	           	targetNode.on('click', function(e){
+	                expect(Y.one('body').hasClass('bounce')).toBeFalsy();
+	            },this, true);
+
+	            targetNode.simulate("click");
 			});
 
 			//TODO: 
