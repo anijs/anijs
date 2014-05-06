@@ -435,7 +435,13 @@ var AniJSLib = function() {
             //Expression regular remplazar caracteres $ por comas
             //TODO: Estudiar si este caracter no esta agarrado
             behaviorTarget = behaviorTarget.split(MULTIPLE_CLASS_SEPARATOR).join(',');
-            behaviorTargetNodeList = rootDOMTravelScope.querySelectorAll(behaviorTarget);
+            try{
+                behaviorTargetNodeList = rootDOMTravelScope.querySelectorAll(behaviorTarget);
+            } catch(e){
+                behaviorTargetNodeList = [];
+                console.log('there are an ugly selector here');
+            }
+            
         }
         return behaviorTargetNodeList;
     };
