@@ -146,6 +146,24 @@ YUI().use('node', 'node-event-simulate', function (Y) {
 
 	            targetNode.simulate("click");
 			});
+
+			it("con selectores reales", function() {
+	            var dataAnijJS = 'if: click, on: .test, do: bounce, to: body',
+	            	targetNode;
+
+	            targetNode = Y.one('#testzone .test');
+
+	            targetNode.setAttribute('data-anijs', dataAnijJS);
+
+	            AniJS.run();
+
+	            targetNode.on('click', function(e){
+	            	console.log(Y.one('body').hasClass('bounce'));
+	                expect(Y.one('body').hasClass('bounce')).toBeTruthy();
+	            },this, true);
+
+	            targetNode.simulate("click");
+			});
 		});
 	});
 
