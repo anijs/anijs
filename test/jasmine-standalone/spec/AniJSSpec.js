@@ -14,7 +14,9 @@ YUI().use('node', 'node-event-simulate', function (Y) {
 
 		});
 
-
+	    //---------------------------------------------------------------------
+	    // Define a trigger event for the animation
+	    //---------------------------------------------------------------------
 		describe("Define a trigger event for the animation", function() {
 			beforeEach(function() {
 	            //Aqui creo el nodo
@@ -72,6 +74,74 @@ YUI().use('node', 'node-event-simulate', function (Y) {
 
 	            targetNode.on('click', function(e){
 	                expect(Y.one('body').hasClass('bounce')).toBeTruthy();
+	            },this, true);
+
+	            targetNode.simulate("click");
+			});
+		});
+
+	    //---------------------------------------------------------------------
+	    // Define the event emiter element
+	    //---------------------------------------------------------------------
+		describe("Define the event emiter element", function() {
+			beforeEach(function() {
+	            //Aqui creo el nodo
+	            var htmlNode = '<div class="test">Test</div>';
+	            Y.one('#testzone').appendChild(htmlNode);
+			});
+
+			afterEach(function() {
+				Y.one('#testzone .test').remove();
+				Y.one('body').removeClass('bounce');
+			});
+
+			it("with empty selector", function() {
+	            var dataAnijJS = 'if: click, on: , do: bounce, to: body',
+	            	targetNode;
+
+	            targetNode = Y.one('#testzone .test');
+
+	            targetNode.setAttribute('data-anijs', dataAnijJS);
+
+	            AniJS.run();
+
+	            targetNode.on('click', function(e){
+	                expect(Y.one('body').hasClass('bounce')).toBeTruthy();
+	            },this, true);
+
+	            targetNode.simulate("click");
+			});
+
+			it("con selectores que no existan", function() {
+	            var dataAnijJS = 'if: click, on: .ghostnode, do: bounce, to: body',
+	            	targetNode;
+
+	            targetNode = Y.one('#testzone .test');
+
+	            targetNode.setAttribute('data-anijs', dataAnijJS);
+
+	            AniJS.run();
+
+	            targetNode.on('click', function(e){
+	                expect(Y.one('body').hasClass('bounce')).toBeFalsy();
+	            },this, true);
+
+	            targetNode.simulate("click");
+			});
+
+			it("con ugly selectores", function() {
+	            var dataAnijJS = 'if: click, on: $/03wew, do: bounce, to: body',
+	            	targetNode;
+
+	            targetNode = Y.one('#testzone .test');
+
+	            targetNode.setAttribute('data-anijs', dataAnijJS);
+
+	            AniJS.run();
+
+	            targetNode.on('click', function(e){
+	            	console.log(Y.one('body').hasClass('bounce'));
+	                expect(Y.one('body').hasClass('bounce')).toBeFalsy();
 	            },this, true);
 
 	            targetNode.simulate("click");

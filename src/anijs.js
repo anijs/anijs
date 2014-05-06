@@ -406,9 +406,14 @@ var AniJSLib = function() {
             } else if (aniJSParsedSentence.eventTarget === 'window') {
                 eventTargetNodeList = [window];
             } else {
-                eventTargetNodeList = rootDOMTravelScope.querySelectorAll(aniJSParsedSentence.eventTarget);
+                try {
+                   eventTargetNodeList = rootDOMTravelScope.querySelectorAll(aniJSParsedSentence.eventTarget);
+                }
+                catch (e) {
+                    console.log('Ugly Selector Here');
+                    eventTargetNodeList = [];
+                }
             }
-
         }
         return eventTargetNodeList;
     };
