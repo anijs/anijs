@@ -51,7 +51,7 @@ var AniJSLib = function() {
         //Default Helper Index
         instance.helperDefaultIndex = DEFAULT;
 
-        instance.setDOMRootTravelScope(BODY);
+        instance.rootDOMTravelScope = document;
 
         //Initialize the Parser Object
         instance.Parser = instance._createParser();
