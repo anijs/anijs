@@ -70,7 +70,16 @@ var AniJSLib = function() {
      * @return
      */
     instance.setDOMRootTravelScope = function(selector) {
-        instance.rootDOMTravelScope = document.querySelector(selector);
+        var rootDOMTravelScope;
+        try{
+            rootDOMTravelScope = document.querySelector(selector);
+            if(!rootDOMTravelScope){
+                rootDOMTravelScope = document;    
+            }
+        } catch(e){
+            rootDOMTravelScope = document;
+        }
+        instance.rootDOMTravelScope = rootDOMTravelScope;
     };
 
     /**
