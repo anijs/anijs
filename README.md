@@ -58,6 +58,8 @@ Start playing by adding **anijs-data** tag to any HTML element.
 </body>
 ```
 
+See a [Codepen Example](http://codepen.io/anon/pen/xfnmD).
+
 If you use [animate.css library](http://daneden.github.io/animate.css/) don't forget to add  the **animated** class in the **do** definition. However, using the [**setClassNamesWhenAnim**](https://github.com/anijs/anijs/wiki/Add-default-class-names-while-Anim) function, AniJS can do that for you. 
 
 
