@@ -72,10 +72,15 @@ var AniJSLib = function() {
     instance.setDOMRootTravelScope = function(selector) {
         var rootDOMTravelScope;
         try{
-            rootDOMTravelScope = document.querySelector(selector);
-            if(!rootDOMTravelScope){
-                rootDOMTravelScope = document;    
+            if(selector === 'document'){
+                rootDOMTravelScope = document;
+            } else{
+                rootDOMTravelScope = document.querySelector(selector);
+                if(!rootDOMTravelScope){
+                    rootDOMTravelScope = document;    
+                }                
             }
+
         } catch(e){
             rootDOMTravelScope = document;
         }

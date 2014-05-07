@@ -1,7 +1,7 @@
 {
     "name": "AniJS",
     "version": "0.1.0",
-    "description": "Declarative handling library for CSS animations",
+    "description": "Declarative handling library for CSS animations.",
     "authors": [
         "Dariel Noel <darielnoel@gmail.com>"
     ],
@@ -19,9 +19,8 @@
         "**/.*",
         "node_modules",
         "bower_components",
+        "test",
         "src",
-        "package.json",
-    ],
-    "dependencies": {
-    }
+        "package.json"
+    ]
 }
