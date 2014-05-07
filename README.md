@@ -83,6 +83,10 @@ Documentation Topics can be founded in the [Wiki Pages](https://github.com/anijs
 - There is no need for third party libraries.
 - Compact - around 6kb after gzipping.
 
+## History
+ 
+For detailed changelog, check [Releases](https://github.com/anijs/anijs/releases).
+
 
 ## Contributing
 AniJS is like a little girl, she needs [hungry and foolish](http://www.youtube.com/watch?v=7CeNIDWtlo0#t=774) community people to grow up healthy. All your [issues](https://github.com/anijs/anijs/issues), [pull requests](https://github.com/anijs/anijs/pulls) and [stars ;) ](https://github.com/anijs/anijs) are welcome.
@@ -97,32 +101,6 @@ AniJS is like a little girl, she needs [hungry and foolish](http://www.youtube.c
 ## Aknowledgement
 
 To [Ms. Ana Silvia Tellería](mailto:anisilv@gmail.com), [Mr. Yolier Galán](mailto:gallego@gmail.com), [Mr. René González](mailto:voltusv@gmail.com), [Mr. Julio Cañizares](juliorubcan@gmail.com) and to all the persons that helped with this project.
-
-## History
- 
-**Version 0.1.0**
-
-- Define animations declaratively
-	- Define a trigger event for the animation (if).
-	- Define the elements from which the trigger event is launched (on).
-	- Animation behavior definition.(do)
-    - Animation elements target definition.(to)
-	- Execute a function before animation run.
-    - Stop animation execution before running it.
-	- Execute a function after animation run.
-	- Helpers instance definition.
-
-- animationEnd and transitionEnd [normalization](buscar).
-- Attach events from window and document objects.
-
-- Running AniJS repeatedly.
-- Change the root DOM scope.
-- Manage animations using JavaScript.
-- Purge events from any node.
-- Register new helpers.
-- Attach new functions to the helpers.
-- removeAnim Default helper function.
-
 
 ## License
  
