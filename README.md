@@ -42,19 +42,20 @@ Include the CSS animation styles definition, we strongly recomend you  to use th
 Start playing by adding **anijs-data** tag to any HTML element.
 ```xml
 <body>
-    <header data-anijs="if: click, do: flipInY">
-     <!-- ... -->
+    <header data-anijs="if: click, do: flipInY animated, after: removeAnim">
+        header
     </header>
-    <nav data-anijs="if: scroll, on: window, do: swing, to: footer">
-     <!-- ... -->
+    <nav data-anijs="if: scroll, on: window, do: swing animated, to: footer">
+        nav
     </nav>
-    <div id="main" data-anijs="if: DOMContentLoaded, on: document, do: swing">
-     <!-- ... -->
+    <div id="main" data-anijs="if: DOMContentLoaded, on: document, do: swing animated">
+        if: DOMContentLoaded, on: document, do: swing animated, after: removeAnim
     </div>
     <footer>
-     <!-- ... -->
+        footer
     </footer>
- </body>
+    <script src="bower_components/anijs/dist/anijs-min.js"></script>
+</body>
 ```
 
 If you use [animate.css library](http://daneden.github.io/animate.css/) don't forget to add  the **animated** class in the **do** definition. However, using the [**setClassNamesWhenAnim**](https://github.com/anijs/anijs/wiki/Add-default-class-names-while-Anim) function, AniJS can do that for you. 
