@@ -11,7 +11,7 @@
     "javascript"
   ],
   "authors": [
-    "Dariel Noel"
+    "Dariel Noel <darielnoel@gmail.com>"
   ],
   "license": "MIT",
   "ignore": [
@@ -19,6 +19,5 @@
     "node_modules",
     "bower_components",
     "test",
-    "tests"
   ]
 }
