@@ -112,7 +112,7 @@ To [Ms. Ana Silvia Tellería](mailto:anisilv@gmail.com), [Mr. Yolier Galán](mai
 	- Execute a function after animation run.
 	- Helpers instance definition.
 
-- animationEnd and transitionEnd normalization.
+- animationEnd and transitionEnd [normalization](buscar).
 - Attach events from window and document objects.
 
 - Running AniJS repeatedly.

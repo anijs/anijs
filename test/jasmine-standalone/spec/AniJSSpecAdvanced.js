@@ -50,6 +50,7 @@ YUI().use('node', 'node-event-simulate', function (Y) {
 
 	           	targetNode.on('click', function(e){
 	                expect(Y.one('body').hasClass('bounce')).toBeFalsy();
+	                AniJS.setDOMRootTravelScope('document');
 	            },this, true);
 
 	            targetNode.simulate("click");

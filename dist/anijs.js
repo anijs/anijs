@@ -51,7 +51,7 @@ var AniJSLib = function() {
         //Default Helper Index
         instance.helperDefaultIndex = DEFAULT;
 
-        instance.setDOMRootTravelScope(BODY);
+        instance.rootDOMTravelScope = document;
 
         //Initialize the Parser Object
         instance.Parser = instance._createParser();
@@ -70,7 +70,16 @@ var AniJSLib = function() {
      * @return
      */
     instance.setDOMRootTravelScope = function(selector) {
-        instance.rootDOMTravelScope = document.querySelector(selector);
+        var rootDOMTravelScope;
+        try{
+            rootDOMTravelScope = document.querySelector(selector);
+            if(!rootDOMTravelScope){
+                rootDOMTravelScope = document;    
+            }
+        } catch(e){
+            rootDOMTravelScope = document;
+        }
+        instance.rootDOMTravelScope = rootDOMTravelScope;
     };
 
     /**
@@ -285,7 +294,7 @@ var AniJSLib = function() {
                         animationContextInstance = new AnimationContext(animationContextConfig);
 
                     //Si before, le paso el animation context
-                    if (before) {
+                    if (before && instance._isFunction(before)) {
                         before(event, animationContextInstance);
                     } else {
                         animationContextInstance.run();
@@ -406,9 +415,14 @@ var AniJSLib = function() {
             } else if (aniJSParsedSentence.eventTarget === 'window') {
                 eventTargetNodeList = [window];
             } else {
-                eventTargetNodeList = rootDOMTravelScope.querySelectorAll(aniJSParsedSentence.eventTarget);
+                try {
+                   eventTargetNodeList = rootDOMTravelScope.querySelectorAll(aniJSParsedSentence.eventTarget);
+                }
+                catch (e) {
+                    console.log('Ugly Selector Here');
+                    eventTargetNodeList = [];
+                }
             }
-
         }
         return eventTargetNodeList;
     };
@@ -430,7 +444,13 @@ var AniJSLib = function() {
             //Expression regular remplazar caracteres $ por comas
             //TODO: Estudiar si este caracter no esta agarrado
             behaviorTarget = behaviorTarget.split(MULTIPLE_CLASS_SEPARATOR).join(',');
-            behaviorTargetNodeList = rootDOMTravelScope.querySelectorAll(behaviorTarget);
+            try{
+                behaviorTargetNodeList = rootDOMTravelScope.querySelectorAll(behaviorTarget);
+            } catch(e){
+                behaviorTargetNodeList = [];
+                console.log('there are an ugly selector here');
+            }
+            
         }
         return behaviorTargetNodeList;
     };
