@@ -103,7 +103,7 @@ AniJS is like a little girl, she needs [hungry and foolish](http://www.youtube.c
 
 ## Aknowledgement
 
-To [Ms. Ana Silvia Tellería](mailto:anisilv@gmail.com), [Mr. Yolier Galán](mailto:gallego@gmail.com), [Mr. René González](mailto:voltusv@gmail.com), [Mr. Julio Cañizares](juliorubcan@gmail.com) and to all the persons that helped with this project.
+To [Ms. Ana Silvia Tellería](mailto:anisilv@gmail.com), [Ms. Marisniulkis Lescaille](http://www.linkedin.com/pub/marisniulkis-lescaille/59/3a/55), [Mr. Yolier Galán](mailto:gallego@gmail.com), [Mr. René González](mailto:voltusv@gmail.com), [Mr. Julio Cañizares](juliorubcan@gmail.com) and to all the persons that helped with this project.
 
 ## License
  
