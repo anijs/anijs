@@ -68,6 +68,23 @@ If you use [animate.css library](http://daneden.github.io/animate.css/) don't fo
     </header>
  </body>
 ```
+### RequireJS
+index.html
+
+```xml
+<body>
+    <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.11/require.js" data-main="app" ></script>
+ </body>
+```
+
+app.js
+
+```javascript
+require(["anijs"], function(AniJS) {
+});
+```
+
+
 
 ## Documentation
 
