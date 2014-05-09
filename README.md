@@ -25,12 +25,12 @@ $ git clone git@github.com:anijs/anijs.git
  
 ## Usage
  
-Put the AniJS file on your page.
+Put the AniJS file on your page or [use AMD](https://github.com/anijs/anijs/wiki/Using-amd).
 ```xml
 <script src="anijs-min.js"></script>
 ```
 
-Include the CSS animation styles definition, we strongly recomend you  to use the amazing [animate.css library](http://daneden.github.io/animate.css/) as starting point, this library provides beautiful animations. Also, you can define your own animations.
+Include the CSS animation styles definition, we strongly recomend you to use the amazing [animate.css library](http://daneden.github.io/animate.css/) as starting point, this library provides beautiful animations. Also, you can define your own animations.
 
 ```xml
 <head>

@@ -1,631 +1,626 @@
 YUI().use('node', 'node-event-simulate', function (Y) {
-	console.log('Hello World');
-	describe("AniJS", function() {
+    describe("AniJS", function() {
 
-		//Aqui se pueden poner variables para tener acceso globalmente
-		
+        //Aqui se pueden poner variables para tener acceso globalmente
 
-		//Funcion que se ejecuta antes de empezar
-		beforeEach(function() {
 
-		});
+        //Funcion que se ejecuta antes de empezar
+        beforeEach(function() {
 
-		afterEach(function() {
+        });
 
-		});
+        afterEach(function() {
 
-	    //---------------------------------------------------------------------
-	    // Define a trigger event for the animation
-	    //---------------------------------------------------------------------
-		describe("Define a trigger event for the animation", function() {
-			beforeEach(function() {
-	            //Aqui creo el nodo
-	            var htmlNode = '<div class="test">Test</div>';
-	            Y.one('#testzone').appendChild(htmlNode);
-			});
+        });
 
-			afterEach(function() {
-				Y.one('#testzone .test').remove();
-			});
+        //---------------------------------------------------------------------
+        // Define a trigger event for the animation
+        //---------------------------------------------------------------------
+        describe("Define a trigger event for the animation", function() {
+            beforeEach(function() {
+                //Aqui creo el nodo
+                var htmlNode = '<div class="test">Test</div>';
+                Y.one('#testzone').appendChild(htmlNode);
+            });
 
-			it("sin la sentencia", function() {
-	            var dataAnijJS = 'do: bounce, to: body',
-	            	targetNode;
+            afterEach(function() {
+                Y.one('#testzone .test').remove();
+            });
 
-	            targetNode = Y.one('#testzone .test');
+            it("sin la sentencia", function() {
+                var dataAnijJS = 'do: bounce, to: body',
+                    targetNode;
 
-	            targetNode.setAttribute('data-anijs', dataAnijJS);
+                targetNode = Y.one('#testzone .test');
 
-	            AniJS.run();
+                targetNode.setAttribute('data-anijs', dataAnijJS);
 
-	            targetNode.on('click', function(e){
-	                expect(Y.one('body').hasClass('bounce')).toBeFalsy();
-	            },this, true);
+                AniJS.run();
 
-	            targetNode.simulate("click");
-			});
+                targetNode.on('click', function(e){
+                    expect(Y.one('body').hasClass('bounce')).toBeFalsy();
+                },this, true);
 
-			it("con el evento vacio", function() {
-	            var dataAnijJS = 'if: , do: bounce, to: body',
-	            	targetNode;
+                targetNode.simulate("click");
+            });
 
-	            targetNode = Y.one('#testzone .test');
+            it("con el evento vacio", function() {
+                var dataAnijJS = 'if: , do: bounce, to: body',
+                    targetNode;
 
-	            targetNode.setAttribute('data-anijs', dataAnijJS);
+                targetNode = Y.one('#testzone .test');
 
-	            AniJS.run();
+                targetNode.setAttribute('data-anijs', dataAnijJS);
 
-	            targetNode.on('click', function(e){
-	                expect(Y.one('body').hasClass('bounce')).toBeFalsy();
-	            },this, true);
+                AniJS.run();
 
-	            targetNode.simulate("click");
-			});
+                targetNode.on('click', function(e){
+                    expect(Y.one('body').hasClass('bounce')).toBeFalsy();
+                },this, true);
 
-			it("con eventos que no existan", function() {
-	            var dataAnijJS = 'if: pepe, do: bounce, to: body',
-	            	targetNode;
+                targetNode.simulate("click");
+            });
 
-	            targetNode = Y.one('#testzone .test');
+            it("con eventos que no existan", function() {
+                var dataAnijJS = 'if: pepe, do: bounce, to: body',
+                    targetNode;
 
-	            targetNode.setAttribute('data-anijs', dataAnijJS);
+                targetNode = Y.one('#testzone .test');
 
-	            AniJS.run();
+                targetNode.setAttribute('data-anijs', dataAnijJS);
 
-	            targetNode.on('click', function(e){
-	                expect(Y.one('body').hasClass('bounce')).toBeFalsy();
-	            },this, true);
+                AniJS.run();
 
-	            targetNode.simulate("click");
-			});
+                targetNode.on('click', function(e){
+                    expect(Y.one('body').hasClass('bounce')).toBeFalsy();
+                },this, true);
 
-			it("con eventos reales", function() {
-	            var dataAnijJS = 'if: click, do: bounce, to: body',
-	            	targetNode;
+                targetNode.simulate("click");
+            });
 
-	            targetNode = Y.one('#testzone .test');
+            it("con eventos reales", function() {
+                var dataAnijJS = 'if: click, do: bounce, to: body',
+                    targetNode;
 
-	            targetNode.setAttribute('data-anijs', dataAnijJS);
+                targetNode = Y.one('#testzone .test');
 
-	            AniJS.run();
+                targetNode.setAttribute('data-anijs', dataAnijJS);
 
-	            targetNode.on('click', function(e){
-	                expect(Y.one('body').hasClass('bounce')).toBeTruthy();
-	            },this, true);
+                AniJS.run();
 
-	            targetNode.simulate("click");
-			});
-		});
+                targetNode.on('click', function(e){
+                    expect(Y.one('body').hasClass('bounce')).toBeTruthy();
+                },this, true);
 
-	    //---------------------------------------------------------------------
-	    // Define the event emiter element
-	    //---------------------------------------------------------------------
-		describe("Define the event emiter element", function() {
-			beforeEach(function() {
-	            //Aqui creo el nodo
-	            var htmlNode = '<div class="test">Test</div>';
-	            Y.one('#testzone').appendChild(htmlNode);
-			});
+                targetNode.simulate("click");
+            });
+        });
 
-			afterEach(function() {
-				Y.one('#testzone .test').remove();
-				Y.one('body').removeClass('bounce');
-			});
-			it("sin la sentencia", function() {
-	            var dataAnijJS = 'if: click, do: bounce, to: body',
-	            	targetNode;
+        //---------------------------------------------------------------------
+        // Define the event emiter element
+        //---------------------------------------------------------------------
+        describe("Define the event emiter element", function() {
+            beforeEach(function() {
+                //Aqui creo el nodo
+                var htmlNode = '<div class="test">Test</div>';
+                Y.one('#testzone').appendChild(htmlNode);
+            });
 
-	            targetNode = Y.one('#testzone .test');
+            afterEach(function() {
+                Y.one('#testzone .test').remove();
+                Y.one('body').removeClass('bounce');
+            });
+            it("sin la sentencia", function() {
+                var dataAnijJS = 'if: click, do: bounce, to: body',
+                    targetNode;
 
-	            targetNode.setAttribute('data-anijs', dataAnijJS);
+                targetNode = Y.one('#testzone .test');
 
-	            AniJS.run();
+                targetNode.setAttribute('data-anijs', dataAnijJS);
 
-	            targetNode.on('click', function(e){
-	                expect(Y.one('body').hasClass('bounce')).toBeTruthy();
-	            },this, true);
+                AniJS.run();
 
-	            targetNode.simulate("click");
-			});
+                targetNode.on('click', function(e){
+                    expect(Y.one('body').hasClass('bounce')).toBeTruthy();
+                },this, true);
 
-			it("with empty selector", function() {
-	            var dataAnijJS = 'if: click, on: , do: bounce, to: body',
-	            	targetNode;
+                targetNode.simulate("click");
+            });
 
-	            targetNode = Y.one('#testzone .test');
+            it("with empty selector", function() {
+                var dataAnijJS = 'if: click, on: , do: bounce, to: body',
+                    targetNode;
 
-	            targetNode.setAttribute('data-anijs', dataAnijJS);
+                targetNode = Y.one('#testzone .test');
 
-	            AniJS.run();
+                targetNode.setAttribute('data-anijs', dataAnijJS);
 
-	            targetNode.on('click', function(e){
-	                expect(Y.one('body').hasClass('bounce')).toBeTruthy();
-	            },this, true);
+                AniJS.run();
 
-	            targetNode.simulate("click");
-			});
+                targetNode.on('click', function(e){
+                    expect(Y.one('body').hasClass('bounce')).toBeTruthy();
+                },this, true);
 
-			it("con selectores que no existan", function() {
-	            var dataAnijJS = 'if: click, on: .ghostnode, do: bounce, to: body',
-	            	targetNode;
+                targetNode.simulate("click");
+            });
 
-	            targetNode = Y.one('#testzone .test');
+            it("con selectores que no existan", function() {
+                var dataAnijJS = 'if: click, on: .ghostnode, do: bounce, to: body',
+                    targetNode;
 
-	            targetNode.setAttribute('data-anijs', dataAnijJS);
+                targetNode = Y.one('#testzone .test');
 
-	            AniJS.run();
+                targetNode.setAttribute('data-anijs', dataAnijJS);
 
-	            targetNode.on('click', function(e){
-	                expect(Y.one('body').hasClass('bounce')).toBeFalsy();
-	            },this, true);
+                AniJS.run();
 
-	            targetNode.simulate("click");
-			});
+                targetNode.on('click', function(e){
+                    expect(Y.one('body').hasClass('bounce')).toBeFalsy();
+                },this, true);
 
-			it("con ugly selectores", function() {
-	            var dataAnijJS = 'if: click, on: $/03wew, do: bounce, to: body',
-	            	targetNode;
+                targetNode.simulate("click");
+            });
 
-	            targetNode = Y.one('#testzone .test');
+            it("con ugly selectores", function() {
+                var dataAnijJS = 'if: click, on: $/03wew, do: bounce, to: body',
+                    targetNode;
 
-	            targetNode.setAttribute('data-anijs', dataAnijJS);
+                targetNode = Y.one('#testzone .test');
 
-	            AniJS.run();
+                targetNode.setAttribute('data-anijs', dataAnijJS);
 
-	            targetNode.on('click', function(e){
-	            	console.log(Y.one('body').hasClass('bounce'));
-	                expect(Y.one('body').hasClass('bounce')).toBeFalsy();
-	            },this, true);
+                AniJS.run();
 
-	            targetNode.simulate("click");
-			});
+                targetNode.on('click', function(e) {
+                    expect(Y.one('body').hasClass('bounce')).toBeFalsy();
+                },this, true);
 
-			it("con selectores reales", function() {
-	            var dataAnijJS = 'if: click, on: .test, do: bounce, to: body',
-	            	targetNode;
+                targetNode.simulate("click");
+            });
 
-	            targetNode = Y.one('#testzone .test');
+            it("con selectores reales", function() {
+                var dataAnijJS = 'if: click, on: .test, do: bounce, to: body',
+                    targetNode;
 
-	            targetNode.setAttribute('data-anijs', dataAnijJS);
+                targetNode = Y.one('#testzone .test');
 
-	            AniJS.run();
+                targetNode.setAttribute('data-anijs', dataAnijJS);
 
-	            targetNode.on('click', function(e){
-	            	console.log(Y.one('body').hasClass('bounce'));
-	                expect(Y.one('body').hasClass('bounce')).toBeTruthy();
-	            },this, true);
+                AniJS.run();
 
-	            targetNode.simulate("click");
-			});
-		});
+                targetNode.on('click', function(e){
+                    expect(Y.one('body').hasClass('bounce')).toBeTruthy();
+                },this, true);
 
-	    //---------------------------------------------------------------------
-	    // Animation behavior definition
-	    //---------------------------------------------------------------------
-		describe("Animation behavior definition", function() {
-			beforeEach(function() {
-	            //Aqui creo el nodo
-	            var htmlNode = '<div class="test">Test</div>';
-	            Y.one('#testzone').appendChild(htmlNode);
-			});
+                targetNode.simulate("click");
+            });
+        });
 
-			afterEach(function() {
-				Y.one('#testzone .test').remove();
-				Y.one('body').removeClass('bounce');
-			});
+        //---------------------------------------------------------------------
+        // Animation behavior definition
+        //---------------------------------------------------------------------
+        describe("Animation behavior definition", function() {
+            beforeEach(function() {
+                //Aqui creo el nodo
+                var htmlNode = '<div class="test">Test</div>';
+                Y.one('#testzone').appendChild(htmlNode);
+            });
 
-			it("with empty behavior", function() {
-	            var dataAnijJS = 'if: click, on: , do: , to: body',
-	            	targetNode;
+            afterEach(function() {
+                Y.one('#testzone .test').remove();
+                Y.one('body').removeClass('bounce');
+            });
 
-	            targetNode = Y.one('#testzone .test');
+            it("with empty behavior", function() {
+                var dataAnijJS = 'if: click, on: , do: , to: body',
+                    targetNode;
 
-	            targetNode.setAttribute('data-anijs', dataAnijJS);
+                targetNode = Y.one('#testzone .test');
 
-	            AniJS.run();
+                targetNode.setAttribute('data-anijs', dataAnijJS);
 
-	            targetNode.on('click', function(e){
-	                expect(Y.one('body').hasClass('bounce')).toBeFalsy();
-	            },this, true);
+                AniJS.run();
 
-	            targetNode.simulate("click");
-			});
+                targetNode.on('click', function(e){
+                    expect(Y.one('body').hasClass('bounce')).toBeFalsy();
+                },this, true);
 
-			it("with existed behavior", function() {
-	            var dataAnijJS = 'if: click, on: , do: flipIn, to: body',
-	            	targetNode;
+                targetNode.simulate("click");
+            });
 
-	            targetNode = Y.one('#testzone .test');
+            it("with existed behavior", function() {
+                var dataAnijJS = 'if: click, on: , do: flipIn, to: body',
+                    targetNode;
 
-	            targetNode.setAttribute('data-anijs', dataAnijJS);
+                targetNode = Y.one('#testzone .test');
 
-	            AniJS.run();
+                targetNode.setAttribute('data-anijs', dataAnijJS);
 
-	            targetNode.on('click', function(e){
-	                expect(Y.one('body').hasClass('flipIn')).toBeTruthy();
-	            },this, true);
+                AniJS.run();
 
-	            targetNode.simulate("click");
-			});
+                targetNode.on('click', function(e){
+                    expect(Y.one('body').hasClass('flipIn')).toBeTruthy();
+                },this, true);
 
-		});
+                targetNode.simulate("click");
+            });
 
-	    //---------------------------------------------------------------------
-	    // Animation elements target definition
-	    //---------------------------------------------------------------------
-		describe("Animation elements target definition", function() {
-			beforeEach(function() {
-	            //Aqui creo el nodo
-	            var htmlNode = '<div class="test">Test</div>';
-	            Y.one('#testzone').appendChild(htmlNode);
-			});
+        });
 
-			afterEach(function() {
-				Y.one('#testzone .test').remove();
-				Y.one('body').removeClass('bounce');
-			});
+        //---------------------------------------------------------------------
+        // Animation elements target definition
+        //---------------------------------------------------------------------
+        describe("Animation elements target definition", function() {
+            beforeEach(function() {
+                //Aqui creo el nodo
+                var htmlNode = '<div class="test">Test</div>';
+                Y.one('#testzone').appendChild(htmlNode);
+            });
 
-			it("sin la sentencia", function() {
-	            var dataAnijJS = 'if: click, do: bounce',
-	            	targetNode;
+            afterEach(function() {
+                Y.one('#testzone .test').remove();
+                Y.one('body').removeClass('bounce');
+            });
 
-	            targetNode = Y.one('#testzone .test');
+            it("sin la sentencia", function() {
+                var dataAnijJS = 'if: click, do: bounce',
+                    targetNode;
 
-	            targetNode.setAttribute('data-anijs', dataAnijJS);
+                targetNode = Y.one('#testzone .test');
 
-	            AniJS.run();
+                targetNode.setAttribute('data-anijs', dataAnijJS);
 
-	            targetNode.on('click', function(e){
-	                expect(targetNode.hasClass('bounce')).toBeTruthy();
-	            },this, true);
+                AniJS.run();
 
-	            targetNode.simulate("click");
-			});
+                targetNode.on('click', function(e){
+                    expect(targetNode.hasClass('bounce')).toBeTruthy();
+                },this, true);
 
-			it("with empty selector", function() {
-	            var dataAnijJS = 'if: click, do: bounce, to: ',
-	            	targetNode;
+                targetNode.simulate("click");
+            });
 
-	            targetNode = Y.one('#testzone .test');
+            it("with empty selector", function() {
+                var dataAnijJS = 'if: click, do: bounce, to: ',
+                    targetNode;
 
-	            targetNode.setAttribute('data-anijs', dataAnijJS);
+                targetNode = Y.one('#testzone .test');
 
-	            AniJS.run();
+                targetNode.setAttribute('data-anijs', dataAnijJS);
 
-	            targetNode.on('click', function(e){
-	                expect(targetNode.hasClass('bounce')).toBeTruthy();
-	            },this, true);
+                AniJS.run();
 
-	            targetNode.simulate("click");
-			});
+                targetNode.on('click', function(e){
+                    expect(targetNode.hasClass('bounce')).toBeTruthy();
+                },this, true);
 
-			it("con selectores que no existan", function() {
-	            var dataAnijJS = 'if: click, do: bounce, to: unkonowk',
-	            	targetNode;
+                targetNode.simulate("click");
+            });
 
-	            targetNode = Y.one('#testzone .test');
+            it("con selectores que no existan", function() {
+                var dataAnijJS = 'if: click, do: bounce, to: unkonowk',
+                    targetNode;
 
-	            targetNode.setAttribute('data-anijs', dataAnijJS);
+                targetNode = Y.one('#testzone .test');
 
-	            AniJS.run();
+                targetNode.setAttribute('data-anijs', dataAnijJS);
 
-	            targetNode.on('click', function(e){
-	                expect(targetNode.hasClass('bounce')).toBeFalsy();
-	            },this, true);
+                AniJS.run();
 
-	            targetNode.simulate("click");
-			});
+                targetNode.on('click', function(e){
+                    expect(targetNode.hasClass('bounce')).toBeFalsy();
+                },this, true);
 
-			it("con ugly selectores", function() {
-	            var dataAnijJS = 'if: click, do: bounce, to: $/03wew',
-	            	targetNode;
+                targetNode.simulate("click");
+            });
 
-	            targetNode = Y.one('#testzone .test');
+            it("con ugly selectores", function() {
+                var dataAnijJS = 'if: click, do: bounce, to: $/03wew',
+                    targetNode;
 
-	            targetNode.setAttribute('data-anijs', dataAnijJS);
+                targetNode = Y.one('#testzone .test');
 
-	            AniJS.run();
+                targetNode.setAttribute('data-anijs', dataAnijJS);
 
-	            targetNode.on('click', function(e){
-	                expect(targetNode.hasClass('bounce')).toBeFalsy();
-	            },this, true);
+                AniJS.run();
 
-	            targetNode.simulate("click");
-			});
+                targetNode.on('click', function(e){
+                    expect(targetNode.hasClass('bounce')).toBeFalsy();
+                },this, true);
 
-			it("con selectores reales", function() {
-	            var dataAnijJS = 'if: click, on: .test, do: bounce, to: body',
-	            	targetNode;
+                targetNode.simulate("click");
+            });
 
-	            targetNode = Y.one('#testzone .test');
+            it("con selectores reales", function() {
+                var dataAnijJS = 'if: click, on: .test, do: bounce, to: body',
+                    targetNode;
 
-	            targetNode.setAttribute('data-anijs', dataAnijJS);
+                targetNode = Y.one('#testzone .test');
 
-	            AniJS.run();
+                targetNode.setAttribute('data-anijs', dataAnijJS);
 
-	            targetNode.on('click', function(e){
-	                expect(Y.one('body').hasClass('bounce')).toBeTruthy();
-	            },this, true);
+                AniJS.run();
 
-	            targetNode.simulate("click");
-			});
-		});
+                targetNode.on('click', function(e){
+                    expect(Y.one('body').hasClass('bounce')).toBeTruthy();
+                },this, true);
 
-	    //---------------------------------------------------------------------
-	    // Execute a function before animation run
-	    //---------------------------------------------------------------------
-		describe("Execute a function before animation run", function() {
-			beforeEach(function() {
-	            //Aqui creo el nodo
-	            var htmlNode = '<div class="test">Test</div>';
-	            Y.one('#testzone').appendChild(htmlNode);
-			});
+                targetNode.simulate("click");
+            });
+        });
 
-			afterEach(function() {
-				Y.one('#testzone .test').remove();
-				Y.one('body').removeClass('bounce');
-			});
+        //---------------------------------------------------------------------
+        // Execute a function before animation run
+        //---------------------------------------------------------------------
+        describe("Execute a function before animation run", function() {
+            beforeEach(function() {
+                //Aqui creo el nodo
+                var htmlNode = '<div class="test">Test</div>';
+                Y.one('#testzone').appendChild(htmlNode);
+            });
 
-			it("empty function", function() {
-	            var dataAnijJS = 'if: click, do: bounce, to: body, before: beforeFunction',
-	            	targetNode;
+            afterEach(function() {
+                Y.one('#testzone .test').remove();
+                Y.one('body').removeClass('bounce');
+            });
 
-	            AniJS.getHelper().beforeFunction = function(){
-	            	expect(true).toBeTruthy();
-	            };
+            it("empty function", function() {
+                var dataAnijJS = 'if: click, do: bounce, to: body, before: beforeFunction',
+                    targetNode;
 
-	            targetNode = Y.one('#testzone .test');
+                AniJS.getHelper().beforeFunction = function(){
+                    expect(true).toBeTruthy();
+                };
 
-	            targetNode.setAttribute('data-anijs', dataAnijJS);
+                targetNode = Y.one('#testzone .test');
 
-	            AniJS.run();
+                targetNode.setAttribute('data-anijs', dataAnijJS);
 
-	            targetNode.on('click', function(e){
-	                expect(Y.one('body').hasClass('bounce')).toBeFalsy();
-	            },this, true);
+                AniJS.run();
 
-	            targetNode.simulate("click");
-			});
+                targetNode.on('click', function(e){
+                    expect(Y.one('body').hasClass('bounce')).toBeFalsy();
+                },this, true);
 
-			//Se espera que no cree la funcion
-			it("non registered function", function() {
-	            var dataAnijJS = 'if: click, do: bounce, to: body, before: beforeNonRegistered',
-	            	targetNode;
+                targetNode.simulate("click");
+            });
 
-	            targetNode = Y.one('#testzone .test');
+            //Se espera que no cree la funcion
+            it("non registered function", function() {
+                var dataAnijJS = 'if: click, do: bounce, to: body, before: beforeNonRegistered',
+                    targetNode;
 
-	            targetNode.setAttribute('data-anijs', dataAnijJS);
+                targetNode = Y.one('#testzone .test');
 
-	            AniJS.run();
+                targetNode.setAttribute('data-anijs', dataAnijJS);
 
-	            expect(AniJS.getHelper['beforeNonRegistered']).toBeFalsy();
+                AniJS.run();
 
-	            targetNode.on('click', function(e){
-					expect(Y.one('body').hasClass('bounce')).toBeTruthy();               
-	            },this, true);
+                expect(AniJS.getHelper['beforeNonRegistered']).toBeFalsy();
 
-	            targetNode.simulate("click");
-			});
+                targetNode.on('click', function(e){
+                    expect(Y.one('body').hasClass('bounce')).toBeTruthy();
+                },this, true);
 
-			//Registered var with same function name
-			it("registered var with same function name", function() {
-	            var dataAnijJS = 'if: click, do: bounce, to: body, before: beforeVarSameName',
-	            	targetNode;
+                targetNode.simulate("click");
+            });
 
-	            targetNode = Y.one('#testzone .test');
+            //Registered var with same function name
+            it("registered var with same function name", function() {
+                var dataAnijJS = 'if: click, do: bounce, to: body, before: beforeVarSameName',
+                    targetNode;
 
-	            targetNode.setAttribute('data-anijs', dataAnijJS);
+                targetNode = Y.one('#testzone .test');
 
-	            AniJS.getHelper().beforeVarSameName = '23';
+                targetNode.setAttribute('data-anijs', dataAnijJS);
 
-	            AniJS.run();
+                AniJS.getHelper().beforeVarSameName = '23';
 
-	            targetNode.on('click', function(e){
-					expect(Y.one('body').hasClass('bounce')).toBeTruthy();               
-	            },this, true);
+                AniJS.run();
 
-	            targetNode.simulate("click");
-			});
-		});
+                targetNode.on('click', function(e){
+                    expect(Y.one('body').hasClass('bounce')).toBeTruthy();
+                },this, true);
 
-	    //---------------------------------------------------------------------
-	    // Animation execution management before running it
-	    //---------------------------------------------------------------------
-		describe("Animation execution management before running it.", function() {
-			beforeEach(function() {
-	            //Aqui creo el nodo
-	            var htmlNode = '<div class="test">Test</div>';
-	            Y.one('#testzone').appendChild(htmlNode);
-			});
+                targetNode.simulate("click");
+            });
+        });
 
-			afterEach(function() {
-				Y.one('#testzone .test').remove();
-				Y.one('body').removeClass('bounce');
-			});
+        //---------------------------------------------------------------------
+        // Animation execution management before running it
+        //---------------------------------------------------------------------
+        describe("Animation execution management before running it.", function() {
+            beforeEach(function() {
+                //Aqui creo el nodo
+                var htmlNode = '<div class="test">Test</div>';
+                Y.one('#testzone').appendChild(htmlNode);
+            });
 
-			it("stop animation execution", function() {
-	            var dataAnijJS = 'if: click, do: bounce, to: body, before: beforeFunction',
-	            	targetNode;
+            afterEach(function() {
+                Y.one('#testzone .test').remove();
+                Y.one('body').removeClass('bounce');
+            });
 
-	            AniJS.getHelper().beforeFunction = function(e, animationContext){
-	            	expect(true).toBeTruthy();
+            it("stop animation execution", function() {
+                var dataAnijJS = 'if: click, do: bounce, to: body, before: beforeFunction',
+                    targetNode;
 
-            		//animationContext.run();
-	            };
+                AniJS.getHelper().beforeFunction = function(e, animationContext){
+                    expect(true).toBeTruthy();
 
-	            targetNode = Y.one('#testzone .test');
-	            targetNode.setAttribute('data-anijs', dataAnijJS);
+                    //animationContext.run();
+                };
 
-	            AniJS.run();
+                targetNode = Y.one('#testzone .test');
+                targetNode.setAttribute('data-anijs', dataAnijJS);
 
-	            targetNode.on('click', function(e){
-	                expect(Y.one('body').hasClass('bounce')).toBeFalsy();
-	            },this, true);
+                AniJS.run();
 
-	            targetNode.simulate("click");
-			});
+                targetNode.on('click', function(e){
+                    expect(Y.one('body').hasClass('bounce')).toBeFalsy();
+                },this, true);
 
-			it("run animation execution", function() {
-	            var dataAnijJS = 'if: click, do: bounce, to: body, before: beforeFunction',
-	            	targetNode;
+                targetNode.simulate("click");
+            });
 
-	            AniJS.getHelper().beforeFunction = function(e, animationContext){
-	            	expect(true).toBeTruthy();
-            		animationContext.run();
-	            };
+            it("run animation execution", function() {
+                var dataAnijJS = 'if: click, do: bounce, to: body, before: beforeFunction',
+                    targetNode;
 
-	            targetNode = Y.one('#testzone .test');
-	            targetNode.setAttribute('data-anijs', dataAnijJS);
+                AniJS.getHelper().beforeFunction = function(e, animationContext){
+                    expect(true).toBeTruthy();
+                    animationContext.run();
+                };
 
-	            AniJS.run();
+                targetNode = Y.one('#testzone .test');
+                targetNode.setAttribute('data-anijs', dataAnijJS);
 
-	            targetNode.on('click', function(e){
-	                expect(Y.one('body').hasClass('bounce')).toBeTruthy();
-	            },this, true);
+                AniJS.run();
 
-	            targetNode.simulate("click");
-			});
-		});
+                targetNode.on('click', function(e){
+                    expect(Y.one('body').hasClass('bounce')).toBeTruthy();
+                },this, true);
 
-	    //---------------------------------------------------------------------
-	    // Execute a function after animation run
-	    //---------------------------------------------------------------------
-		describe("Execute a function after animation run", function() {
-			beforeEach(function() {
-	            //Aqui creo el nodo
-	            var htmlNode = '<div class="test">Test</div>';
-	            Y.one('#testzone').appendChild(htmlNode);
-			});
+                targetNode.simulate("click");
+            });
+        });
 
-			afterEach(function() {
-				Y.one('#testzone .test').remove();
-				Y.one('body').removeClass('bounce');
-			});
+        //---------------------------------------------------------------------
+        // Execute a function after animation run
+        //---------------------------------------------------------------------
+        describe("Execute a function after animation run", function() {
+            beforeEach(function() {
+                //Aqui creo el nodo
+                var htmlNode = '<div class="test">Test</div>';
+                Y.one('#testzone').appendChild(htmlNode);
+            });
 
-			it("empty function", function() {
-	            var dataAnijJS = 'if: click, do: bounce, to: body, after: afterFunction',
-	            	targetNode;
+            afterEach(function() {
+                Y.one('#testzone .test').remove();
+                Y.one('body').removeClass('bounce');
+            });
 
-	            AniJS.getHelper().afterFunction = function(){
-	            	expect(true).toBeTruthy();
-	            };
+            it("empty function", function() {
+                var dataAnijJS = 'if: click, do: bounce, to: body, after: afterFunction',
+                    targetNode;
 
-	            targetNode = Y.one('#testzone .test');
+                AniJS.getHelper().afterFunction = function(){
+                    expect(true).toBeTruthy();
+                };
 
-	            targetNode.setAttribute('data-anijs', dataAnijJS);
+                targetNode = Y.one('#testzone .test');
 
-	            AniJS.run();
+                targetNode.setAttribute('data-anijs', dataAnijJS);
 
-	            targetNode.on('click', function(e){
-	                expect(Y.one('body').hasClass('bounce')).toBeTruthy();
-	            },this, true);
+                AniJS.run();
 
-	            targetNode.simulate("click");
-			});
+                targetNode.on('click', function(e){
+                    expect(Y.one('body').hasClass('bounce')).toBeTruthy();
+                },this, true);
 
-			//Se espera que no cree la funcion
-			it("non registered function", function() {
-	            var dataAnijJS = 'if: click, do: bounce, to: body, after: afterNonRegistered',
-	            	targetNode;
+                targetNode.simulate("click");
+            });
 
-	            targetNode = Y.one('#testzone .test');
+            //Se espera que no cree la funcion
+            it("non registered function", function() {
+                var dataAnijJS = 'if: click, do: bounce, to: body, after: afterNonRegistered',
+                    targetNode;
 
-	            targetNode.setAttribute('data-anijs', dataAnijJS);
+                targetNode = Y.one('#testzone .test');
 
-	            AniJS.run();
+                targetNode.setAttribute('data-anijs', dataAnijJS);
 
-	            expect(AniJS.getHelper['afterNonRegistered']).toBeFalsy();
+                AniJS.run();
 
-	            targetNode.on('click', function(e){
-					expect(Y.one('body').hasClass('bounce')).toBeTruthy();               
-	            },this, true);
+                expect(AniJS.getHelper['afterNonRegistered']).toBeFalsy();
 
-	            targetNode.simulate("click");
-			});
+                targetNode.on('click', function(e){
+                    expect(Y.one('body').hasClass('bounce')).toBeTruthy();
+                },this, true);
 
-			//Registered var with same function name
-			it("registered var with same function name", function() {
-	            var dataAnijJS = 'if: click, do: bounce, to: body, after: afterVarSameName',
-	            	targetNode;
+                targetNode.simulate("click");
+            });
 
-	            targetNode = Y.one('#testzone .test');
+            //Registered var with same function name
+            it("registered var with same function name", function() {
+                var dataAnijJS = 'if: click, do: bounce, to: body, after: afterVarSameName',
+                    targetNode;
 
-	            targetNode.setAttribute('data-anijs', dataAnijJS);
+                targetNode = Y.one('#testzone .test');
 
-	            AniJS.getHelper().afterVarSameName = '23';
+                targetNode.setAttribute('data-anijs', dataAnijJS);
 
-	            AniJS.run();
+                AniJS.getHelper().afterVarSameName = '23';
 
-	            targetNode.on('click', function(e){
-					expect(Y.one('body').hasClass('bounce')).toBeTruthy();               
-	            },this, true);
+                AniJS.run();
 
-	            targetNode.simulate("click");
-			});
-		});
+                targetNode.on('click', function(e){
+                    expect(Y.one('body').hasClass('bounce')).toBeTruthy();
+                },this, true);
 
-	    //---------------------------------------------------------------------
-	    // Helpers instance definition.
-	    //---------------------------------------------------------------------
-		describe("Helpers instance definition.", function() {
-			beforeEach(function() {
-	            //Aqui creo el nodo
-	            var htmlNode = '<div class="test">Test</div>';
-	            Y.one('#testzone').appendChild(htmlNode);
-			});
+                targetNode.simulate("click");
+            });
+        });
 
-			afterEach(function() {
-				Y.one('#testzone .test').remove();
-				Y.one('body').removeClass('bounce');
-			});
+        //---------------------------------------------------------------------
+        // Helpers instance definition.
+        //---------------------------------------------------------------------
+        describe("Helpers instance definition.", function() {
+            beforeEach(function() {
+                //Aqui creo el nodo
+                var htmlNode = '<div class="test">Test</div>';
+                Y.one('#testzone').appendChild(htmlNode);
+            });
 
-			it("empty helper creation", function() {
-	            var dataAnijJS = 'if: click, do: bounce, to: body, before: beforeFunction, helper: emptyHelper',
-	            	targetNode;
+            afterEach(function() {
+                Y.one('#testzone .test').remove();
+                Y.one('body').removeClass('bounce');
+            });
 
-	            var emptyHelper = '';
+            it("empty helper creation", function() {
+                var dataAnijJS = 'if: click, do: bounce, to: body, before: beforeFunction, helper: emptyHelper',
+                    targetNode;
 
-	            AniJS.registerHelper('emptyHelper', emptyHelper);
+                var emptyHelper = '';
 
-	            targetNode = Y.one('#testzone .test');
+                AniJS.registerHelper('emptyHelper', emptyHelper);
 
-	            targetNode.setAttribute('data-anijs', dataAnijJS);
+                targetNode = Y.one('#testzone .test');
 
-	            AniJS.run();
+                targetNode.setAttribute('data-anijs', dataAnijJS);
 
-	            targetNode.on('click', function(e){
-	                expect(Y.one('body').hasClass('bounce')).toBeTruthy();
-	            },this, true);
+                AniJS.run();
 
-	            targetNode.simulate("click");
-			});
+                targetNode.on('click', function(e){
+                    expect(Y.one('body').hasClass('bounce')).toBeTruthy();
+                },this, true);
 
-			it("helper as function creation", function() {
-	            var dataAnijJS = 'if: click, do: bounce, to: body, before: beforeFunction, helper: emptyHelper',
-	            	targetNode;
+                targetNode.simulate("click");
+            });
 
-	            var emptyHelper = function(){
-	            	console.log(emptyHelper);
-	            };
+            it("helper as function creation", function() {
+                var dataAnijJS = 'if: click, do: bounce, to: body, before: beforeFunction, helper: emptyHelper',
+                    targetNode;
 
-	            AniJS.registerHelper('emptyHelper', emptyHelper);
+                var emptyHelper = function(){
+                    console.log(emptyHelper);
+                };
 
-	            targetNode = Y.one('#testzone .test');
+                AniJS.registerHelper('emptyHelper', emptyHelper);
 
-	            targetNode.setAttribute('data-anijs', dataAnijJS);
+                targetNode = Y.one('#testzone .test');
 
-	            console.log(AniJS);
+                targetNode.setAttribute('data-anijs', dataAnijJS);
 
-	            AniJS.run();
+                AniJS.run();
 
-	            targetNode.on('click', function(e){
-	                expect(Y.one('body').hasClass('bounce')).toBeTruthy();
-	            },this, true);
+                targetNode.on('click', function(e){
+                    expect(Y.one('body').hasClass('bounce')).toBeTruthy();
+                },this, true);
 
-	            targetNode.simulate("click");
-			});
-		});
-	});
+                targetNode.simulate("click");
+            });
+        });
+    });
 });
 
 
