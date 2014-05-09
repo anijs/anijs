@@ -1,157 +1,153 @@
 YUI().use('node', 'node-event-simulate', function (Y) {
-	describe("AniJS Advanced", function() {
+    describe("AniJS Advanced", function() {
 
-		//Aqui se pueden poner variables para tener acceso globalmente
-		
+        //Aqui se pueden poner variables para tener acceso globalmente
 
-		//Funcion que se ejecuta antes de empezar
-		beforeEach(function() {
 
-		});
+        //Funcion que se ejecuta antes de empezar
+        beforeEach(function() {
 
-		afterEach(function() {
+        });
 
-		});
+        afterEach(function() {
 
-	    //---------------------------------------------------------------------
-	    // Change the root DOM scope.
-	    //---------------------------------------------------------------------
-		describe("Change the root DOM scope.", function() {
-			beforeEach(function() {
-	            //Aqui creo el nodo
-	            var htmlNode = '<div class="test">Test</div>';
-	            Y.one('#testzone').appendChild(htmlNode);
-			});
+        });
 
-			afterEach(function() {
-				Y.one('#testzone .test').remove();
-			});
+        //---------------------------------------------------------------------
+        // Change the root DOM scope.
+        //---------------------------------------------------------------------
+        describe("Change the root DOM scope.", function() {
+            beforeEach(function() {
+                //Aqui creo el nodo
+                var htmlNode = '<div class="test">Test</div>';
+                Y.one('#testzone').appendChild(htmlNode);
+            });
 
-			it("dont existed DOM Scope", function() {
-				AniJS.setDOMRootTravelScope('.dontExisted');
-				expect(AniJS.rootDOMTravelScope == document).toBeTruthy();
-			});
+            afterEach(function() {
+                Y.one('#testzone .test').remove();
+            });
 
-			it("empty DOM selector Scope", function() {
-				AniJS.setDOMRootTravelScope('');
-				expect(AniJS.rootDOMTravelScope == document).toBeTruthy();
-			});
+            it("dont existed DOM Scope", function() {
+                AniJS.setDOMRootTravelScope('.dontExisted');
+                expect(AniJS.rootDOMTravelScope == document).toBeTruthy();
+            });
 
-			it("new DOM selector Scope", function() {
-				AniJS.setDOMRootTravelScope('.test');
-				expect(AniJS.rootDOMTravelScope == document).toBeFalsy();
+            it("empty DOM selector Scope", function() {
+                AniJS.setDOMRootTravelScope('');
+                expect(AniJS.rootDOMTravelScope == document).toBeTruthy();
+            });
 
-				Y.one('body').appendChild('<div class="outsideselector">Outside Selector</div>');
-				var dataAnijJS = 'do: bounce, to: body',
-	            	targetNode;
+            it("new DOM selector Scope", function() {
+                AniJS.setDOMRootTravelScope('.test');
+                expect(AniJS.rootDOMTravelScope == document).toBeFalsy();
 
-	            targetNode = Y.one('.outsideselector');
-	            targetNode.setAttribute('data-anijs', dataAnijJS);
+                Y.one('body').appendChild('<div class="outsideselector">Outside Selector</div>');
+                var dataAnijJS = 'do: bounce, to: body',
+                    targetNode;
 
-	           	targetNode.on('click', function(e){
-	                expect(Y.one('body').hasClass('bounce')).toBeFalsy();
-	                AniJS.setDOMRootTravelScope('document');
-	            },this, true);
+                targetNode = Y.one('.outsideselector');
+                targetNode.setAttribute('data-anijs', dataAnijJS);
 
-	            targetNode.simulate("click");
-			});
+                   targetNode.on('click', function(e){
+                    expect(Y.one('body').hasClass('bounce')).toBeFalsy();
+                    AniJS.setDOMRootTravelScope('document');
+                },this, true);
 
-			//TODO: 
-			it("//TODO", function() {
+                targetNode.simulate("click");
+            });
 
-			});
-		});
+            //TODO:
+            it("//TODO", function() {
 
-	    //---------------------------------------------------------------------
-	    // Running AniJS repeatedly.
-	    //---------------------------------------------------------------------
-		describe("Running AniJS repeatedly.", function() {
-			beforeEach(function() {
-	            //Aqui creo el nodo
-	            var htmlNode = '<div class="test">Test</div>';
-	            Y.one('#testzone').appendChild(htmlNode);
-			});
+            });
+        });
 
-			afterEach(function() {
-				Y.one('#testzone .test').remove();
-			});
+        //---------------------------------------------------------------------
+        // Running AniJS repeatedly.
+        //---------------------------------------------------------------------
+        describe("Running AniJS repeatedly.", function() {
+            beforeEach(function() {
+                //Aqui creo el nodo
+                var htmlNode = '<div class="test">Test</div>';
+                Y.one('#testzone').appendChild(htmlNode);
+            });
 
-			it("ten times", function() {
-				for (var i = 1; i < 10; i++) {
-		            var dataAnijJS = 'if: click, do: bounce, to: body',
-		            	targetNode;
+            afterEach(function() {
+                Y.one('#testzone .test').remove();
+            });
 
-		            targetNode = Y.one('#testzone .test');
+            it("ten times", function() {
+                for (var i = 1; i < 10; i++) {
+                    var dataAnijJS = 'if: click, do: bounce, to: body',
+                        targetNode;
 
-		            targetNode.setAttribute('data-anijs', dataAnijJS);
-					AniJS.run();
-					if(i > 1){
-						expect(AniJS.eventCollection[i-1]).toBeNull();	
-					}
-					expect(AniJS.eventCollection[i]).not.toBeNull();
-				}
-			});
-			//TODO: Memory leaks here
-			it("hundred times", function() {
-				for (var i = 1; i < 100; i++) {
-		            var dataAnijJS = 'if: click, do: bounce, to: body',
-		            	targetNode;
+                    targetNode = Y.one('#testzone .test');
+                    targetNode.setAttribute('data-anijs', dataAnijJS);
+                    AniJS.run();
 
-		            targetNode = Y.one('#testzone .test');
+                    expect(AniJS.eventCollection[i]).not.toBeNull();
+                }
+            });
+            //TODO: Memory leaks here
+            it("hundred times", function() {
+                for (var i = 1; i < 100; i++) {
+                    var dataAnijJS = 'if: click, do: bounce, to: body',
+                        targetNode;
 
-		            targetNode.setAttribute('data-anijs', dataAnijJS);
-					AniJS.run();
-					if(i > 1){
-						expect(AniJS.eventCollection[i-1]).toBeNull();	
-					}
-					expect(AniJS.eventCollection[i]).not.toBeNull();
-				}
-			});
+                    targetNode = Y.one('#testzone .test');
 
-			//TODO: 
-			it("//TODO", function() {
+                    targetNode.setAttribute('data-anijs', dataAnijJS);
 
-			});
-		});
+                     AniJS.run();
 
-	    //---------------------------------------------------------------------
-	    // animationEnd and transitionEnd normalization.
-	    //---------------------------------------------------------------------
-		describe("animationEnd and transitionEnd normalization", function() {
-			beforeEach(function() {
-	            //Aqui creo el nodo
-	            var htmlNode = '<div class="test">Test</div>';
-	            Y.one('#testzone').appendChild(htmlNode);
-			});
+                    expect(AniJS.eventCollection[i]).not.toBeNull();
+                }
+            });
 
-			afterEach(function() {
-				Y.one('#testzone .test').remove();
-			});
-			//TODO: 
-			it("//TODO", function() {
+            //TODO:
+            it("//TODO", function() {
 
-			});
-		});
+            });
+        });
 
-	    //---------------------------------------------------------------------
-	    // Attach events from window and document objects
-	    //---------------------------------------------------------------------
-		describe("Attach events from window and document objects", function() {
-			beforeEach(function() {
-	            //Aqui creo el nodo
-	            var htmlNode = '<div class="test">Test</div>';
-	            Y.one('#testzone').appendChild(htmlNode);
-			});
+        //---------------------------------------------------------------------
+        // animationEnd and transitionEnd normalization.
+        //---------------------------------------------------------------------
+        describe("animationEnd and transitionEnd normalization", function() {
+            beforeEach(function() {
+                //Aqui creo el nodo
+                var htmlNode = '<div class="test">Test</div>';
+                Y.one('#testzone').appendChild(htmlNode);
+            });
 
-			afterEach(function() {
-				Y.one('#testzone .test').remove();
-			});
-			//TODO: 
-			it("//TODO", function() {
+            afterEach(function() {
+                Y.one('#testzone .test').remove();
+            });
+            //TODO:
+            it("//TODO", function() {
 
-			}); 
-		});
-	});
+            });
+        });
+
+        //---------------------------------------------------------------------
+        // Attach events from window and document objects
+        //---------------------------------------------------------------------
+        describe("Attach events from window and document objects", function() {
+            beforeEach(function() {
+                //Aqui creo el nodo
+                var htmlNode = '<div class="test">Test</div>';
+                Y.one('#testzone').appendChild(htmlNode);
+            });
+
+            afterEach(function() {
+                Y.one('#testzone .test').remove();
+            });
+            //TODO:
+            it("//TODO", function() {
+
+            });
+        });
+    });
 });
 
 
