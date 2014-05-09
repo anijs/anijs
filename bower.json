@@ -1,6 +1,6 @@
 {
   "name": "AniJS",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "homepage": "http://anijs.github.io/",
   "description": "Declarative handling library for CSS animations.",
   "main": "dist/anijs-min.js",
