@@ -54,9 +54,12 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             //ATTRS inicialization
             instance.helperCollection = {};
 
+            instance.eventProviderCollection = {};
+
             //AniJS event Collection
             //TODO: Encapsulate this in another class
             instance.eventCollection = {};
+
             instance.eventIdCounter = 0;
 
             var defaultHelper = instance._createDefaultHelper();
@@ -183,7 +186,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                     i = 0;
 
                 for (i; i < size; i++) {
-                    instance._purgeNode(purgeNodeCollection[i]);
+                    instance.purgeEventTarget(purgeNodeCollection[i]);
                 }
             }
         };
@@ -207,15 +210,88 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                 eventObject = eventCollection[key];
 
                 if (eventObject && eventObject.handleCollection && eventObject.handleCollection.length > 0) {
-                    instance._purgeNode(eventObject.handleCollection[0].element);
+                    instance.purgeEventTarget(eventObject.handleCollection[0].element);
                 }
 
                 delete eventCollection[key];
             }
         };
 
+        /**
+         * Detach all AniJS subscriptions to this element
+         * @method purgeEventTarget
+         * @param {} element
+         * @return
+         */
+        instance.purgeEventTarget = function(element) {
+            var aniJSEventID = element._aniJSEventID,
+                elementHandleCollection;
+            if (aniJSEventID) {
+
+                //Se le quitan todos los eventos a los que este suscrito
+                elementHandleCollection = instance.eventCollection[aniJSEventID].handleCollection;
+
+                var size = elementHandleCollection.length,
+                    i = 0,
+                    item;
+
+                for (i; i < size; i++) {
+                    item = elementHandleCollection[i];
+
+                    //Para cada handle
+                    element.removeEventListener(item.eventType, item.listener);
+
+                }
+                instance.eventCollection[aniJSEventID] = null;
+                delete instance.eventCollection[aniJSEventID];
+                element._aniJSEventID = null;
+                delete element._aniJSEventID;
+            }
+        };
+
+        /**
+         * Add default class names while Anim
+         * @method setClassNamesWhenAnim
+         * @param {} defaultClasses
+         * @return 
+         */
         instance.setClassNamesWhenAnim = function(defaultClasses) {
             instance.classNamesWhenAnim = ' ' + defaultClasses;
+        };
+
+        /**
+         * Create an EventTarget
+         * @method createEventProvider
+         * @return EventTarget
+         */
+        instance.createEventProvider = function(){
+            return new EventTarget();          
+        };
+
+        /**
+         * Put an event provider in the eventProviderCollection
+         * @method registerEventProvider
+         * @param {} eventProvider
+         * @return Literal
+         */
+        instance.registerEventProvider = function(eventProvider) {
+            var eventProviderCollection = instance.eventProviderCollection;
+
+            if(eventProvider.id && eventProvider.value && eventProvider.value instanceof EventTarget){
+                eventProviderCollection[eventProvider.id] = eventProvider.value;
+                return 1;
+            }
+            return '';
+        };
+
+        /**
+         * Return an eventProvider instance
+         * @method getEventProvider
+         * @param {} eventProviderID
+         * @return eventProvider
+         */
+        instance.getEventProvider = function(eventProviderID) {
+            return instance.eventProviderCollection[eventProviderID];
         };
 
         /**
@@ -275,6 +351,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
          * @return
          */
         instance._setupElementSentenceAnim = function(element, aniJSParsedSentence) {
+            //TODO: If the user use animationend or transitionend names to custom events the eventdispach will be not executed
             var event = instance._eventHelper(aniJSParsedSentence),
                 eventTargetList = instance._eventTargetHelper(element, aniJSParsedSentence);
 
@@ -288,44 +365,44 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                 for (i; i < size; i++) {
                     eventTargetItem = eventTargetList[i];
 
-                    var listener = function(event) {
+                    if(eventTargetItem.addEventListener){
+                        var listener = function(event) {
 
-                        //Si cambia algun parametro dinamicamente entonces hay que enterarse
-                        var behaviorTargetList = instance._behaviorTargetHelper(element, aniJSParsedSentence),
-                            behavior = instance._behaviorHelper(aniJSParsedSentence),
-                            before = instance._beforeHelper(element, aniJSParsedSentence),
-                            after = instance._afterHelper(element, aniJSParsedSentence);
+                            //Si cambia algun parametro dinamicamente entonces hay que enterarse
+                            var behaviorTargetList = instance._behaviorTargetHelper(element, aniJSParsedSentence),
+                                behavior = instance._behaviorHelper(aniJSParsedSentence),
+                                before = instance._beforeHelper(element, aniJSParsedSentence),
+                                after = instance._afterHelper(element, aniJSParsedSentence);
 
-                        if (instance.classNamesWhenAnim !== '') {
-                            behavior += instance.classNamesWhenAnim;
-                        }
+                            if (instance.classNamesWhenAnim !== '') {
+                                behavior += instance.classNamesWhenAnim;
+                            }
 
-                        //TODO: ejecutar function before
-                        //antes de aqui
+                            //Creo un nuevo animation context
+                            var animationContextConfig = {
+                                behaviorTargetList: behaviorTargetList,
+                                nodeHelper: NodeHelper,
+                                animationEndEvent: instance.animationEndEvent,
+                                behavior: behavior,
+                                after: after
+                            },
 
-                        //Creo un nuevo animation context
-                        var animationContextConfig = {
-                            behaviorTargetList: behaviorTargetList,
-                            nodeHelper: NodeHelper,
-                            animationEndEvent: instance.animationEndEvent,
-                            behavior: behavior,
-                            after: after
-                        },
+                                animationContextInstance = new AnimationContext(animationContextConfig);
 
-                            animationContextInstance = new AnimationContext(animationContextConfig);
+                            //Si before, le paso el animation context
+                            if (before && instance._isFunction(before)) {
+                                before(event, animationContextInstance);
+                            } else {
+                                animationContextInstance.run();
+                            }
+                        };
 
-                        //Si before, le paso el animation context
-                        if (before && instance._isFunction(before)) {
-                            before(event, animationContextInstance);
-                        } else {
-                            animationContextInstance.run();
-                        }
-                    };
+                        eventTargetItem.addEventListener(event, listener, false);
 
-                    eventTargetItem.addEventListener(event, listener, false);
+                        //Register event to feature handle
+                        instance._registerEventHandle(eventTargetItem, event, listener);
+                    }
 
-                    //Register event to feature handle
-                    instance._registerEventHandle(eventTargetItem, event, listener);
 
 
                 }
@@ -364,37 +441,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         };
 
         /**
-         * Detach all AniJS subscriptions to this element
-         * @method _purgeNode
-         * @param {} element
-         * @return
-         */
-        instance._purgeNode = function(element) {
-            var aniJSEventID = element._aniJSEventID,
-                elementHandleCollection;
-            if (aniJSEventID) {
-
-                //Se le quitan todos los eventos a los que este suscrito
-                elementHandleCollection = instance.eventCollection[aniJSEventID].handleCollection;
-
-                var size = elementHandleCollection.length,
-                    i = 0,
-                    item;
-
-                for (i; i < size; i++) {
-                    item = elementHandleCollection[i];
-
-                    //Para cada handle
-                    element.removeEventListener(item.eventType, item.listener);
-
-                }
-                instance.eventCollection[aniJSEventID] = null;
-                element._aniJSEventID = null;
-            }
-        };
-
-
-        /**
          * Helper to setup the Event that trigger the animation from declaration
          * https://developer.mozilla.org/en-US/docs/Web/Reference/Events
          * http://www.w3schools.com/tags/ref_eventattributes.asp
@@ -409,6 +455,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
             if (event === 'animationend') {
                 event = instance._animationEndPrefix();
+            } else if(event === 'transitionend'){
+                event = instance._transitionEndPrefix();
             }
 
             return event;
@@ -421,30 +469,37 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
          * @method _eventTargetHelper
          * @param {} element
          * @param {} aniJSParsedSentence
-         * @return eventTargetNodeList
+         * @return eventTargetList
          */
         instance._eventTargetHelper = function(element, aniJSParsedSentence) {
             var defaultValue = element,
-                eventTargetNodeList = [defaultValue],
-                rootDOMTravelScope = instance.rootDOMTravelScope;
+                eventTargetList = [defaultValue],
+                rootDOMTravelScope = instance.rootDOMTravelScope,
+                eventProviderList;
 
             //TODO: We could add other non direct DOM Objects
             if (aniJSParsedSentence.eventTarget) {
-                if (aniJSParsedSentence.eventTarget === 'document') {
-                    eventTargetNodeList = [document];
+
+                eventProviderList = instance._eventProviderHelper(aniJSParsedSentence.eventTarget);
+
+                if(eventProviderList.length > 0){
+                    eventTargetList = eventProviderList;
+                } else if (aniJSParsedSentence.eventTarget === 'document') {
+                    eventTargetList = [document];
                 } else if (aniJSParsedSentence.eventTarget === 'window') {
-                    eventTargetNodeList = [window];
-                } else {
+                    eventTargetList = [window];
+                } else if(aniJSParsedSentence.eventTarget.split){
                     try {
-                       eventTargetNodeList = rootDOMTravelScope.querySelectorAll(aniJSParsedSentence.eventTarget);
+                       eventTargetList = rootDOMTravelScope.querySelectorAll(aniJSParsedSentence.eventTarget);
                     }
                     catch (e) {
                         console.log('Ugly Selector Here');
-                        eventTargetNodeList = [];
+                        eventTargetList = [];
                     }
                 }
             }
-            return eventTargetNodeList;
+            //It's not a nodeList any more
+            return eventTargetList;
         };
 
         /**
@@ -549,6 +604,56 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             var defaultValue = aniJSParsedSentence.helper || instance.helperDefaultIndex;
             return defaultValue;
         };
+
+        /**
+         * Helper to setup the eventProvider
+         * @method _eventProviderHelper
+         * @param {} eventTargetDefinition
+         * @return defaultValue
+         */
+        instance._eventProviderHelper = function(eventTargetDefinition) {
+            var defaultValue = [],
+                eventProviderCollection = instance.eventProviderCollection;
+
+            if(eventTargetDefinition) {
+                //{id: eventProviderID, value:eventProviderObject}
+                if( eventTargetDefinition.id && eventTargetDefinition.value instanceof EventTarget){
+                    //TODO: In the near future could be an object list
+                    
+                    defaultValue.push(eventTargetDefinition.value);
+
+                    instance.registerEventProvider(eventTargetDefinition);
+
+                } else if(eventTargetDefinition.split){
+                    //Picar por signo de peso y obtener la lista de id de events providers
+                    eventProviderIDList = eventTargetDefinition.split('$');
+                    var size  = eventProviderIDList.length,
+                        i = 1,
+                        eventProviderID;
+
+                    for ( i; i < size; i++) {
+                        eventProviderID = eventProviderIDList[i];
+                        if(eventProviderID && eventProviderID !== ' ') {
+                            //limpiarle los espacios alante y atras (trim)
+                            eventProviderID = eventProviderID.trim();
+
+                            //TODO: Big Refactoring here
+                            var value = instance.getEventProvider(eventProviderID);
+                            if(!value){
+                                value = new EventTarget();
+                                instance.registerEventProvider({
+                                    id: eventProviderID,
+                                    value: value
+                                });
+                            }
+                            defaultValue.push(value);  
+                        }
+                    }
+                }
+            }
+
+            return defaultValue;
+        };  
 
         /**
          * Parse an String Declaration
@@ -880,6 +985,90 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             },
 
         };
+
+    /**
+     * Helper the custom EventTarget
+     * Copyright (c) 2010 Nicholas C. Zakas. All rights reserved.
+     * MIT License
+     * http://www.nczonline.net/blog/2010/03/09/custom-events-in-javascript/
+     * @class EventTarget
+     */
+    function EventTarget(){
+        this._listeners = {};
+    }
+
+    EventTarget.prototype = {
+
+        constructor: EventTarget,
+
+        /**
+         * Registers the specified listener on the EventTarget it's called on
+         * Similar to the native implementation
+         * @method addEventListener
+         * @param {} type
+         * @param {} listener
+         * @param {} other
+         * @return 
+         */
+        addEventListener: function(type, listener, other){
+            var instance = this;
+            if (typeof instance._listeners[type] == "undefined"){
+                instance._listeners[type] = [];
+            }
+
+            instance._listeners[type].push(listener);
+        },
+
+        /**
+         * Dispatches an Event at the specified EventTarget
+         * Similar to the native implementation
+         * @method dispatchEvent
+         * @param {} event
+         * @return 
+         */
+        dispatchEvent: function(event){
+            var instance = this;
+            if (typeof event == "string"){
+                event = { type: event };
+            }
+            if (!event.target){
+                event.target = instance;
+            }
+
+            if (!event.type){  //falsy
+                throw new Error("Event object missing 'type' property.");
+            }
+
+            if (this._listeners[event.type] instanceof Array){
+                var listeners = instance._listeners[event.type];
+
+                for (var i=0, len=listeners.length; i < len; i++){
+                    listeners[i].call(instance, event);
+                }
+            }
+        },
+
+        /**
+         * Removes the event listener previously registered with EventTarget.addEventListener.
+         * Similar to the native implementation
+         * @method removeEventListener
+         * @param {} type
+         * @param {} listener
+         * @return 
+         */
+        removeEventListener: function(type, listener){
+            var instance = this;
+            if (instance._listeners[type] instanceof Array){
+                var listeners = instance._listeners[type];
+                for (var i=0, len=listeners.length; i < len; i++){
+                    if (listeners[i] === listener){
+                        listeners.splice(i, 1);
+                        break;
+                    }
+                }
+            }
+        }
+    };
 
         instance._initializer();
 
