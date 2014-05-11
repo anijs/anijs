@@ -216,6 +216,12 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             }
         };
 
+        /**
+         * Add default class names while Anim
+         * @method setClassNamesWhenAnim
+         * @param {} defaultClasses
+         * @return 
+         */
         instance.setClassNamesWhenAnim = function(defaultClasses) {
             instance.classNamesWhenAnim = ' ' + defaultClasses;
         };
@@ -609,11 +615,22 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             return defaultValue;
         };  
 
+        /**
+         * Create an EventTarget
+         * @method createEventProvider
+         * @return EventTarget
+         */
         instance.createEventProvider = function(){
             return new EventTarget();          
         };
 
-        //Needs a valid event provider in the value
+
+        /**
+         * Put an event provider in the eventProviderCollection
+         * @method registerEventProvider
+         * @param {} eventProvider
+         * @return Literal
+         */
         instance.registerEventProvider = function(eventProvider) {
             var eventProviderCollection = instance.eventProviderCollection;
 
@@ -624,6 +641,12 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             return '';
         };
 
+        /**
+         * Return an eventProvider instance
+         * @method getEventProvider
+         * @param {} eventProviderID
+         * @return eventProvider
+         */
         instance.getEventProvider = function(eventProviderID) {
             return instance.eventProviderCollection[eventProviderID];
         };
@@ -698,11 +721,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
          */
         instance._isFunction = function(obj) {
             return !!(obj && obj.constructor && obj.call && obj.apply);
-        };
-
-        //TODO Not Implement this
-        instance._isObject = function(obj) {
-            return false;
         };
 
         /**
