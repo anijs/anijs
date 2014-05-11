@@ -1,11 +1,11 @@
 # AniJS
 
-Declarative handling library for CSS animations. The main objective is to provide an elocuent, easy to translate, and quick to develop environment.
+Declarative handling library for CSS animations. The main objective is to provide an eloquent, easy to translate, and quick to develop environment.
 
 
 ## Try It!!
 
-Check the online [Demostration](http://anijs.github.io/).
+Check the online [Demonstration](http://anijs.github.io/).
 
 
 ## Installation
@@ -30,7 +30,7 @@ Put the AniJS file on your page or [use AMD](https://github.com/anijs/anijs/wiki
 <script src="anijs-min.js"></script>
 ```
 
-Include the CSS animation styles definition, we strongly recomend you to use the amazing [animate.css library](http://daneden.github.io/animate.css/) as starting point, this library provides beautiful animations. Also, you can define your own animations.
+Include the CSS animation styles definition, we strongly recommend you to use the amazing [animate.css library](http://daneden.github.io/animate.css/) as starting point, this library provides beautiful animations. Also, you can define your own animations.
 
 ```xml
 <head>
@@ -82,7 +82,7 @@ Documentation Topics can be founded in the [Wiki Pages](https://github.com/anijs
 - Reusable code.
 - Speed of development.
 - Better integration between coders and designers.
-- The obtained code is reliable, elgant and expressive.
+- The obtained code is reliable, elegant and expressive.
 - There is no need for third party libraries.
 - Compact - around 6kb after gzipping.
 
