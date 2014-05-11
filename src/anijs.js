@@ -605,7 +605,12 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             return defaultValue;
         };
 
-        //eventProviderList = instance._eventProviderHelper(aniJSParsedSentence.eventTarget);
+        /**
+         * Helper to setup the eventProvider
+         * @method _eventProviderHelper
+         * @param {} eventTargetDefinition
+         * @return defaultValue
+         */
         instance._eventProviderHelper = function(eventTargetDefinition) {
             var defaultValue = [],
                 eventProviderCollection = instance.eventProviderCollection;
