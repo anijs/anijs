@@ -964,10 +964,13 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
         };
 
-    //Copyright (c) 2010 Nicholas C. Zakas. All rights reserved.
-    //MIT License
-    //http://www.nczonline.net/blog/2010/03/09/custom-events-in-javascript/
-
+    /**
+     * Helper the custom EventTarget
+     * Copyright (c) 2010 Nicholas C. Zakas. All rights reserved.
+     * MIT License
+     * http://www.nczonline.net/blog/2010/03/09/custom-events-in-javascript/
+     * @class EventTarget
+     */
     function EventTarget(){
         this._listeners = {};
     }
@@ -976,20 +979,38 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
         constructor: EventTarget,
 
+        /**
+         * Registers the specified listener on the EventTarget it's called on
+         * Similar to the native implementation
+         * @method addEventListener
+         * @param {} type
+         * @param {} listener
+         * @param {} other
+         * @return 
+         */
         addEventListener: function(type, listener, other){
-            if (typeof this._listeners[type] == "undefined"){
-                this._listeners[type] = [];
+            var instance = this;
+            if (typeof instance._listeners[type] == "undefined"){
+                instance._listeners[type] = [];
             }
 
-            this._listeners[type].push(listener);
+            instance._listeners[type].push(listener);
         },
 
+        /**
+         * Dispatches an Event at the specified EventTarget
+         * Similar to the native implementation
+         * @method dispatchEvent
+         * @param {} event
+         * @return 
+         */
         dispatchEvent: function(event){
+            var instance = this;
             if (typeof event == "string"){
                 event = { type: event };
             }
             if (!event.target){
-                event.target = this;
+                event.target = instance;
             }
 
             if (!event.type){  //falsy
@@ -997,17 +1018,26 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             }
 
             if (this._listeners[event.type] instanceof Array){
-                var listeners = this._listeners[event.type];
+                var listeners = instance._listeners[event.type];
 
                 for (var i=0, len=listeners.length; i < len; i++){
-                    listeners[i].call(this, event);
+                    listeners[i].call(instance, event);
                 }
             }
         },
 
+        /**
+         * Removes the event listener previously registered with EventTarget.addEventListener.
+         * Similar to the native implementation
+         * @method removeEventListener
+         * @param {} type
+         * @param {} listener
+         * @return 
+         */
         removeEventListener: function(type, listener){
-            if (this._listeners[type] instanceof Array){
-                var listeners = this._listeners[type];
+            var instance = this;
+            if (instance._listeners[type] instanceof Array){
+                var listeners = instance._listeners[type];
                 for (var i=0, len=listeners.length; i < len; i++){
                     if (listeners[i] === listener){
                         listeners.splice(i, 1);
