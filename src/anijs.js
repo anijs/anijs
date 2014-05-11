@@ -59,6 +59,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             //AniJS event Collection
             //TODO: Encapsulate this in another class
             instance.eventCollection = {};
+
             instance.eventIdCounter = 0;
 
             var defaultHelper = instance._createDefaultHelper();
@@ -217,6 +218,38 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         };
 
         /**
+         * Detach all AniJS subscriptions to this element
+         * @method purgeEventTarget
+         * @param {} element
+         * @return
+         */
+        instance.purgeEventTarget = function(element) {
+            var aniJSEventID = element._aniJSEventID,
+                elementHandleCollection;
+            if (aniJSEventID) {
+
+                //Se le quitan todos los eventos a los que este suscrito
+                elementHandleCollection = instance.eventCollection[aniJSEventID].handleCollection;
+
+                var size = elementHandleCollection.length,
+                    i = 0,
+                    item;
+
+                for (i; i < size; i++) {
+                    item = elementHandleCollection[i];
+
+                    //Para cada handle
+                    element.removeEventListener(item.eventType, item.listener);
+
+                }
+                instance.eventCollection[aniJSEventID] = null;
+                delete instance.eventCollection[aniJSEventID];
+                element._aniJSEventID = null;
+                delete element._aniJSEventID;
+            }
+        };
+
+        /**
          * Add default class names while Anim
          * @method setClassNamesWhenAnim
          * @param {} defaultClasses
@@ -224,6 +257,41 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
          */
         instance.setClassNamesWhenAnim = function(defaultClasses) {
             instance.classNamesWhenAnim = ' ' + defaultClasses;
+        };
+
+        /**
+         * Create an EventTarget
+         * @method createEventProvider
+         * @return EventTarget
+         */
+        instance.createEventProvider = function(){
+            return new EventTarget();          
+        };
+
+        /**
+         * Put an event provider in the eventProviderCollection
+         * @method registerEventProvider
+         * @param {} eventProvider
+         * @return Literal
+         */
+        instance.registerEventProvider = function(eventProvider) {
+            var eventProviderCollection = instance.eventProviderCollection;
+
+            if(eventProvider.id && eventProvider.value && eventProvider.value instanceof EventTarget){
+                eventProviderCollection[eventProvider.id] = eventProvider.value;
+                return 1;
+            }
+            return '';
+        };
+
+        /**
+         * Return an eventProvider instance
+         * @method getEventProvider
+         * @param {} eventProviderID
+         * @return eventProvider
+         */
+        instance.getEventProvider = function(eventProviderID) {
+            return instance.eventProviderCollection[eventProviderID];
         };
 
         /**
@@ -371,39 +439,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                 element._aniJSEventID = instance.eventIdCounter;
             }
         };
-
-        /**
-         * Detach all AniJS subscriptions to this element
-         * @method purgeEventTarget
-         * @param {} element
-         * @return
-         */
-        instance.purgeEventTarget = function(element) {
-            var aniJSEventID = element._aniJSEventID,
-                elementHandleCollection;
-            if (aniJSEventID) {
-
-                //Se le quitan todos los eventos a los que este suscrito
-                elementHandleCollection = instance.eventCollection[aniJSEventID].handleCollection;
-
-                var size = elementHandleCollection.length,
-                    i = 0,
-                    item;
-
-                for (i; i < size; i++) {
-                    item = elementHandleCollection[i];
-
-                    //Para cada handle
-                    element.removeEventListener(item.eventType, item.listener);
-
-                }
-                instance.eventCollection[aniJSEventID] = null;
-                delete instance.eventCollection[aniJSEventID];
-                element._aniJSEventID = null;
-                delete element._aniJSEventID;
-            }
-        };
-
 
         /**
          * Helper to setup the Event that trigger the animation from declaration
@@ -614,42 +649,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
             return defaultValue;
         };  
-
-        /**
-         * Create an EventTarget
-         * @method createEventProvider
-         * @return EventTarget
-         */
-        instance.createEventProvider = function(){
-            return new EventTarget();          
-        };
-
-
-        /**
-         * Put an event provider in the eventProviderCollection
-         * @method registerEventProvider
-         * @param {} eventProvider
-         * @return Literal
-         */
-        instance.registerEventProvider = function(eventProvider) {
-            var eventProviderCollection = instance.eventProviderCollection;
-
-            if(eventProvider.id && eventProvider.value && eventProvider.value instanceof EventTarget){
-                eventProviderCollection[eventProvider.id] = eventProvider.value;
-                return 1;
-            }
-            return '';
-        };
-
-        /**
-         * Return an eventProvider instance
-         * @method getEventProvider
-         * @param {} eventProviderID
-         * @return eventProvider
-         */
-        instance.getEventProvider = function(eventProviderID) {
-            return instance.eventProviderCollection[eventProviderID];
-        };
 
         /**
          * Parse an String Declaration
