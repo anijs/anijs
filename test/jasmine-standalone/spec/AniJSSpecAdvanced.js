@@ -85,7 +85,7 @@ YUI().use('node', 'node-event-simulate', function (Y) {
                     targetNode.setAttribute('data-anijs', dataAnijJS);
                     AniJS.run();
 
-                    expect(AniJS.eventCollection[i]).not.toBeNull();
+                    expect(AniJS.eventSystem.eventCollection[i]).not.toBeNull();
                 }
             });
             //TODO: Memory leaks here
@@ -100,7 +100,7 @@ YUI().use('node', 'node-event-simulate', function (Y) {
 
                      AniJS.run();
 
-                    expect(AniJS.eventCollection[i]).not.toBeNull();
+                    expect(AniJS.eventSystem.eventCollection[i]).not.toBeNull();
                 }
             });
 

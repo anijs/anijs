@@ -227,7 +227,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
          * @return EventTarget
          */
         instance.createEventProvider = function(){
-            return new EventTarget();          
+            return instance.eventSystem.createEventTarget();
         };
 
         /**
@@ -346,7 +346,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                                 nodeHelper: NodeHelper,
                                 animationEndEvent: instance.animationEndEvent,
                                 behavior: behavior,
-                                after: after
+                                after: after,
+                                eventSystem: instance.eventSystem
                             },
 
                                 animationContextInstance = new AnimationContext(animationContextConfig);
@@ -945,6 +946,10 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                     return true;
                 }
                 return false; 
+            },
+
+            createEventTarget: function(){
+                return new EventTarget();
             },
 
             addEventListenerHelper: function(eventTargetItem, event, listener, other){
