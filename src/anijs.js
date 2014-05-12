@@ -51,7 +51,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
          */
         instance._initializer = function() {
 
-            //ATTRS inicialization
+            //ATTRS initialization
             instance.helperCollection = {};
 
             //AniJS event Collection
