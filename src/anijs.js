@@ -58,11 +58,16 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
             //AniJS event Collection
             //TODO: Encapsulate this in another class
-            instance.eventCollection = {};
+            // instance.eventCollection = {};
 
-            instance.eventIdCounter = 0;
+            // instance.eventIdCounter = 0;
+            
+            instance.eventSystem = new EventSystem();
+
+
 
             var defaultHelper = instance._createDefaultHelper();
+
             //Registering an empty helper
             instance.registerHelper(DEFAULT, defaultHelper);
 
@@ -179,14 +184,14 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
          */
         instance.purge = function(selector) {
 
-            //TODO: Search a regular expression for a valid CSS selector
+            //TODO: Search a regular expression for test a valid CSS selector
             if (selector && selector !== '' && selector !== ' ') {
                 var purgeNodeCollection = document.querySelectorAll(selector),
                     size = purgeNodeCollection.length,
                     i = 0;
 
                 for (i; i < size; i++) {
-                    instance.purgeEventTarget(purgeNodeCollection[i]);
+                    instance.eventSystem.purgeEventTarget(purgeNodeCollection[i]);
                 }
             }
         };
@@ -198,56 +203,13 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
          * @return
          */
         instance.purgeAll = function() {
-            var eventCollection = instance.eventCollection,
-                eventCollectionKeyList = Object.keys(eventCollection),
-                size = eventCollectionKeyList.length,
-                i = 0,
-                key,
-                eventObject;
-
-            for (i; i < size; i++) {
-                key = eventCollectionKeyList[i];
-                eventObject = eventCollection[key];
-
-                if (eventObject && eventObject.handleCollection && eventObject.handleCollection.length > 0) {
-                    instance.purgeEventTarget(eventObject.handleCollection[0].element);
-                }
-
-                delete eventCollection[key];
-            }
+            instance.eventSystem.purgeAll();
         };
 
-        /**
-         * Detach all AniJS subscriptions to this element
-         * @method purgeEventTarget
-         * @param {} element
-         * @return
-         */
         instance.purgeEventTarget = function(element) {
-            var aniJSEventID = element._aniJSEventID,
-                elementHandleCollection;
-            if (aniJSEventID) {
-
-                //Se le quitan todos los eventos a los que este suscrito
-                elementHandleCollection = instance.eventCollection[aniJSEventID].handleCollection;
-
-                var size = elementHandleCollection.length,
-                    i = 0,
-                    item;
-
-                for (i; i < size; i++) {
-                    item = elementHandleCollection[i];
-
-                    //Para cada handle
-                    element.removeEventListener(item.eventType, item.listener);
-
-                }
-                instance.eventCollection[aniJSEventID] = null;
-                delete instance.eventCollection[aniJSEventID];
-                element._aniJSEventID = null;
-                delete element._aniJSEventID;
-            }
+            instance.eventSystem.purgeEventTarget(element);
         };
+        
 
         /**
          * Add default class names while Anim
@@ -365,7 +327,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                 for (i; i < size; i++) {
                     eventTargetItem = eventTargetList[i];
 
-                    if(eventTargetItem.addEventListener){
+                    if(instance.eventSystem.isEventTarget(eventTargetItem)){
                         var listener = function(event) {
 
                             //Si cambia algun parametro dinamicamente entonces hay que enterarse
@@ -397,10 +359,10 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                             }
                         };
 
-                        eventTargetItem.addEventListener(event, listener, false);
+                        instance.eventSystem.addEventListenerHelper(eventTargetItem, event, listener, false);
 
                         //Register event to feature handle
-                        instance._registerEventHandle(eventTargetItem, event, listener);
+                        instance.eventSystem.registerEventHandle(eventTargetItem, event, listener);
                     }
 
 
@@ -408,35 +370,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                 }
             } else {
                 console.log('You must define some event');
-            }
-        };
-
-        /**
-         * Create a handle to remove the listener when purge it
-         * @method registerEventHandle
-         * @param {} element
-         * @param {} eventType
-         * @param {} listener
-         * @return
-         */
-        instance._registerEventHandle = function(element, eventType, listener) {
-            var aniJSEventID = element._aniJSEventID,
-                eventCollection = instance.eventCollection,
-                elementEventHandle = {
-                    eventType: eventType,
-                    listener: listener,
-                    element: element
-                };
-
-            if (aniJSEventID) {
-                eventCollection[aniJSEventID].handleCollection.push(elementEventHandle);
-            } else {
-                var tempEventHandle = {
-                    handleCollection: [elementEventHandle]
-                };
-
-                eventCollection[++instance.eventIdCounter] = tempEventHandle;
-                element._aniJSEventID = instance.eventIdCounter;
             }
         };
 
@@ -744,6 +677,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
              */
             animationContextInstance.initializer = function(config) {
 
+                //TODO: Valorar la idea de usar prototype por performance reasons
                 //ATTRS
                 animationContextInstance.behaviorTargetList = config.behaviorTargetList || [];
 
@@ -755,6 +689,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
                 animationContextInstance.after = config.after;
 
+                animationContextInstance.eventSystem = config.eventSystem;
+
             },
 
             /**
@@ -763,12 +699,13 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
              * @return
              */
             animationContextInstance.run = function() {
-                var behaviorTargetList = animationContextInstance.behaviorTargetList,
+                var instance = animationContextInstance,
+                    behaviorTargetList = instance.behaviorTargetList,
                     behaviorTargetListSize = behaviorTargetList.length,
-                    nodeHelper = animationContextInstance.nodeHelper,
-                    behavior = animationContextInstance.behavior,
-                    animationEndEvent = animationContextInstance.animationEndEvent,
-                    after = animationContextInstance.after,
+                    nodeHelper = instance.nodeHelper,
+                    behavior = instance.behavior,
+                    animationEndEvent = instance.animationEndEvent,
+                    after = instance.after,
                     j = 0,
                     behaviorTargetListItem;
 
@@ -777,11 +714,11 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
                     nodeHelper.addClass(behaviorTargetListItem, behavior);
 
-                    // create event
-                    behaviorTargetListItem.addEventListener(animationEndEvent, function(e) {
+                    //create event
+                    instance.eventSystem.addEventListenerHelper(behaviorTargetListItem, animationEndEvent, function(e) {
 
-                        // remove event
-                        e.target.removeEventListener(e.type, arguments.callee);
+                        //remove event
+                        instance.eventSystem.removeEventListenerHelper(e, arguments);
 
                         // callback handler
                         if (after) {
@@ -789,7 +726,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                         }
 
                     });
-
                 }
             };
 
@@ -986,91 +922,247 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
         };
 
-    /**
-     * Helper the custom EventTarget
-     * Copyright (c) 2010 Nicholas C. Zakas. All rights reserved.
-     * MIT License
-     * http://www.nczonline.net/blog/2010/03/09/custom-events-in-javascript/
-     * @class EventTarget
-     */
-    function EventTarget(){
-        this._listeners = {};
-    }
-
-    EventTarget.prototype = {
-
-        constructor: EventTarget,
-
         /**
-         * Registers the specified listener on the EventTarget it's called on
-         * Similar to the native implementation
-         * @method addEventListener
-         * @param {} type
-         * @param {} listener
-         * @param {} other
-         * @return 
+         * Event System Interface (AniJS Current Implementation)
+         * @class EventSystem
          */
-        addEventListener: function(type, listener, other){
+        function EventSystem(){
+
             var instance = this;
-            if (typeof instance._listeners[type] == "undefined"){
-                instance._listeners[type] = [];
-            }
+            //ATTRS
+            instance.eventCollection = {};
 
-            instance._listeners[type].push(listener);
-        },
+            instance.eventIdCounter = 0;
+        }
 
-        /**
-         * Dispatches an Event at the specified EventTarget
-         * Similar to the native implementation
-         * @method dispatchEvent
-         * @param {} event
-         * @return 
-         */
-        dispatchEvent: function(event){
-            var instance = this;
-            if (typeof event == "string"){
-                event = { type: event };
-            }
-            if (!event.target){
-                event.target = instance;
-            }
+        EventSystem.prototype = {
 
-            if (!event.type){  //falsy
-                throw new Error("Event object missing 'type' property.");
-            }
+            constructor: EventSystem,
 
-            if (this._listeners[event.type] instanceof Array){
-                var listeners = instance._listeners[event.type];
-
-                for (var i=0, len=listeners.length; i < len; i++){
-                    listeners[i].call(instance, event);
+            isEventTarget: function(element){
+                //TODO: simplify with ternary operator
+                if(element.addEventListener){
+                    return true;
                 }
-            }
-        },
+                return false; 
+            },
 
-        /**
-         * Removes the event listener previously registered with EventTarget.addEventListener.
-         * Similar to the native implementation
-         * @method removeEventListener
-         * @param {} type
-         * @param {} listener
-         * @return 
-         */
-        removeEventListener: function(type, listener){
-            var instance = this;
-            if (instance._listeners[type] instanceof Array){
-                var listeners = instance._listeners[type];
-                for (var i=0, len=listeners.length; i < len; i++){
-                    if (listeners[i] === listener){
-                        listeners.splice(i, 1);
-                        break;
+            addEventListenerHelper: function(eventTargetItem, event, listener, other){
+                eventTargetItem.addEventListener(event, listener, false);
+            },
+
+            removeEventListenerHelper: function(e, arguments){
+                // remove event
+                e.target.removeEventListener(e.type, arguments.callee);
+            },
+               
+
+            purgeAll: function() {
+                var instance = this,
+                    eventCollection = instance.eventCollection,
+                    eventCollectionKeyList = Object.keys(eventCollection),
+                    size = eventCollectionKeyList.length,
+                    i = 0,
+                    key,
+                    eventObject;
+
+                for (i; i < size; i++) {
+                    key = eventCollectionKeyList[i];
+                    eventObject = eventCollection[key];
+
+                    if (eventObject && eventObject.handleCollection && eventObject.handleCollection.length > 0) {
+                        instance.purgeEventTarget(eventObject.handleCollection[0].element);
+                    }
+
+                    delete eventCollection[key];
+                }
+            },
+
+            /**
+             * Detach all AniJS subscriptions to this element
+             * @method purgeEventTarget
+             * @param {} element
+             * @return
+             */
+            purgeEventTarget: function(element) {
+                var instance = this,
+                    aniJSEventID = element._aniJSEventID,
+                    elementHandleCollection;
+                if (aniJSEventID) {
+
+                    //Se le quitan todos los eventos a los que este suscrito
+                    elementHandleCollection = instance.eventCollection[aniJSEventID].handleCollection;
+
+                    var size = elementHandleCollection.length,
+                        i = 0,
+                        item;
+
+                    for (i; i < size; i++) {
+                        item = elementHandleCollection[i];
+
+                        //Para cada handle
+                        element.removeEventListener(item.eventType, item.listener);
+
+                    }
+                    instance.eventCollection[aniJSEventID] = null;
+                    delete instance.eventCollection[aniJSEventID];
+                    element._aniJSEventID = null;
+                    delete element._aniJSEventID;
+                }
+            },
+
+            /**
+             * Create a handle to remove the listener when purge it
+             * @method registerEventHandle
+             * @param {} element
+             * @param {} eventType
+             * @param {} listener
+             * @return
+             */
+            registerEventHandle: function(element, eventType, listener) {
+                var instance = this,
+                    aniJSEventID = element._aniJSEventID,
+                    eventCollection = instance.eventCollection,
+                    elementEventHandle = {
+                        eventType: eventType,
+                        listener: listener,
+                        element: element
+                    };
+
+                if (aniJSEventID) {
+                    eventCollection[aniJSEventID].handleCollection.push(elementEventHandle);
+                } else {
+                    var tempEventHandle = {
+                        handleCollection: [elementEventHandle]
+                    };
+
+                    eventCollection[++instance.eventIdCounter] = tempEventHandle;
+                    element._aniJSEventID = instance.eventIdCounter;
+                }
+            },
+
+
+            dispatchEvent: function(event){
+                var instance = this;
+                if (typeof event == "string"){
+                    event = { type: event };
+                }
+                if (!event.target){
+                    event.target = instance;
+                }
+
+                if (!event.type){  //falsy
+                    throw new Error("Event object missing 'type' property.");
+                }
+
+                if (this._listeners[event.type] instanceof Array){
+                    var listeners = instance._listeners[event.type];
+
+                    for (var i=0, len=listeners.length; i < len; i++){
+                        listeners[i].call(instance, event);
+                    }
+                }
+            },
+
+            removeEventListener: function(type, listener){
+                var instance = this;
+                if (instance._listeners[type] instanceof Array){
+                    var listeners = instance._listeners[type];
+                    for (var i=0, len=listeners.length; i < len; i++){
+                        if (listeners[i] === listener){
+                            listeners.splice(i, 1);
+                            break;
+                        }
                     }
                 }
             }
-        }
-    };
+        };
 
-        instance._initializer();
+        /**
+         * Helper the custom EventTarget
+         * Copyright (c) 2010 Nicholas C. Zakas. All rights reserved.
+         * MIT License
+         * http://www.nczonline.net/blog/2010/03/09/custom-events-in-javascript/
+         * @class EventTarget
+         */
+        function EventTarget(){
+            this._listeners = {};
+        }
+
+        EventTarget.prototype = {
+
+            constructor: EventTarget,
+
+            /**
+             * Registers the specified listener on the EventTarget it's called on
+             * Similar to the native implementation
+             * @method addEventListener
+             * @param {} type
+             * @param {} listener
+             * @param {} other
+             * @return 
+             */
+            addEventListener: function(type, listener, other){
+                var instance = this;
+                if (typeof instance._listeners[type] == "undefined"){
+                    instance._listeners[type] = [];
+                }
+
+                instance._listeners[type].push(listener);
+            },
+
+            /**
+             * Dispatches an Event at the specified EventTarget
+             * Similar to the native implementation
+             * @method dispatchEvent
+             * @param {} event
+             * @return 
+             */
+            dispatchEvent: function(event){
+                var instance = this;
+                if (typeof event == "string"){
+                    event = { type: event };
+                }
+                if (!event.target){
+                    event.target = instance;
+                }
+
+                if (!event.type){  //falsy
+                    throw new Error("Event object missing 'type' property.");
+                }
+
+                if (this._listeners[event.type] instanceof Array){
+                    var listeners = instance._listeners[event.type];
+
+                    for (var i=0, len=listeners.length; i < len; i++){
+                        listeners[i].call(instance, event);
+                    }
+                }
+            },
+
+            /**
+             * Removes the event listener previously registered with EventTarget.addEventListener.
+             * Similar to the native implementation
+             * @method removeEventListener
+             * @param {} type
+             * @param {} listener
+             * @return 
+             */
+            removeEventListener: function(type, listener){
+                var instance = this;
+                if (instance._listeners[type] instanceof Array){
+                    var listeners = instance._listeners[type];
+                    for (var i=0, len=listeners.length; i < len; i++){
+                        if (listeners[i] === listener){
+                            listeners.splice(i, 1);
+                            break;
+                        }
+                    }
+                }
+            }
+        };
+
+            instance._initializer();
 
     };
 
