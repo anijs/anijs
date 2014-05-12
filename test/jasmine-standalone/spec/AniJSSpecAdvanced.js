@@ -171,8 +171,6 @@ YUI().use('node', 'node-event-simulate', function (Y) {
                 targetNode.setAttribute('data-anijs', dataAnijJS);
                 AniJS.run();
 
-                console.log(AniJS.eventProviderCollection);
-
                 expect(AniJS.eventProviderCollection['customEventProvider']).not.toBeUndefined();
 
                 expect(AniJS.getEventProvider('customEventProvider') !== undefined).toBeTruthy();
@@ -191,8 +189,6 @@ YUI().use('node', 'node-event-simulate', function (Y) {
                 targetNode = Y.one('#testzone .test');
                 targetNode.setAttribute('data-anijs', dataAnijJS);
                 AniJS.run();
-
-                console.log(AniJS.eventProviderCollection);
 
                 expect(AniJS.eventProviderCollection['customEventProvider']).not.toBeUndefined();
 
@@ -253,7 +249,7 @@ YUI().use('node', 'node-event-simulate', function (Y) {
 
                     AniJS.run();
 
-                    console.log(AniJS.eventProviderCollection);
+                    
 
                     expect(AniJS.eventProviderCollection['customEventProvider']).not.toBeUndefined();
 
@@ -286,7 +282,7 @@ YUI().use('node', 'node-event-simulate', function (Y) {
 
                     AniJS.run();
 
-                    console.log(AniJS.eventProviderCollection);
+                    
 
                     expect(AniJS.eventProviderCollection['customEventProvider']).not.toBeUndefined();
 
@@ -318,7 +314,7 @@ YUI().use('node', 'node-event-simulate', function (Y) {
 
                     AniJS.run();
 
-                    console.log(AniJS.eventProviderCollection);
+                    
 
                     expect(AniJS.eventProviderCollection['customEventProvider']).not.toBeUndefined();
                     expect(AniJS.eventProviderCollection['customEventProvider2']).not.toBeUndefined();

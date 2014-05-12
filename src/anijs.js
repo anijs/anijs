@@ -62,7 +62,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
             // instance.eventIdCounter = 0;
             
-            instance.eventSystem = new EventSystem();
+            instance.eventSystem = new AniJSLib.EventSystem();
 
 
 
@@ -927,7 +927,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
          * Event System Interface (AniJS Current Implementation)
          * @class EventSystem
          */
-        function EventSystem(){
+        AniJSLib.EventSystem =  function EventSystem(){
 
             var instance = this;
             //ATTRS
@@ -936,9 +936,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             instance.eventIdCounter = 0;
         }
 
-        EventSystem.prototype = {
+        AniJSLib.EventSystem.prototype = {
 
-            constructor: EventSystem,
+            constructor: AniJSLib.EventSystem,
 
             isEventTarget: function(element){
                 //TODO: simplify with ternary operator
