@@ -123,7 +123,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             for (i; i < size; i++) {
                 item = aniJSNodeCollection[i];
 
-                //IMPROVE: The datatag name migth come from configuration
+                //IMPROVE: The datatag name might come from configuration
                 aniJSParsedSentenceCollection = instance._getParsedAniJSSentenceCollection(item.getAttribute(ANIJS_DATATAG_NAME));
 
                 //Le seteo su animacion
