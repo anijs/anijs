@@ -381,7 +381,7 @@ YUI().use('node', 'node-event-simulate', function (Y) {
 
                     var eventProvider = {
                         id: 'customEventProvider',
-                        value: AniJS.createEventProvider()
+                        value: AniJS.eventSystem.createEventTarget()
                     }
 
                     AniJS.createAnimation([{
@@ -396,6 +396,8 @@ YUI().use('node', 'node-event-simulate', function (Y) {
                             }
                         }
                     }]);
+
+                    console.log(AniJS.eventProviderCollection);
 
                     expect(AniJS.eventProviderCollection['customEventProvider']).not.toBeUndefined();
 

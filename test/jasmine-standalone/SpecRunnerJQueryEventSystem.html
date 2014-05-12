@@ -6,6 +6,7 @@
 
   <link rel="shortcut icon" type="image/png" href="lib/jasmine-2.0.0/jasmine_favicon.png">
   <link rel="stylesheet" type="text/css" href="lib/jasmine-2.0.0/jasmine.css">
+  <link rel="stylesheet" type="text/css" href="../../../framework/animationcss/animate.css">
 
   <script type="text/javascript" src="lib/jasmine-2.0.0/jasmine.js"></script>
   <script type="text/javascript" src="lib/jasmine-2.0.0/jasmine-html.js"></script>
@@ -18,20 +19,21 @@
 <!--  <script src="http://yui.yahooapis.com/3.16.0/build/yui/yui-min.js"></script>-->
 <!--  <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.js"></script>-->
 
-  <!-- include source files here... -->
-<script type="text/javascript" src="../../src/anijs-jquery-event-system.js"></script>
-<script type="text/javascript" src="../../src/anijs.js"></script>
 
-
-  <!-- include spec files here... -->
-
-  <script type="text/javascript" src="spec/AniJSSpec.js"></script>
-  <script type="text/javascript" src="spec/AniJSSpecAdvanced.js"></script>
 
 
 </head>
 
 <body>
-  <div id="testzone">Test Zone</div>
+  <div id="testzone" data-anijs="if: click, do: bounce animated, after: removeAnim">Test Zone</div>
+  <!-- include source files here... -->
+<!-- <script type="text/javascript" src="../../src/anijs-jquery-event-system.js"></script> -->
+  <script type="text/javascript" src="../../src/anijs.js"></script>
+
+
+  <!-- include spec files here... -->
+
+  <script type="text/javascript" src="spec/AniJSSpec.js"></script>
+   <script type="text/javascript" src="spec/AniJSSpecAdvanced.js"></script>
 </body>
 </html>

@@ -62,10 +62,13 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
             // instance.eventIdCounter = 0;
             
-            instance.eventSystem = new AniJSLib.EventSystem();
-
-
-
+            //Using with Custom Event Systems
+            if(!window.EventSystem){
+                instance.eventSystem = new AniJSLib.EventSystem();    
+            } else{
+                instance.eventSystem = new EventSystem();
+            }
+            
             var defaultHelper = instance._createDefaultHelper();
 
             //Registering an empty helper
