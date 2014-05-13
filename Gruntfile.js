@@ -1,5 +1,4 @@
 module.exports = function(grunt) {
-  // Project Configuration
 	grunt.initConfig({
 		uglify: {
 			my_target: {
@@ -49,6 +48,10 @@ module.exports = function(grunt) {
 		    	{ from: '_transitionEndPrefix', to: '_q' },
 		    	{ from: '_endPrefixBrowserDetectionIndex', to: '_r' },
 		    	{ from: '_animationEndPrefix', to: '_s' },
+		    	{ from: '_helperCollection', to: '_t' },
+		    	{ from: '_helperDefaultIndex', to: '_u' },
+		    	{ from: '_animationEndEvent', to: '_v' },
+		    	{ from: '_classNamesWhenAnim', to: '_w' },
 		    ]
 		  }
 		}
@@ -60,7 +63,6 @@ module.exports = function(grunt) {
   	grunt.loadNpmTasks('grunt-contrib-copy');
   	grunt.loadNpmTasks('grunt-contrib-uglify');
   	grunt.loadNpmTasks('grunt-text-replace');
-
 
 	grunt.registerTask(
 		'prod',

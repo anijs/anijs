@@ -31,7 +31,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
     /**
      * AniJS is library for write declarative animations in your static html documents
      * @class AniJSit
-     * @constructor initializer
+     * @constructor init
      * @author @dariel_noel
      */
     var AniJS = ( function( AniJS ){
@@ -46,7 +46,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             BEHAVIOR_RESERVED_WORD = 'do',
             BEHAVIOR_TARGET_RESERVED_WORD = 'to',
             REGEX_BEGIN = '(\\s+|^)',
-            REGEX_END = '(\\s+|$)';
+            REGEX_END = '(\\s+|$)',
+            ANIMATION_END = 'animationend',
+            TRANSITION_END = 'transitionend';
 
 
         /////////////////////////////////////////////////////////
@@ -60,13 +62,13 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             eventProviderCollection: {},
             /**
              * Initializer Function
-             * @method initializer
+             * @method init
              * @return
              */
-            initializer: function() {
+            init: function() {
 
                 //ATTRS inicialization
-                selfish.helperCollection = {};
+                selfish._helperCollection = {};
 
                 var defaultHelper = selfish._createDefaultHelper();
 
@@ -74,7 +76,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                 AniJS.registerHelper(DEFAULT, defaultHelper);
 
                 //Default Helper Index
-                selfish.helperDefaultIndex = DEFAULT;
+                selfish._helperDefaultIndex = DEFAULT;
 
                 AniJS.rootDOMTravelScope = document;
 
@@ -82,10 +84,10 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                 AniJS.Parser = selfish.Parser;
 
                 //AnimationEnd Correct Prefix Setup
-                selfish.animationEndEvent = selfish._animationEndPrefix();
+                selfish._animationEndEvent = selfish._animationEndPrefix();
 
                 //Add this class names when anim
-                selfish.classNamesWhenAnim = '';
+                selfish._classNamesWhenAnim = '';
             },
 
             /**
@@ -161,7 +163,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
              * @return LogicalExpression
              */
             getHelper: function(helperID) {
-                var helperCollection = selfish.helperCollection;
+                var helperCollection = selfish._helperCollection;
                 return helperCollection[helperID] || helperCollection[DEFAULT];
             },
 
@@ -174,7 +176,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
              * @return
              */
             registerHelper: function(helperName, helperInstance) {
-                selfish.helperCollection[helperName] = helperInstance;
+                selfish._helperCollection[helperName] = helperInstance;
             },
 
             purge: function(selector) {
@@ -212,7 +214,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
              * @return 
              */
             setClassNamesWhenAnim: function(defaultClasses) {
-                selfish.classNamesWhenAnim = ' ' + defaultClasses;
+                selfish._classNamesWhenAnim = ' ' + defaultClasses;
             },
 
             /**
@@ -258,7 +260,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         // Private Methods an Vars
         /////////////////////////////////////////////////////////
         
-        var selfish = {}
+        var selfish = {
+            
+        }
         
         /**
          * Description
@@ -342,15 +346,15 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                                 before = selfish._beforeHelper(element, aniJSParsedSentence),
                                 after = selfish._afterHelper(element, aniJSParsedSentence);
 
-                            if (selfish.classNamesWhenAnim !== '') {
-                                behavior += selfish.classNamesWhenAnim;
+                            if (selfish._classNamesWhenAnim !== '') {
+                                behavior += selfish._classNamesWhenAnim;
                             }
 
                             //Creo un nuevo animation context
                             var animationContextConfig = {
                                 behaviorTargetList: behaviorTargetList,
                                 nodeHelper: selfish.NodeHelper,
-                                animationEndEvent: selfish.animationEndEvent,
+                                animationEndEvent: selfish._animationEndEvent,
                                 behavior: behavior,
                                 after: after,
                                 eventSystem: AniJS.EventSystem
@@ -397,9 +401,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                 event = aniJSParsedSentence.event || defaultValue;
 
             //TODO: Improve to reduce this ugly logic here
-            if (event === 'animationend') {
+            if (event === ANIMATION_END) {
                 event = selfish._animationEndPrefix();
-            } else if(event === 'transitionend'){
+            } else if(event === TRANSITION_END){
                 event = selfish._transitionEndPrefix();
             }
 
@@ -467,7 +471,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                     behaviorTargetNodeList = rootDOMTravelScope.querySelectorAll(behaviorTarget);
                 } catch(e){
                     behaviorTargetNodeList = [];
-                    console.log('there are an ugly selector here');
+                    console.log('ugly selector here');
                 }
 
             }
@@ -524,7 +528,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
             if (defaultValue) {
                 if (!selfish.Util.isFunction(defaultValue)) {
-                    var helperCollection = selfish.helperCollection,
+                    var helperCollection = selfish._helperCollection,
                         helperInstance = helperCollection[helper];
 
                     if (helperInstance && helperInstance[defaultValue]) {
@@ -546,7 +550,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
          * @return defaultValue
          */
         selfish._helperHelper = function(aniJSParsedSentence) {
-            var defaultValue = aniJSParsedSentence.helper || selfish.helperDefaultIndex;
+            var defaultValue = aniJSParsedSentence.helper || selfish._helperDefaultIndex;
             return defaultValue;
         };
 
@@ -629,7 +633,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
          */
         selfish._animationEndPrefix = function() {
             var endPrefixBrowserDetectionIndex = selfish._endPrefixBrowserDetectionIndex(),
-                animationEndBrowserPrefix = ['animationend', 'oAnimationEnd', 'animationend', 'webkitAnimationEnd'];
+                animationEndBrowserPrefix = [ANIMATION_END, 'oAnimationEnd', ANIMATION_END, 'webkitAnimationEnd'];
 
             return animationEndBrowserPrefix[endPrefixBrowserDetectionIndex];
         };
@@ -641,7 +645,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
          */
         selfish._transitionEndPrefix = function() {
             var endPrefixBrowserDetectionIndex = selfish._endPrefixBrowserDetectionIndex(),
-                transitionEndBrowserPrefix = ['transitionend', 'oTransitionEnd', 'transitionend', 'webkitTransitionEnd'];
+                transitionEndBrowserPrefix = [TRANSITION_END, 'oTransitionEnd', TRANSITION_END, 'webkitTransitionEnd'];
 
             return transitionEndBrowserPrefix[endPrefixBrowserDetectionIndex];
         };
@@ -679,11 +683,11 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
             /**
              * Class constructor
-             * @method initializer
+             * @method init
              * @param {} config
              * @return
              */
-            animationContextInstance.initializer = function(config) {
+            animationContextInstance.init = function(config) {
 
                 //TODO: Valorar la idea de usar prototype por performance reasons
                 //ATTRS
@@ -737,7 +741,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                 }
             };
 
-            animationContextInstance.initializer(config);
+            animationContextInstance.init(config);
         });
 
         /**
@@ -1038,45 +1042,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                     eventCollection[++instance.eventIdCounter] = tempEventHandle;
                     element._aniJSEventID = instance.eventIdCounter;
                 }
-            },
-
-
-            dispatchEvent: function(event){
-                var instance = this;
-                if (typeof event == "string"){
-                    event = { type: event };
-                }
-                if (!event.target){
-                    event.target = instance;
-                }
-
-                if (!event.type){  //falsy
-                    throw new Error("Event object missing 'type' property.");
-                }
-
-                if (instance._listeners[event.type] instanceof Array){
-                    var listeners = instance._listeners[event.type];
-
-                    for (var i=0, len=listeners.length; i < len; i++){
-                        listeners[i].call(instance, event);
-                    }
-                }
-            },
-
-            removeEventListener: function(type, listener){
-                var instance = this;
-                if (instance._listeners[type] instanceof Array){
-                    var listeners = instance._listeners[type];
-                    for (var i=0, len=listeners.length; i < len; i++){
-                        if (listeners[i] === listener){
-                            listeners.splice(i, 1);
-                            break;
-                        }
-                    }
-                }
             }
-
-          
+         
         }
 
 
@@ -1164,15 +1131,12 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             }
         };
 
-
- 
-
         return AniJS;
 
    }( AniJS || {} ));
 
     
-    AniJS.initializer();
+    AniJS.init();
     AniJS.run();
 
     // https://github.com/jrburke/requirejs/wiki/Updating-existing-libraries#wiki-anon
