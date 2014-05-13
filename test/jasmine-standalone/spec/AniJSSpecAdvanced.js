@@ -182,6 +182,31 @@ YUI().use('node', 'node-event-simulate', function (Y) {
                 expect(Y.one('body').hasClass('bounce')).toBeTruthy();
             });
 
+            it("Simple Custom Event Creation JQuery", function() {
+                var dataAnijJS = 'if: customevent, on: $customEventProvider, do: bounce, to: body',
+                    targetNode;
+
+                targetNode = Y.one('#testzone .test');
+                targetNode.setAttribute('data-anijs', dataAnijJS);
+                AniJS.run();
+
+
+                expect(AniJS.eventProviderCollection['customEventProvider']).not.toBeUndefined();
+
+                expect(AniJS.getEventProvider('customEventProvider') !== undefined).toBeTruthy();
+
+                var customEventProvider = AniJS.getEventProvider('customEventProvider');
+
+                
+                customEventProvider.trigger('customevent');
+
+                expect(Y.one('body').hasClass('bounce')).toBeTruthy();
+            });
+
+
+
+           
+
             it("Unregister Event", function() {
                 var dataAnijJS = 'if: customevent, on: $customEventProvider, do: bounce, to: body',
                     targetNode;

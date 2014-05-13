@@ -242,7 +242,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         instance.registerEventProvider = function(eventProvider) {
             var eventProviderCollection = instance.eventProviderCollection;
 
-            if(eventProvider.id && eventProvider.value && eventProvider.value instanceof EventTarget){
+            if(eventProvider.id && eventProvider.value && instance.eventSystem.isEventTarget(eventProvider.value)){
                 eventProviderCollection[eventProvider.id] = eventProvider.value;
                 return 1;
             }
@@ -554,7 +554,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
             if(eventTargetDefinition) {
                 //{id: eventProviderID, value:eventProviderObject}
-                if( eventTargetDefinition.id && eventTargetDefinition.value instanceof EventTarget){
+                if( eventTargetDefinition.id && instance.eventSystem.isEventTarget(eventTargetDefinition.value)){
                     //TODO: In the near future could be an object list
                     
                     defaultValue.push(eventTargetDefinition.value);
@@ -577,7 +577,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                             //TODO: Big Refactoring here
                             var value = instance.getEventProvider(eventProviderID);
                             if(!value){
-                                value = new EventTarget();
+                                value = instance.eventSystem.createEventTarget();
                                 instance.registerEventProvider({
                                     id: eventProviderID,
                                     value: value
@@ -725,7 +725,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                         instance.eventSystem.removeEventListenerHelper(e, arguments);
 
                         // callback handler
-                        if (after) {
+                        if (Util.isFunction(after)) {
                             after(e, animationContextInstance);
                         }
 
@@ -737,6 +737,14 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 
         });
+
+        
+        var Util = {
+            isFunction : function(obj){
+                return !!(obj && obj.constructor && obj.call && obj.apply);
+            }
+        }
+
 
         /**
          * Encapsulate the AnimJS sintax parser

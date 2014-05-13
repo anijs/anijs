@@ -504,7 +504,7 @@ YUI().use('node', 'node-event-simulate', function (Y) {
                     targetNode;
 
                 AniJS.getHelper().afterFunction = function(){
-                    expect(true).toBeTruthy();
+                    console.log('haciendo after function');
                 };
 
                 targetNode = Y.one('#testzone .test');
