@@ -1,4 +1,8 @@
 YUI().use('node', 'node-event-simulate', function (Y) {
+
+
+    console.log(AniJS);
+
     describe("AniJS Advanced", function() {
 
         //Aqui se pueden poner variables para tener acceso globalmente
@@ -85,7 +89,7 @@ YUI().use('node', 'node-event-simulate', function (Y) {
                     targetNode.setAttribute('data-anijs', dataAnijJS);
                     AniJS.run();
 
-                    expect(AniJS.eventSystem.eventCollection[i]).not.toBeNull();
+                    expect(AniJS.EventSystem.eventCollection[i]).not.toBeNull();
                 }
             });
             //TODO: Memory leaks here
@@ -100,7 +104,7 @@ YUI().use('node', 'node-event-simulate', function (Y) {
 
                      AniJS.run();
 
-                    expect(AniJS.eventSystem.eventCollection[i]).not.toBeNull();
+                    expect(AniJS.EventSystem.eventCollection[i]).not.toBeNull();
                 }
             });
 
@@ -171,7 +175,7 @@ YUI().use('node', 'node-event-simulate', function (Y) {
                 targetNode.setAttribute('data-anijs', dataAnijJS);
                 AniJS.run();
 
-                expect(AniJS.eventProviderCollection['customEventProvider']).not.toBeUndefined();
+               
 
                 expect(AniJS.getEventProvider('customEventProvider') !== undefined).toBeTruthy();
 
@@ -182,31 +186,6 @@ YUI().use('node', 'node-event-simulate', function (Y) {
                 expect(Y.one('body').hasClass('bounce')).toBeTruthy();
             });
 
-            it("Simple Custom Event Creation JQuery", function() {
-                var dataAnijJS = 'if: customevent, on: $customEventProvider, do: bounce, to: body',
-                    targetNode;
-
-                targetNode = Y.one('#testzone .test');
-                targetNode.setAttribute('data-anijs', dataAnijJS);
-                AniJS.run();
-
-
-                expect(AniJS.eventProviderCollection['customEventProvider']).not.toBeUndefined();
-
-                expect(AniJS.getEventProvider('customEventProvider') !== undefined).toBeTruthy();
-
-                var customEventProvider = AniJS.getEventProvider('customEventProvider');
-
-                
-                customEventProvider.trigger('customevent');
-
-                expect(Y.one('body').hasClass('bounce')).toBeTruthy();
-            });
-
-
-
-           
-
             it("Unregister Event", function() {
                 var dataAnijJS = 'if: customevent, on: $customEventProvider, do: bounce, to: body',
                     targetNode;
@@ -214,8 +193,7 @@ YUI().use('node', 'node-event-simulate', function (Y) {
                 targetNode = Y.one('#testzone .test');
                 targetNode.setAttribute('data-anijs', dataAnijJS);
                 AniJS.run();
-
-                expect(AniJS.eventProviderCollection['customEventProvider']).not.toBeUndefined();
+           
 
                 expect(AniJS.getEventProvider('customEventProvider') !== undefined).toBeTruthy();
 
@@ -276,7 +254,7 @@ YUI().use('node', 'node-event-simulate', function (Y) {
 
                     
 
-                    expect(AniJS.eventProviderCollection['customEventProvider']).not.toBeUndefined();
+                   
 
                     expect(AniJS.getEventProvider('customEventProvider') !== undefined).toBeTruthy();
 
@@ -309,7 +287,7 @@ YUI().use('node', 'node-event-simulate', function (Y) {
 
                     
 
-                    expect(AniJS.eventProviderCollection['customEventProvider']).not.toBeUndefined();
+                   
 
                     expect(AniJS.getEventProvider('customEventProvider') !== undefined).toBeTruthy();
 
@@ -338,12 +316,7 @@ YUI().use('node', 'node-event-simulate', function (Y) {
                     targetNode.setAttribute('data-anijs', dataAnijJS);
 
                     AniJS.run();
-
                     
-
-                    expect(AniJS.eventProviderCollection['customEventProvider']).not.toBeUndefined();
-                    expect(AniJS.eventProviderCollection['customEventProvider2']).not.toBeUndefined();
-
                     expect(AniJS.getEventProvider('customEventProvider')).not.toBeUndefined();
                     expect(AniJS.getEventProvider('customEventProvider2')).not.toBeUndefined();
 
@@ -389,8 +362,6 @@ YUI().use('node', 'node-event-simulate', function (Y) {
                         }
                     }]);
 
-                    expect(AniJS.eventProviderCollection['customEventProvider']).not.toBeUndefined();
-
                     expect(AniJS.getEventProvider('customEventProvider')).not.toBeUndefined();
 
                     var customEventProvider = AniJS.getEventProvider('customEventProvider');
@@ -406,7 +377,7 @@ YUI().use('node', 'node-event-simulate', function (Y) {
 
                     var eventProvider = {
                         id: 'customEventProvider',
-                        value: AniJS.eventSystem.createEventTarget()
+                        value: AniJS.EventSystem.createEventTarget()
                     }
 
                     AniJS.createAnimation([{
@@ -421,10 +392,6 @@ YUI().use('node', 'node-event-simulate', function (Y) {
                             }
                         }
                     }]);
-
-                    console.log(AniJS.eventProviderCollection);
-
-                    expect(AniJS.eventProviderCollection['customEventProvider']).not.toBeUndefined();
 
                     expect(AniJS.getEventProvider('customEventProvider')).not.toBeUndefined();
 
