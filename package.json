@@ -5,8 +5,6 @@
     "grunt": "~0.4.2",
     "grunt-contrib-copy": "~0.5.0",
     "grunt-contrib-uglify": "~0.2.7",
-    "grunt-contrib-cssmin": "~0.6.2",
-    "grunt-replace": "^0.7.7",
     "grunt-text-replace": "^0.3.11"
   }
 }
