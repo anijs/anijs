@@ -1,0 +1,15 @@
+{
+  "name": "anijs",
+  "version": "0.2.0",
+  "main": "dist/anijs.js",
+  "scripts": [
+    "dist/anijs.js"
+  ],
+  "homepage": "https://github.com/anijs/anijs",
+  "description": "Declarative handling library for CSS animations.",
+  "keywords": [
+    "animations",
+    "css"
+  ],
+  "license": "MIT"
+}
