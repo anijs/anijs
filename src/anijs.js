@@ -44,7 +44,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             EVENT_RESERVED_WORD = 'if',
             EVENT_TARGET_RESERVED_WORD = 'on',
             BEHAVIOR_RESERVED_WORD = 'do',
-            BEHAVIOR_TARGET_RESERVED_WORD = 'to';
+            BEHAVIOR_TARGET_RESERVED_WORD = 'to',
+            REGEX_BEGIN = '(\\s+|^)',
+            REGEX_END = '(\\s+|$)';
 
 
         /////////////////////////////////////////////////////////
@@ -871,7 +873,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                     string = string.split(' ');
                 }
                 for (var i = 0, len = string.length; i < len; ++i) {
-                    if (string[i] && !new RegExp('(\\s+|^)' + string[i] + '(\\s+|$)').test(elem.className)) {
+                    if (string[i] && !new RegExp(REGEX_BEGIN + string[i] + REGEX_END).test(elem.className)) {
                         elem.className = elem.className.trim() + ' ' + string[i];
                     }
                 }
@@ -889,24 +891,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                     string = string.split(' ');
                 }
                 for (var i = 0, len = string.length; i < len; ++i) {
-                    elem.className = elem.className.replace(new RegExp('(\\s+|^)' + string[i] + '(\\s+|$)'), ' ').trim();
-                }
-            },
-
-            /**
-             * Toggle Class of the nested element
-             * @method toggleClass
-             * @param {} elem
-             * @param {} string
-             * @return
-             */
-            toggleClass: function(elem, string) {
-                if (string) {
-                    if (new RegExp('(\\s+|^)' + string + '(\\s+|$)').test(elem.className)) {
-                        elem.className = elem.className.replace(new RegExp('(\\s+|^)' + string + '(\\s+|$)'), ' ').trim();
-                    } else {
-                        elem.className = elem.className.trim() + ' ' + string;
-                    }
+                    elem.className = elem.className.replace(new RegExp(REGEX_BEGIN + string[i] + REGEX_END), ' ').trim();
                 }
             },
 
@@ -918,7 +903,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
              * @return LogicalExpression
              */
             hasClass: function(elem, string) {
-                return string && new RegExp('(\\s+|^)' + string + '(\\s+|$)').test(elem.className);
+                return string && new RegExp(REGEX_BEGIN + string + REGEX_END).test(elem.className);
             },
         };
 
@@ -955,11 +940,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             eventIdCounter: 0,
 
             isEventTarget: function(element){
-                //TODO: simplify with ternary operator
-                if(element.addEventListener){
-                    return true;
-                }
-                return false; 
+                return (element.addEventListener) ? 1 : 0; 
             },
 
             createEventTarget: function(){
@@ -1023,9 +1004,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                         element.removeEventListener(item.eventType, item.listener);
 
                     }
-                    instance.eventCollection[aniJSEventID] = null;
+                    instance.eventCollection[aniJSEventID] = element._aniJSEventID = null;
                     delete instance.eventCollection[aniJSEventID];
-                    element._aniJSEventID = null;
                     delete element._aniJSEventID;
                 }
             },
@@ -1074,7 +1054,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                     throw new Error("Event object missing 'type' property.");
                 }
 
-                if (this._listeners[event.type] instanceof Array){
+                if (instance._listeners[event.type] instanceof Array){
                     var listeners = instance._listeners[event.type];
 
                     for (var i=0, len=listeners.length; i < len; i++){
