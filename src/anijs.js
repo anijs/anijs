@@ -51,7 +51,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             ANIMATION_END = 'animationend',
             TRANSITION_END = 'transitionend';
 
-
         /////////////////////////////////////////////////////////
         // Public API
         /////////////////////////////////////////////////////////
