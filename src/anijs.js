@@ -60,6 +60,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             rootDOMTravelScope: {},
 
             eventProviderCollection: {},
+
             /**
              * Initializer Function
              * @method init
@@ -113,6 +114,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                 }
                 AniJS.rootDOMTravelScope = rootDOMTravelScope;
             },
+
             /**
              * Parse Declarations and setup Anim in a founded elements
              * @method run
@@ -179,6 +181,12 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                 selfish._helperCollection[helperName] = helperInstance;
             },
 
+            /**
+             * Purge a NodeList By Selector
+             * @method purge
+             * @param {} selector
+             * @return 
+             */
             purge: function(selector) {
                 //TODO: Search a regular expression for test a valid CSS selector
                 if (selector && selector !== '' && selector !== ' ') {
@@ -202,7 +210,12 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                 AniJS.EventSystem.purgeAll();
             },
 
-            //TODO: Comment it
+            /**
+             * Remove all listener from an element
+             * @method purgeEventTarget
+             * @param {} element
+             * @return 
+             */
             purgeEventTarget: function(element) {
                 AniJS.EventSystem.purgeEventTarget(element);
             },
@@ -862,6 +875,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         /**
          * Helper to DOM manipulation
          * @class Parser
+         * @author @dariel_noel
          */
         selfish.NodeHelper = {
 
@@ -913,10 +927,11 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
         /**
          * A kind of util functions
-         * @class animationContext
+         * @class Util
          * @author @dariel_noel
          */
         selfish.Util = {
+
             /**
              * Thanks a lot to underscore guys
              * @method isFunction
@@ -935,6 +950,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         /**
          * Event System Interface (AniJS Current Implementation)
          * @class EventSystem
+         * @author @dariel_noel
          */        
         AniJS.EventSystem =  {
 
@@ -943,24 +959,56 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
             eventIdCounter: 0,
 
+            /**
+             * AniJS concrete implementation
+             * @method isEventTarget
+             * @param {} element
+             * @return true or false
+             */
             isEventTarget: function(element){
                 return (element.addEventListener) ? 1 : 0; 
             },
 
+            /**
+             * Create new AniJS EventTarget element
+             * @method createEventTarget
+             * @return AniJS.EventTarget
+             */
             createEventTarget: function(){
                 return new AniJS.EventTarget();
             },
 
+            /**
+             * Put a listener in the object
+             * @method addEventListenerHelper
+             * @param {} eventTargetItem
+             * @param {} event
+             * @param {} listener
+             * @param {} other
+             * @return 
+             */
             addEventListenerHelper: function(eventTargetItem, event, listener, other){
                 eventTargetItem.addEventListener(event, listener, false);
             },
 
+            /**
+             * Put a listener of the object
+             * @method removeEventListenerHelper
+             * @param {} e
+             * @param {} arguments
+             * @return 
+             */
             removeEventListenerHelper: function(e, arguments){
                 // remove event
                 e.target.removeEventListener(e.type, arguments.callee);
             },
                
 
+            /**
+             * Purge all register elements handle
+             * @method purgeAll
+             * @return 
+             */
             purgeAll: function() {
                 var instance = this,
                     eventCollection = instance.eventCollection,
