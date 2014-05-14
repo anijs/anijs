@@ -127,6 +127,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                 //Clear all node listener
                 AniJS.purgeAll();
 
+                AniJS.eventProviderCollection = {};
+
                 aniJSNodeCollection = selfish._findAniJSNodeCollection(AniJS.rootDOMTravelScope);
 
                 var size = aniJSNodeCollection.length,
@@ -743,7 +745,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                     instance.eventSystem.addEventListenerHelper(behaviorTargetListItem, animationEndEvent, function(e) {
 
                         //remove event
-                        instance.eventSystem.removeEventListenerHelper(e, arguments);
+                        instance.eventSystem.removeEventListenerHelper(e.target, e.type, arguments.callee);
 
                         // callback handler
                         if (selfish.Util.isFunction(after)) {
@@ -998,9 +1000,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
              * @param {} arguments
              * @return 
              */
-            removeEventListenerHelper: function(e, arguments){
-                // remove event
-                e.target.removeEventListener(e.type, arguments.callee);
+            removeEventListenerHelper: function(element, type, listener){
+                element.removeEventListener(type, listener);
             },
                
 
@@ -1053,7 +1054,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                         item = elementHandleCollection[i];
 
                         //Para cada handle
-                        element.removeEventListener(item.eventType, item.listener);
+                        instance.removeEventListenerHelper(element, item.eventType, item.listener);
 
                     }
                     instance.eventCollection[aniJSEventID] = element._aniJSEventID = null;

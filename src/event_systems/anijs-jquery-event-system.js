@@ -15,7 +15,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
  * JQuery Event System Interface
  */
 (function(){
-	console.log('ejecutando algun code');
 	var JQueryEventSystem = AniJS.EventSystem;
 
 	/**
@@ -24,7 +23,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 	 * @param {} element
 	 * @return ConditionalExpression
 	 */
-	JQueryEventSystem.isEventTarget = function(element){
+	AniJS.EventSystem.isEventTarget = function(element){
 		return (element.trigger) ? 1 : 0; 
 	};
 
@@ -33,8 +32,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 	 * @method createEventTarget
 	 * @return CallExpression
 	 */
-	JQueryEventSystem.createEventTarget = function(){
-	        return $({});
+	AniJS.EventSystem.createEventTarget = function(){
+        return $({});
 	};
 
 	/**
@@ -46,8 +45,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 	 * @param {} other
 	 * @return 
 	 */
-	JQueryEventSystem.addEventListenerHelper = function(eventTargetItem, event, listener, other){
-	        $(eventTargetItem).on(event, listener);
+	AniJS.EventSystem.addEventListenerHelper = function(eventTargetItem, event, listener, other){
+	    $(eventTargetItem).on(event, listener);
 	};
 
 	/**
@@ -57,8 +56,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 	 * @param {} arguments
 	 * @return 
 	 */
-	JQueryEventSystem.removeEventListenerHelper = function(e, arguments){
-	        $(e.target).off(e.type, arguments.callee);
+	AniJS.EventSystem.removeEventListenerHelper = function(element, type, listener){
+	    $(element).off(type, listener);
 	};
+
 
 }(window));
