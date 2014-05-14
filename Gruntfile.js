@@ -10,6 +10,7 @@ module.exports = function(grunt) {
     			},
 				files: {
 					'dist/anijs-min.js': ['src/anijs.js'],
+					'dist/event_systems/anijs-jquery-event-system-min.js': ['src/event_systems/anijs-jquery-event-system.js'],
 				}
 			}
 		},
