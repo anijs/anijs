@@ -22,6 +22,14 @@ module.exports = function(grunt) {
 				dest: 'dist/anijs.js',
 				options: {
 				}
+			},
+			remoteProduction2: {
+				src: [
+						'src/event_systems/anijs-jquery-event-system.js'
+					],
+				dest: 'dist/event_systems/anijs-jquery-event-system.js',
+				options: {
+				}
 			}
 		},
 
