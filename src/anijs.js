@@ -11,21 +11,22 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-(function (root, factory) { "use strict";
+(function(root, factory) {
+    "use strict";
     if (typeof module == "object" && typeof module.exports == "object") {
         module.exports = root.document ?
-                factory(root, true) :
-                function (w) {
-                    if (!w.document) {
-                        throw new Error("AniJS requires a window with a document");
-                    }
-                    return factory(w);
-                };
+            factory(root, true) :
+            function(w) {
+                if (!w.document) {
+                    throw new Error("AniJS requires a window with a document");
+                }
+                return factory(w);
+        };
     } else {
         factory(root);
     }
 
-})(typeof window !== "undefined"? window : this, function(window, noGlobal) {
+})(typeof window !== "undefined" ? window : this, function(window, noGlobal) {
 
 
     /**
@@ -34,7 +35,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
      * @constructor init
      * @author @dariel_noel
      */
-    var AniJS = ( function( AniJS ){
+    var AniJS = (function(AniJS) {
 
         //Shorthands
         var ANIJS_DATATAG_NAME = 'data-anijs',
@@ -99,17 +100,17 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
              */
             setDOMRootTravelScope: function(selector) {
                 var rootDOMTravelScope;
-                try{
-                    if(selector === 'document'){
+                try {
+                    if (selector === 'document') {
                         rootDOMTravelScope = document;
-                    } else{
+                    } else {
                         rootDOMTravelScope = document.querySelector(selector);
-                        if(!rootDOMTravelScope){
+                        if (!rootDOMTravelScope) {
                             rootDOMTravelScope = document;
                         }
                     }
 
-                } catch(e){
+                } catch (e) {
                     rootDOMTravelScope = document;
                 }
                 AniJS.rootDOMTravelScope = rootDOMTravelScope;
@@ -187,7 +188,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
              * Purge a NodeList By Selector
              * @method purge
              * @param {} selector
-             * @return 
+             * @return
              */
             purge: function(selector) {
                 //TODO: Search a regular expression for test a valid CSS selector
@@ -216,7 +217,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
              * Remove all listener from an element
              * @method purgeEventTarget
              * @param {} element
-             * @return 
+             * @return
              */
             purgeEventTarget: function(element) {
                 AniJS.EventSystem.purgeEventTarget(element);
@@ -226,7 +227,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
              * Add default class names while Anim
              * @method setClassNamesWhenAnim
              * @param {} defaultClasses
-             * @return 
+             * @return
              */
             setClassNamesWhenAnim: function(defaultClasses) {
                 selfish._classNamesWhenAnim = ' ' + defaultClasses;
@@ -237,7 +238,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
              * @method createEventProvider
              * @return EventTarget
              */
-            createEventProvider: function(){
+            createEventProvider: function() {
                 return AniJS.EventSystem.createEventTarget();
             },
 
@@ -251,7 +252,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                 var eventProviderCollection = AniJS.eventProviderCollection;
 
                 //TODO: Optimize lookups here
-                if(eventProvider.id && eventProvider.value && AniJS.EventSystem.isEventTarget(eventProvider.value)){
+                if (eventProvider.id && eventProvider.value && AniJS.EventSystem.isEventTarget(eventProvider.value)) {
                     eventProviderCollection[eventProvider.id] = eventProvider.value;
                     return 1;
                 }
@@ -274,11 +275,11 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         /////////////////////////////////////////////////////////
         // Private Methods an Vars
         /////////////////////////////////////////////////////////
-        
+
         var selfish = {
-            
+
         }
-        
+
         /**
          * Description
          * @method _createDefaultHelper
@@ -352,7 +353,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                 for (i; i < size; i++) {
                     eventTargetItem = eventTargetList[i];
 
-                    if(AniJS.EventSystem.isEventTarget(eventTargetItem)){
+                    if (AniJS.EventSystem.isEventTarget(eventTargetItem)) {
                         var listener = function(event) {
 
                             //Si cambia algun parametro dinamicamente entonces hay que enterarse
@@ -418,7 +419,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             //TODO: Improve to reduce this ugly logic here
             if (event === ANIMATION_END) {
                 event = selfish._animationEndPrefix();
-            } else if(event === TRANSITION_END){
+            } else if (event === TRANSITION_END) {
                 event = selfish._transitionEndPrefix();
             }
 
@@ -445,17 +446,16 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
                 eventProviderList = selfish._eventProviderHelper(aniJSParsedSentence.eventTarget);
 
-                if(eventProviderList.length > 0){
+                if (eventProviderList.length > 0) {
                     eventTargetList = eventProviderList;
                 } else if (aniJSParsedSentence.eventTarget === 'document') {
                     eventTargetList = [document];
                 } else if (aniJSParsedSentence.eventTarget === 'window') {
                     eventTargetList = [window];
-                } else if(aniJSParsedSentence.eventTarget.split){
+                } else if (aniJSParsedSentence.eventTarget.split) {
                     try {
-                       eventTargetList = rootDOMTravelScope.querySelectorAll(aniJSParsedSentence.eventTarget);
-                    }
-                    catch (e) {
+                        eventTargetList = rootDOMTravelScope.querySelectorAll(aniJSParsedSentence.eventTarget);
+                    } catch (e) {
                         console.log('Ugly Selector Here');
                         eventTargetList = [];
                     }
@@ -482,9 +482,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                 //Expression regular remplazar caracteres $ por comas
                 //TODO: Estudiar si este caracter no esta agarrado
                 behaviorTarget = behaviorTarget.split(MULTIPLE_CLASS_SEPARATOR).join(',');
-                try{
+                try {
                     behaviorTargetNodeList = rootDOMTravelScope.querySelectorAll(behaviorTarget);
-                } catch(e){
+                } catch (e) {
                     behaviorTargetNodeList = [];
                     console.log('ugly selector here');
                 }
@@ -579,38 +579,38 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             var defaultValue = [],
                 eventProviderCollection = AniJS.eventProviderCollection;
 
-            if(eventTargetDefinition) {
+            if (eventTargetDefinition) {
                 //{id: eventProviderID, value:eventProviderObject}
-                if( eventTargetDefinition.id && AniJS.EventSystem.isEventTarget(eventTargetDefinition.value)){
-                    
+                if (eventTargetDefinition.id && AniJS.EventSystem.isEventTarget(eventTargetDefinition.value)) {
+
                     //TODO: In the near future could be an object list
                     defaultValue.push(eventTargetDefinition.value);
 
                     AniJS.registerEventProvider(eventTargetDefinition);
 
-                } else if(eventTargetDefinition.split){
+                } else if (eventTargetDefinition.split) {
                     //Picar por signo de peso y obtener la lista de id de events providers
                     eventProviderIDList = eventTargetDefinition.split('$');
-                    var size  = eventProviderIDList.length,
+                    var size = eventProviderIDList.length,
                         i = 1,
                         eventProviderID;
 
-                    for ( i; i < size; i++) {
+                    for (i; i < size; i++) {
                         eventProviderID = eventProviderIDList[i];
-                        if(eventProviderID && eventProviderID !== ' ') {
+                        if (eventProviderID && eventProviderID !== ' ') {
                             //limpiarle los espacios alante y atras (trim)
                             eventProviderID = eventProviderID.trim();
 
                             //TODO: Big Refactoring here
                             var value = AniJS.getEventProvider(eventProviderID);
-                            if(!value){
+                            if (!value) {
                                 value = AniJS.EventSystem.createEventTarget();
                                 AniJS.registerEventProvider({
                                     id: eventProviderID,
                                     value: value
                                 });
                             }
-                            defaultValue.push(value);  
+                            defaultValue.push(value);
                         }
                     }
                 }
@@ -942,7 +942,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
              */
             isFunction: function(obj) {
                 return !!(obj && obj.constructor && obj.call && obj.apply);
-            }  
+            }
         }
 
         /////////////////////////////////////////////////////////
@@ -953,8 +953,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
          * Event System Interface (AniJS Current Implementation)
          * @class EventSystem
          * @author @dariel_noel
-         */        
-        AniJS.EventSystem =  {
+         */
+        AniJS.EventSystem = {
 
             //ATTRS
             eventCollection: {},
@@ -967,8 +967,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
              * @param {} element
              * @return true or false
              */
-            isEventTarget: function(element){
-                return (element.addEventListener) ? 1 : 0; 
+            isEventTarget: function(element) {
+                return (element.addEventListener) ? 1 : 0;
             },
 
             /**
@@ -976,7 +976,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
              * @method createEventTarget
              * @return AniJS.EventTarget
              */
-            createEventTarget: function(){
+            createEventTarget: function() {
                 return new AniJS.EventTarget();
             },
 
@@ -987,9 +987,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
              * @param {} event
              * @param {} listener
              * @param {} other
-             * @return 
+             * @return
              */
-            addEventListenerHelper: function(eventTargetItem, event, listener, other){
+            addEventListenerHelper: function(eventTargetItem, event, listener, other) {
                 eventTargetItem.addEventListener(event, listener, false);
             },
 
@@ -998,17 +998,17 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
              * @method removeEventListenerHelper
              * @param {} e
              * @param {} arguments
-             * @return 
+             * @return
              */
-            removeEventListenerHelper: function(element, type, listener){
+            removeEventListenerHelper: function(element, type, listener) {
                 element.removeEventListener(type, listener);
             },
-               
+
 
             /**
              * Purge all register elements handle
              * @method purgeAll
-             * @return 
+             * @return
              */
             purgeAll: function() {
                 var instance = this,
@@ -1092,7 +1092,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                     element._aniJSEventID = instance.eventIdCounter;
                 }
             }
-         
+
         }
 
 
@@ -1103,7 +1103,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
          * http://www.nczonline.net/blog/2010/03/09/custom-events-in-javascript/
          * @class EventTarget
          */
-        AniJS.EventTarget = function EventTarget(){
+        AniJS.EventTarget = function EventTarget() {
             this._listeners = {};
         }
 
@@ -1118,11 +1118,11 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
              * @param {} type
              * @param {} listener
              * @param {} other
-             * @return 
+             * @return
              */
-            addEventListener: function(type, listener, other){
+            addEventListener: function(type, listener, other) {
                 var instance = this;
-                if (typeof instance._listeners[type] == "undefined"){
+                if (typeof instance._listeners[type] == "undefined") {
                     instance._listeners[type] = [];
                 }
 
@@ -1134,25 +1134,27 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
              * Similar to the native implementation
              * @method dispatchEvent
              * @param {} event
-             * @return 
+             * @return
              */
-            dispatchEvent: function(event){
+            dispatchEvent: function(event) {
                 var instance = this;
-                if (typeof event == "string"){
-                    event = { type: event };
+                if (typeof event == "string") {
+                    event = {
+                        type: event
+                    };
                 }
-                if (!event.target){
+                if (!event.target) {
                     event.target = instance;
                 }
 
-                if (!event.type){  //falsy
+                if (!event.type) { //falsy
                     throw new Error("Event object missing 'type' property.");
                 }
 
-                if (this._listeners[event.type] instanceof Array){
+                if (this._listeners[event.type] instanceof Array) {
                     var listeners = instance._listeners[event.type];
 
-                    for (var i=0, len=listeners.length; i < len; i++){
+                    for (var i = 0, len = listeners.length; i < len; i++) {
                         listeners[i].call(instance, event);
                     }
                 }
@@ -1164,14 +1166,14 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
              * @method removeEventListener
              * @param {} type
              * @param {} listener
-             * @return 
+             * @return
              */
-            removeEventListener: function(type, listener){
+            removeEventListener: function(type, listener) {
                 var instance = this;
-                if (instance._listeners[type] instanceof Array){
+                if (instance._listeners[type] instanceof Array) {
                     var listeners = instance._listeners[type];
-                    for (var i=0, len=listeners.length; i < len; i++){
-                        if (listeners[i] === listener){
+                    for (var i = 0, len = listeners.length; i < len; i++) {
+                        if (listeners[i] === listener) {
                             listeners.splice(i, 1);
                             break;
                         }
@@ -1182,16 +1184,16 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
         return AniJS;
 
-   }( AniJS || {} ));
+    }(AniJS || {}));
 
-    
+
     AniJS.init();
     AniJS.run();
 
     // https://github.com/jrburke/requirejs/wiki/Updating-existing-libraries#wiki-anon
     // AMD Support
-    if ( typeof define === "function" && define.amd ) {
-        define( "anijs", [], function() {
+    if (typeof define === "function" && define.amd) {
+        define("anijs", [], function() {
             return AniJS;
         });
     }
@@ -1201,4 +1203,3 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
     return AniJS;
 });
-

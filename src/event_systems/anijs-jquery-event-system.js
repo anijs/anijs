@@ -14,51 +14,51 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 /**
  * JQuery Event System Interface
  */
-(function(){
-	var JQueryEventSystem = AniJS.EventSystem;
+(function() {
+    var JQueryEventSystem = AniJS.EventSystem;
 
-	/**
-	 * Overwriting isEventTarget method
-	 * @method isEventTarget
-	 * @param {} element
-	 * @return ConditionalExpression
-	 */
-	AniJS.EventSystem.isEventTarget = function(element){
-		return (element.trigger) ? 1 : 0; 
-	};
+    /**
+     * Overwriting isEventTarget method
+     * @method isEventTarget
+     * @param {} element
+     * @return ConditionalExpression
+     */
+    AniJS.EventSystem.isEventTarget = function(element) {
+        return (element.trigger) ? 1 : 0;
+    };
 
-	/**
-	 * Overwriting createEventTarget method
-	 * @method createEventTarget
-	 * @return CallExpression
-	 */
-	AniJS.EventSystem.createEventTarget = function(){
+    /**
+     * Overwriting createEventTarget method
+     * @method createEventTarget
+     * @return CallExpression
+     */
+    AniJS.EventSystem.createEventTarget = function() {
         return $({});
-	};
+    };
 
-	/**
-	 * Overwriting addEventListenerHelper method
-	 * @method addEventListenerHelper
-	 * @param {} eventTargetItem
-	 * @param {} event
-	 * @param {} listener
-	 * @param {} other
-	 * @return 
-	 */
-	AniJS.EventSystem.addEventListenerHelper = function(eventTargetItem, event, listener, other){
-	    $(eventTargetItem).on(event, listener);
-	};
+    /**
+     * Overwriting addEventListenerHelper method
+     * @method addEventListenerHelper
+     * @param {} eventTargetItem
+     * @param {} event
+     * @param {} listener
+     * @param {} other
+     * @return
+     */
+    AniJS.EventSystem.addEventListenerHelper = function(eventTargetItem, event, listener, other) {
+        $(eventTargetItem).on(event, listener);
+    };
 
-	/**
-	 * Overwriting removeEventListenerHelper method
-	 * @method removeEventListenerHelper
-	 * @param {} e
-	 * @param {} arguments
-	 * @return 
-	 */
-	AniJS.EventSystem.removeEventListenerHelper = function(element, type, listener){
-	    $(element).off(type, listener);
-	};
+    /**
+     * Overwriting removeEventListenerHelper method
+     * @method removeEventListenerHelper
+     * @param {} e
+     * @param {} arguments
+     * @return
+     */
+    AniJS.EventSystem.removeEventListenerHelper = function(element, type, listener) {
+        $(element).off(type, listener);
+    };
 
 
 }(window));
