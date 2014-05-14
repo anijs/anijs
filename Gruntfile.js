@@ -10,7 +10,7 @@ module.exports = function(grunt) {
     			},
 				files: {
 					'dist/anijs-min.js': ['src/anijs.js'],
-					'dist/event_systems/jquery_event_system/anijs-jquery-event-system-min.js': ['src/event_systems/jquery_event_system/anijs-jquery-event-system.js'],
+					'dist/event_systems/jquery/anijs-jquery-event-system-min.js': ['src/event_systems/jquery_event_system/anijs-jquery-event-system.js'],
 				}
 			}
 		},
@@ -25,9 +25,9 @@ module.exports = function(grunt) {
 			},
 			remoteProduction2: {
 				src: [
-						'src/event_systems/jquery_event_system/anijs-jquery-event-system.js'
+						'src/event_systems/jquery/anijs-jquery-event-system.js'
 					],
-				dest: 'dist/event_systems/jquery_event_system/anijs-jquery-event-system.js',
+				dest: 'dist/event_systems/jquery/anijs-jquery-event-system.js',
 				options: {
 				}
 			}
