@@ -47,7 +47,6 @@ module.exports = function(grunt) {
 		    	{ from: '_animationEndPrefix', to: '_p' },
 		    	{ from: '_transitionEndPrefix', to: '_q' },
 		    	{ from: '_endPrefixBrowserDetectionIndex', to: '_r' },
-		    	{ from: '_animationEndPrefix', to: '_s' },
 		    	{ from: '_helperCollection', to: '_t' },
 		    	{ from: '_helperDefaultIndex', to: '_u' },
 		    	{ from: '_animationEndEvent', to: '_v' },
