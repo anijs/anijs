@@ -961,7 +961,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             eventIdCounter: 0,
 
             /**
-             * AniJS concrete implementation
+             * Return true if the element it's an event target object
              * @method isEventTarget
              * @param {} element
              * @return true or false
@@ -971,7 +971,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             },
 
             /**
-             * Create new AniJS EventTarget element
+             * Create new EventTarget element
              * @method createEventTarget
              * @return AniJS.EventTarget
              */
