@@ -6,5 +6,8 @@
     "grunt-contrib-copy": "~0.5.0",
     "grunt-contrib-uglify":"~0.2.7",
     "grunt-contrib-cssmin":"~0.6.2"
+  },
+  "spm": {
+    "main": "dist/anijs.js"
   }
 }
