@@ -79,7 +79,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         };
 
         /**
-         * You can use these to change the escope to run AniJS
+         * You can use these to change the scope to run AniJS
          * @method setDOMRootTravelScope
          * @param {} selector
          * @return
