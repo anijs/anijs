@@ -11,6 +11,7 @@ module.exports = function(grunt) {
 				files: {
 					'dist/anijs-min.js': ['src/anijs.js'],
 					'dist/event_systems/jquery/anijs-jquery-event-system-min.js': ['src/event_systems/jquery/anijs-jquery-event-system.js'],
+					'dist/helpers/scrollreveal/anijs-helper-scrollreveal-min.js': ['src/helpers/scrollreveal/anijs-helper-scrollreveal.js'],
 				}
 			}
 		},
@@ -28,6 +29,14 @@ module.exports = function(grunt) {
 						'src/event_systems/jquery/anijs-jquery-event-system.js'
 					],
 				dest: 'dist/event_systems/jquery/anijs-jquery-event-system.js',
+				options: {
+				}
+			},
+			remoteProduction3: {
+				src: [
+						'src/helpers/scrollreveal/anijs-helper-scrollreveal.js'
+					],
+				dest: 'dist/helpers/scrollreveal/anijs-helper-scrollreveal.js',
 				options: {
 				}
 			}
