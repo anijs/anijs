@@ -48,7 +48,7 @@ Start playing by adding **anijs-data** tag to any HTML element.
     <nav data-anijs="if: scroll, on: window, do: swing animated, to: footer">
         nav
     </nav>
-    <div id="main" data-anijs="if: DOMContentLoaded, on: document, do: swing animated">
+    <div id="main" data-anijs="if: DOMContentLoaded, on: document, do: swing animated, after: holdAnimClass">
         if: DOMContentLoaded, on: document, do: swing animated
     </div>
     <footer>
