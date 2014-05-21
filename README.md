@@ -42,14 +42,14 @@ Include the CSS animation styles definition, we strongly recommend you to use th
 Start playing by adding **anijs-data** tag to any HTML element.
 ```xml
 <body>
-    <header data-anijs="if: click, do: flipInY animated, after: removeAnim">
+    <header data-anijs="if: click, do: flipInY animated">
         header
     </header>
     <nav data-anijs="if: scroll, on: window, do: swing animated, to: footer">
         nav
     </nav>
-    <div id="main" data-anijs="if: DOMContentLoaded, on: document, do: swing animated">
-        if: DOMContentLoaded, on: document, do: swing animated, after: removeAnim
+    <div id="main" data-anijs="if: DOMContentLoaded, on: document, do: swing animated, after: holdAnimClass">
+        if: DOMContentLoaded, on: document, do: swing animated
     </div>
     <footer>
         footer

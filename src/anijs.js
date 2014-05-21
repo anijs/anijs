@@ -296,6 +296,15 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                  */
                 removeAnim: function(e, animationContext) {
                     animationContext.nodeHelper.removeClass(e.target, animationContext.behavior);
+                },
+                /**
+                 * Holds the animation class added when animation is created
+                 * @method holdAnimClass
+                 * @param {} e
+                 * @param {} animationContext
+                 * @return
+                 */
+                holdAnimClass: function(e, animationContext) {
                 }
             };
 
@@ -747,9 +756,13 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                         instance.eventSystem.removeEventListenerHelper(e.target, e.type, arguments.callee);
 
                         // callback handler
-                        if (selfish.Util.isFunction(after)) {
+                        if (!after) {
+                            //removing the animation by default if there are not an after function
+                            nodeHelper.removeClass(e.target, behavior);
+                        } else if(selfish.Util.isFunction(after)){
                             after(e, animationContextInstance);
                         }
+                        
 
                     });
                 }
