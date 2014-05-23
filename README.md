@@ -25,7 +25,8 @@ $ git clone git@github.com:anijs/anijs.git
  
 ## Usage
  
-Put the AniJS file on your page or [use AMD](https://github.com/anijs/anijs/wiki/Using-amd).
+Put the AniJS file on your page or [use AMD](https://github.com/anijs/anijs/wiki/Using-amd). Also it can be loaded from the [CDN](http://www.jsdelivr.com/#!anijs).
+
 ```xml
 <script src="anijs-min.js"></script>
 ```
@@ -75,6 +76,16 @@ If you use [animate.css library](http://daneden.github.io/animate.css/) don't fo
 
 Documentation Topics can be founded in the [Wiki Pages](https://github.com/anijs/anijs/wiki).
 
+## Examples
+
+[ScrollReveal](http://anijs.github.io/examples/scrollreveal/).
+
+[RequireJS and Total.js(NodeJs web  framework)](https://github.com/anijs/examples/tree/gh-pages/anijs-requirejs-totaljs) created by [@gallegogt](https://github.com/gallegogt).
+
+[Custom Events Listening.](http://codepen.io/darielnoel/pen/KzsFn?editors=001)
+
+[JQuery Events System.](http://codepen.io/darielnoel/pen/nltiL?editors=001)
+
 
 ## Advantages
 
@@ -103,7 +114,7 @@ AniJS is like a little girl, she needs [hungry and foolish](http://www.youtube.c
 
 ## Aknowledgement
 
-To [Ms. Ana Silvia Tellería](mailto:anisilv@gmail.com), [Ms. Marisniulkis Lescaille](http://www.linkedin.com/pub/marisniulkis-lescaille/59/3a/55), [Mr. Yolier Galán](mailto:gallego@gmail.com), [Mr. René González](mailto:voltusv@gmail.com), [Mr. Julio Cañizares](juliorubcan@gmail.com) and to all the persons that helped with this project.
+To [Ms. Ana Silvia Tellería](mailto:anisilv@gmail.com), [Ms. Marisniulkis Lescaille](http://www.linkedin.com/pub/marisniulkis-lescaille/59/3a/55), [Mr. Yolier Galán](mailto:gallego@gmail.com), [Mr. René González](mailto:voltusv@gmail.com), [Mr. Julio Cañizares](juliorubcan@gmail.com), [Mr. Caridy Patino](https://twitter.com/caridy) and to all the persons that helped with this project.
 
 ## License
  
