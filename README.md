@@ -90,15 +90,15 @@ Documentation Topics can be founded in the [Wiki Pages](https://github.com/anijs
 ## Advantages
 
 - Easy to use.
-- Compact - around 7.7kb after gzipping.
-- There is no need for third party libraries.
+- Compact - around **7.7kb** after gzipping.
+- There is **no need** for **third party** libraries.
 - Speed of development.
 - Better integration between coders and designers.
 
 
 **“There is one more thing ...”**
 
-Work well in iPad, iPhone and Android. And the [modern browsers](http://browsehappy.com/). **;)**
+Work well in iPad, iPhone, Android and the [modern browsers](http://browsehappy.com/). **;)**
 
 ## History
  
