@@ -72,6 +72,19 @@ If you use [animate.css library](http://daneden.github.io/animate.css/) don't fo
  </body>
 ```
 
+## Advantages
+
+- Easy to use.
+- Compact - around **7.7kb** after gzipping.
+- There is **no need** for **third party** libraries.
+- Speed of development.
+- Better integration between coders and designers.
+
+**“There is one more thing ...”**
+
+Work well in iPad, iPhone, Android and the [modern browsers](http://browsehappy.com/). **;)**
+
+
 ## Documentation
 
 Documentation Topics can be founded in the [Wiki Pages](https://github.com/anijs/anijs/wiki).
@@ -86,19 +99,6 @@ Documentation Topics can be founded in the [Wiki Pages](https://github.com/anijs
 
 [JQuery Events System.](http://codepen.io/darielnoel/pen/nltiL?editors=001)
 
-
-## Advantages
-
-- Easy to use.
-- Compact - around **7.7kb** after gzipping.
-- There is **no need** for **third party** libraries.
-- Speed of development.
-- Better integration between coders and designers.
-
-
-**“There is one more thing ...”**
-
-Work well in iPad, iPhone, Android and the [modern browsers](http://browsehappy.com/). **;)**
 
 ## History
  
