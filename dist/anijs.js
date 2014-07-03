@@ -144,6 +144,12 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                     //Le seteo su animacion
                     selfish._setupElementAnim(item, aniJSParsedSentenceCollection);
                 }
+
+                //We can use this for supply the window load and DomContentLoaded in some context
+                var aniJSEventsEventProvider = AniJS.getEventProvider('AniJSEventProvider');
+                if(aniJSEventsEventProvider){
+                    aniJSEventsEventProvider.dispatchEvent('onRunFinished');
+                }
             },
 
             /**
@@ -752,6 +758,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                     //create event
                     instance.eventSystem.addEventListenerHelper(behaviorTargetListItem, animationEndEvent, function(e) {
 
+                        e.stopPropagation();
                         //remove event
                         instance.eventSystem.removeEventListenerHelper(e.target, e.type, arguments.callee);
 
@@ -865,7 +872,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
                 if (definitionBody.length > 1) {
                     definitionKey = definitionBody[0].trim();
-                    definitionValue = definitionBody[1].trim();
+                    
 
                     //Change by reserved words
                     if (definitionKey === EVENT_RESERVED_WORD) {
@@ -879,6 +886,17 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                     }
 
                     parsedDefinition.key = definitionKey;
+                    
+                    //CSS3 selectors support
+                    if(definitionBody.length > 2){
+                        definitionValue = definitionBody.slice(1);
+                        definitionValue = definitionValue.join(':');
+                        definitionValue = definitionValue.trim();
+
+                    } else {
+                        definitionValue = definitionBody[1].trim();
+                    }
+                    
                     parsedDefinition.value = definitionValue;
                 }
 
