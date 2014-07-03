@@ -5,7 +5,7 @@ Declarative handling library for CSS animations. The main objective is to provid
 
 ## Try It!!
 
-Check the online [Demonstration](http://anijs.github.io/).
+Check the online [Demostration](http://anijs.github.io/).
 
 
 ## Installation
