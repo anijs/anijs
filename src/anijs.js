@@ -758,6 +758,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                     //create event
                     instance.eventSystem.addEventListenerHelper(behaviorTargetListItem, animationEndEvent, function(e) {
 
+                        e.stopPropagation();
                         //remove event
                         instance.eventSystem.removeEventListenerHelper(e.target, e.type, arguments.callee);
 
