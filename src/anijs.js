@@ -144,6 +144,12 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                     //Le seteo su animacion
                     selfish._setupElementAnim(item, aniJSParsedSentenceCollection);
                 }
+
+                //We can use this for supply the window load and DomContentLoaded in some context
+                var aniJSEventsEventProvider = AniJS.getEventProvider('AniJSEventProvider');
+                if(aniJSEventsEventProvider){
+                    aniJSEventsEventProvider.dispatchEvent('onRunFinished');
+                }
             },
 
             /**
