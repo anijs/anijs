@@ -872,7 +872,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
                 if (definitionBody.length > 1) {
                     definitionKey = definitionBody[0].trim();
-                    definitionValue = definitionBody[1].trim();
+                    
 
                     //Change by reserved words
                     if (definitionKey === EVENT_RESERVED_WORD) {
@@ -886,6 +886,17 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                     }
 
                     parsedDefinition.key = definitionKey;
+                    
+                    //CSS3 selectors support
+                    if(definitionBody.length > 2){
+                        definitionValue = definitionBody.slice(1);
+                        definitionValue = definitionValue.join(':');
+                        definitionValue = definitionValue.trim();
+
+                    } else {
+                        definitionValue = definitionBody[1].trim();
+                    }
+                    
                     parsedDefinition.value = definitionValue;
                 }
 
