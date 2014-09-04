@@ -49,7 +49,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             REGEX_BEGIN = '(\\s+|^)',
             REGEX_END = '(\\s+|$)',
             ANIMATION_END = 'animationend',
-            TRANSITION_END = 'transitionend';
+            TRANSITION_END = 'transitionend',
+            TARGET = 'target';
 
         /////////////////////////////////////////////////////////
         // Public API
@@ -373,7 +374,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                         var listener = function(event) {
 
                             //Si cambia algun parametro dinamicamente entonces hay que enterarse
-                            var behaviorTargetList = selfish._behaviorTargetHelper(element, aniJSParsedSentence),
+                            var behaviorTargetList = selfish._behaviorTargetHelper(element, aniJSParsedSentence, event),
                                 behavior = selfish._behaviorHelper(aniJSParsedSentence),
                                 before = selfish._beforeHelper(element, aniJSParsedSentence),
                                 after = selfish._afterHelper(element, aniJSParsedSentence);
@@ -488,22 +489,27 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
          * @param {} aniJSParsedSentence
          * @return behaviorTargetNodeList
          */
-        selfish._behaviorTargetHelper = function(element, aniJSParsedSentence) {
+        selfish._behaviorTargetHelper = function(element, aniJSParsedSentence, event) {
             var defaultValue = element,
                 behaviorTargetNodeList = [defaultValue],
                 rootDOMTravelScope = AniJS.rootDOMTravelScope,
                 behaviorTarget = aniJSParsedSentence.behaviorTarget;
 
             if (behaviorTarget) {
-                //Expression regular remplazar caracteres $ por comas
-                //TODO: Estudiar si este caracter no esta agarrado
-                behaviorTarget = behaviorTarget.split(MULTIPLE_CLASS_SEPARATOR).join(',');
-                try {
-                    behaviorTargetNodeList = rootDOMTravelScope.querySelectorAll(behaviorTarget);
-                } catch (e) {
-                    behaviorTargetNodeList = [];
-                    console.log('ugly selector here');
+                if(behaviorTarget === TARGET && event.target){
+                    behaviorTargetNodeList = [event.target];
+                } else{
+                    //Expression regular remplazar caracteres $ por comas
+                    //TODO: Estudiar si este caracter no esta agarrado
+                    behaviorTarget = behaviorTarget.split(MULTIPLE_CLASS_SEPARATOR).join(',');
+                    try {
+                        behaviorTargetNodeList = rootDOMTravelScope.querySelectorAll(behaviorTarget);
+                    } catch (e) {
+                        behaviorTargetNodeList = [];
+                        console.log('ugly selector here');
+                    }
                 }
+
 
             }
             return behaviorTargetNodeList;

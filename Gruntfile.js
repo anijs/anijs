@@ -40,6 +40,14 @@ module.exports = function(grunt) {
 				dest: 'dist/helpers/scrollreveal/anijs-helper-scrollreveal.js',
 				options: {
 				}
+			},
+			remoteProduction4: {
+				src: [
+						'src/helpers/dom/anijs-helper-dom.js'
+					],
+				dest: 'dist/helpers/dom/anijs-helper-dom.js',
+				options: {
+				}
 			}
 		},
 
