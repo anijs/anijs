@@ -6,12 +6,13 @@ module.exports = function(grunt) {
       				mangle: true,
 					compress: {
 						drop_console: true
-					}      				
+					}
     			},
 				files: {
 					'dist/anijs-min.js': ['src/anijs.js'],
 					'dist/event_systems/jquery/anijs-jquery-event-system-min.js': ['src/event_systems/jquery/anijs-jquery-event-system.js'],
 					'dist/helpers/scrollreveal/anijs-helper-scrollreveal-min.js': ['src/helpers/scrollreveal/anijs-helper-scrollreveal.js'],
+					'dist/helpers/dom/anijs-helper-dom-min.js': ['src/helpers/dom/anijs-helper-dom.js']
 				}
 			}
 		},

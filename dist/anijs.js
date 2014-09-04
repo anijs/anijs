@@ -301,7 +301,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                  * @return
                  */
                 removeAnim: function(e, animationContext) {
-                    animationContext.nodeHelper.removeClass(e.target, animationContext.behavior);
+                    if(e.target){
+                      animationContext.nodeHelper.removeClass(e.target, animationContext.behavior);
+                    }
                 },
                 /**
                  * Holds the animation class added when animation is created
@@ -388,10 +390,10 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                                 behavior: behavior,
                                 after: after,
                                 eventSystem: AniJS.EventSystem
-                                //TODO: eventSystem should be called directly 
+                                //TODO: eventSystem should be called directly
                             },
 
-                                animationContextInstance = new selfish.AnimationContext(animationContextConfig);
+                                animationContextInstance = new AniJS.AnimationContext(animationContextConfig);
 
                             //Si before, le paso el animation context
                             //TODO: Util is a submodule
@@ -515,7 +517,16 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
          * @return defaultValue
          */
         selfish._behaviorHelper = function(aniJSParsedSentence) {
-            var defaultValue = aniJSParsedSentence.behavior || '';
+            var defaultValue = aniJSParsedSentence.behavior || '',
+                executeFunction;
+            if(Array.isArray(defaultValue)){
+                executeFunction = selfish._callbackHelper({}, aniJSParsedSentence, defaultValue[0]);
+                if(executeFunction){
+                    defaultValue[0] = executeFunction;
+                } else {
+                    defaultValue = defaultValue.join(' ');
+                }
+            }
             return defaultValue;
         };
 
@@ -705,7 +716,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
          * @class animationContext
          * @author @dariel_noel
          */
-        selfish.AnimationContext = (function(config) {
+        AniJS.AnimationContext = (function(config) {
 
             //TODO: Module aproach here
             var animationContextInstance = this;
@@ -735,6 +746,57 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             },
 
             /**
+             * Custom AniJS animation behavior
+             * @author Dariel Noel <darielnoel@gmail.com>
+             * @since  2014-09-03
+             * @param  {[type]}   target   [description]
+             * @param  {[type]}   behavior [description]
+             * @return {[type]}            [description]
+             */
+            animationContextInstance.doDefaultAction = function(target, behavior){
+                var instance = animationContextInstance,
+                    nodeHelper = instance.nodeHelper,
+                    animationEndEvent = instance.animationEndEvent,
+                    after = instance.after;
+
+                nodeHelper.addClass(target, behavior);
+
+                //create event
+                instance.eventSystem.addEventListenerHelper(target, animationEndEvent, function(e) {
+
+                    e.stopPropagation();
+                    //remove event
+                    instance.eventSystem.removeEventListenerHelper(e.target, e.type, arguments.callee);
+
+                    // callback handler
+                    if (!after) {
+                        //removing the animation by default if there are not an after function
+                        nodeHelper.removeClass(e.target, behavior);
+                    } else if(selfish.Util.isFunction(after)){
+                        after(e, animationContextInstance);
+                    }
+                });
+            },
+
+            /**
+             * Allows to use a custom helpers function via do definitions
+             * @author Dariel Noel <darielnoel@gmail.com>
+             * @since  2014-09-03
+             * @param  {[type]}   target   [description]
+             * @param  {[type]}   behavior [description]
+             * @return {[type]}            [description]
+             */
+            animationContextInstance.doFunctionAction = function(target, behavior){
+                var instance = animationContextInstance,
+                    after = instance.after,
+                    e = {};
+                behavior[0](e, animationContextInstance, behavior);
+                if(selfish.Util.isFunction(after)){
+                    after(e, animationContextInstance);
+                }
+            },
+
+            /**
              * Execute an animation context instance
              * @method run
              * @return
@@ -743,35 +805,20 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                 var instance = animationContextInstance,
                     behaviorTargetList = instance.behaviorTargetList,
                     behaviorTargetListSize = behaviorTargetList.length,
-                    nodeHelper = instance.nodeHelper,
                     behavior = instance.behavior,
-                    animationEndEvent = instance.animationEndEvent,
-                    after = instance.after,
                     j = 0,
                     behaviorTargetListItem;
 
+                animationContextInstance.hasRunned = 1;
                 for (j; j < behaviorTargetListSize; j++) {
-                    behaviorTargetListItem = behaviorTargetList[j];
+                    if(Array.isArray(behavior)){
+                        animationContextInstance
+                            .doFunctionAction(behaviorTargetList[j], behavior);
+                    } else{
+                        animationContextInstance
+                            .doDefaultAction(behaviorTargetList[j], behavior);
+                    }
 
-                    nodeHelper.addClass(behaviorTargetListItem, behavior);
-
-                    //create event
-                    instance.eventSystem.addEventListenerHelper(behaviorTargetListItem, animationEndEvent, function(e) {
-
-                        e.stopPropagation();
-                        //remove event
-                        instance.eventSystem.removeEventListenerHelper(e.target, e.type, arguments.callee);
-
-                        // callback handler
-                        if (!after) {
-                            //removing the animation by default if there are not an after function
-                            nodeHelper.removeClass(e.target, behavior);
-                        } else if(selfish.Util.isFunction(after)){
-                            after(e, animationContextInstance);
-                        }
-                        
-
-                    });
                 }
             };
 
@@ -872,21 +919,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
                 if (definitionBody.length > 1) {
                     definitionKey = definitionBody[0].trim();
-                    
 
-                    //Change by reserved words
-                    if (definitionKey === EVENT_RESERVED_WORD) {
-                        definitionKey = EVENT_KEY;
-                    } else if (definitionKey === EVENT_TARGET_RESERVED_WORD) {
-                        definitionKey = EVENT_TARGET_KEY;
-                    } else if (definitionKey === BEHAVIOR_RESERVED_WORD) {
-                        definitionKey = BEHAVIOR_KEY;
-                    } else if (definitionKey === BEHAVIOR_TARGET_RESERVED_WORD) {
-                        definitionKey = BEHAVIOR_TARGET_KEY;
-                    }
-
-                    parsedDefinition.key = definitionKey;
-                    
                     //CSS3 selectors support
                     if(definitionBody.length > 2){
                         definitionValue = definitionBody.slice(1);
@@ -896,11 +929,42 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                     } else {
                         definitionValue = definitionBody[1].trim();
                     }
-                    
+                    parsedDefinition.value = definitionValue;
+
+                    //Change by reserved words
+                    if (definitionKey === EVENT_RESERVED_WORD) {
+                        definitionKey = EVENT_KEY;
+                    } else if (definitionKey === EVENT_TARGET_RESERVED_WORD) {
+                        definitionKey = EVENT_TARGET_KEY;
+                    } else if (definitionKey === BEHAVIOR_RESERVED_WORD) {
+                        definitionKey = BEHAVIOR_KEY;
+                        definitionValue = this.parseDoDefinition(definitionValue);
+                    } else if (definitionKey === BEHAVIOR_TARGET_RESERVED_WORD) {
+                        definitionKey = BEHAVIOR_TARGET_KEY;
+                    }
+
+                    parsedDefinition.key = definitionKey;
                     parsedDefinition.value = definitionValue;
                 }
 
                 return parsedDefinition;
+            },
+
+            /**
+             * Allow to parse do definitions
+             * @author Dariel Noel <darielnoel@gmail.com>
+             * @since  2014-09-03
+             * @param  {[type]}   doDefinition [description]
+             */
+            parseDoDefinition: function(doDefinition){
+                var doDefinitionArray = doDefinition.split('$');
+                if(doDefinitionArray.length > 1){
+                    doDefinitionArray = doDefinitionArray[1].split(' ');
+                    doDefinition = [];
+                    doDefinition[0] = doDefinitionArray[0];
+                    doDefinition[1] = doDefinitionArray.slice(1).join(' ');
+                }
+                return doDefinition;
             }
         };
 
