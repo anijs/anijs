@@ -1,15 +1,15 @@
 {
   "name": "anijs",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "main": "dist/anijs.js",
   "scripts": [
     "dist/anijs.js"
   ],
-  "homepage": "https://github.com/anijs/anijs",  
-  "description": "Declarative handling library for CSS animations.",  
+  "homepage": "https://github.com/anijs/anijs",
+  "description": "Declarative handling library for CSS animations.",
   "authors": [
     "Dariel Noel Vila Plagado <darielnoel@gmail.com>"
-  ],    
+  ],
   "keywords": [
     "animations",
     "css"
