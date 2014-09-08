@@ -380,7 +380,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                                 after = selfish._afterHelper(element, aniJSParsedSentence);
 
                             if (selfish._classNamesWhenAnim !== '') {
-                                behavior += selfish._classNamesWhenAnim;
+                                if(!Array.isArray(behavior))
+                                    behavior += selfish._classNamesWhenAnim;
                             }
 
                             //Creo un nuevo animation context
@@ -796,7 +797,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                 var instance = animationContextInstance,
                     after = instance.after,
                     e = {};
-                behavior[0](e, animationContextInstance, behavior);
+                behavior[0](e, animationContextInstance, target, behavior);
                 if(selfish.Util.isFunction(after)){
                     after(e, animationContextInstance);
                 }

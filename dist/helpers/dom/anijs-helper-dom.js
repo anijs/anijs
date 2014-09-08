@@ -27,8 +27,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
      * @param  {object}   animationContext AniJS Animation Context Object
      * @param  {[string]}   params           [description]
      */
-    AniJSDefaultHelper.addClass = function(e, animationContext, params) {
-        AniJSDefaultHelper.makeAction(e, animationContext, params, 0);
+    AniJSDefaultHelper.addClass = function(e, animationContext, target, params) {
+        AniJSDefaultHelper.makeAction(e, animationContext, target, params, 0);
     };
 
     /**
@@ -39,8 +39,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
      * @param  {object}   animationContext AniJS Animation Context Object
      * @param  {[string]}   params           [description]                   [description]
      */
-    AniJSDefaultHelper.removeClass = function(e, animationContext, params) {
-        AniJSDefaultHelper.makeAction(e, animationContext, params, 1);
+    AniJSDefaultHelper.removeClass = function(e, animationContext, target, params) {
+        AniJSDefaultHelper.makeAction(e, animationContext,  target, params, 1);
     };
 
     /**
@@ -51,8 +51,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
      * @param  {object}   animationContext AniJS Animation Context Object
      * @param  {[string]}   params           [description]
      */
-    AniJSDefaultHelper.toggleClass = function(e, animationContext, params) {
-        AniJSDefaultHelper.makeAction(e, animationContext, params, 2);
+    AniJSDefaultHelper.toggleClass = function(e, animationContext, target, params) {
+        AniJSDefaultHelper.makeAction(e, animationContext,  target, params, 2);
     };
 
     /**
@@ -63,22 +63,18 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
      * @param  {object}   animationContext AniJS Animation Context Object
      * @param  {[string]}   params           [description]
      */
-    AniJSDefaultHelper.makeAction = function(e, animationContext, params, actionID){
+    AniJSDefaultHelper.makeAction = function(e, animationContext, target, params, actionID){
         //Current elements that will be animated
         animationContextBehaviorTargetList = animationContext.behaviorTargetList;
-
-        for (var i = 0; i < animationContextBehaviorTargetList.length; i++) {
-            element = animationContextBehaviorTargetList[i];
-            if(actionID === 0){
-                animationContext.nodeHelper.addClass(element, params[1]);
-            } else if(actionID === 1){
-                animationContext.nodeHelper.removeClass(element, params[1]);
-            } else{
-                if(animationContext.nodeHelper.hasClass(element, params[1])){
-                   animationContext.nodeHelper.removeClass(element, params[1]);
-                }else {
-                   animationContext.nodeHelper.addClass(element, params[1]);
-                }
+        if(actionID === 0){
+            animationContext.nodeHelper.addClass(target, params[1]);
+        } else if(actionID === 1){
+            animationContext.nodeHelper.removeClass(target, params[1]);
+        } else{
+            if(animationContext.nodeHelper.hasClass(target, params[1])){
+               animationContext.nodeHelper.removeClass(target, params[1]);
+            }else {
+               animationContext.nodeHelper.addClass(target, params[1]);
             }
         }
         //Run the animation
