@@ -423,6 +423,35 @@ YUI().use('node', 'node-event-simulate', function (Y) {
 
                 targetNode.simulate("click");
             });
+            describe('the function has', function(){
+                beforeEach(function(done) {
+                    //Aqui creo el nodo
+                    var htmlNode = '<div class="test">Test</div>';
+                    Y.one('#testzone').appendChild(htmlNode);
+                });
+                //Registered var with same function name
+                it("one param", function() {
+                    var dataAnijJS = 'if: click, do: bounce, to: body, before: beforeFunction paramA',
+                        targetNode;
+
+                    AniJS.getHelper().beforeFunction = function(e, animationContext, params){
+                        expect(params[0]).toBe('paramA');
+                    };
+
+                    targetNode = Y.one('#testzone .test');
+
+                    targetNode.setAttribute('data-anijs', dataAnijJS);
+
+                    AniJS.run();
+
+                    targetNode.on('click', function(e){
+                        //expect(Y.one('body').hasClass('bounce')).toBeFalsy();
+                    },this, true);
+
+                    targetNode.simulate("click");
+                });
+            });
+
         });
 
         //---------------------------------------------------------------------

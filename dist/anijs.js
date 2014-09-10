@@ -18,7 +18,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             factory(root, true) :
             function(w) {
                 if (!w.document) {
-                    throw new Error("AniJS requires a window with a document");
+                    throw new Error("AniJS-RWWD");
                 }
                 return factory(w);
         };
@@ -41,10 +41,11 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         var ANIJS_DATATAG_NAME = 'data-anijs',
             DEFAULT = 'default',
             BODY = 'body',
+            PARAMS_SEPARATOR = '&',
             MULTIPLE_CLASS_SEPARATOR = '$',
             EVENT_RESERVED_WORD = 'if',
             EVENT_TARGET_RESERVED_WORD = 'on',
-            BEHAVIOR_RESERVED_WORD = 'do',
+            BEHAVIOR_RESERVED_WORD = ['do', 'after', 'before'],
             BEHAVIOR_TARGET_RESERVED_WORD = 'to',
             REGEX_BEGIN = '(\\s+|^)',
             REGEX_END = '(\\s+|$)',
@@ -276,7 +277,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                 return AniJS.eventProviderCollection[eventProviderID];
             }
 
-        }
+        };
 
         /////////////////////////////////////////////////////////
         // Private Methods an Vars
@@ -284,7 +285,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
         var selfish = {
 
-        }
+        };
 
         /**
          * Description
@@ -302,7 +303,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                  * @return
                  */
                 removeAnim: function(e, animationContext) {
-                    if(e.target){
+                    if(e.target && e.type){
                       animationContext.nodeHelper.removeClass(e.target, animationContext.behavior);
                     }
                 },
@@ -362,14 +363,12 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
             //Es obligatorio definir de eventTarget ATTR
             if (event !== '') {
-
                 var size = eventTargetList.length,
                     i = 0,
                     eventTargetItem;
 
                 for (i; i < size; i++) {
                     eventTargetItem = eventTargetList[i];
-
                     if (AniJS.EventSystem.isEventTarget(eventTargetItem)) {
                         var listener = function(event) {
 
@@ -380,7 +379,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                                 after = selfish._afterHelper(element, aniJSParsedSentence);
 
                             if (selfish._classNamesWhenAnim !== '') {
-                                if(!Array.isArray(behavior))
+                                if(!selfish.Util.beArray(behavior))
                                     behavior += selfish._classNamesWhenAnim;
                             }
 
@@ -395,12 +394,16 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                                 //TODO: eventSystem should be called directly
                             },
 
-                                animationContextInstance = new AniJS.AnimationContext(animationContextConfig);
+                            animationContextInstance = new AniJS.AnimationContext(animationContextConfig);
 
                             //Si before, le paso el animation context
                             //TODO: Util is a submodule
-                            if (before && selfish.Util.isFunction(before)) {
-                                before(event, animationContextInstance);
+                            if (before) {
+                                if(selfish.Util.isFunction(before)) {
+                                    before(event, animationContextInstance);
+                                } else if(selfish.Util.beArray(before)) {
+                                    before[0](event, animationContextInstance, selfish._paramsHelper(before));
+                                }
                             } else {
                                 animationContextInstance.run();
                             }
@@ -416,8 +419,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 
                 }
-            } else {
-                console.log('You must define some event');
             }
         };
 
@@ -507,7 +508,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                         behaviorTargetNodeList = rootDOMTravelScope.querySelectorAll(behaviorTarget);
                     } catch (e) {
                         behaviorTargetNodeList = [];
-                        console.log('ugly selector here');
                     }
                 }
 
@@ -524,17 +524,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
          * @return defaultValue
          */
         selfish._behaviorHelper = function(aniJSParsedSentence) {
-            var defaultValue = aniJSParsedSentence.behavior || '',
-                executeFunction;
-            if(Array.isArray(defaultValue)){
-                executeFunction = selfish._callbackHelper({}, aniJSParsedSentence, defaultValue[0]);
-                if(executeFunction){
-                    defaultValue[0] = executeFunction;
-                } else {
-                    defaultValue = defaultValue.join(' ');
-                }
-            }
-            return defaultValue;
+            return this._actionHelper({}, aniJSParsedSentence, aniJSParsedSentence.behavior);
         };
 
         /**
@@ -545,8 +535,11 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
          * @return defaultValue
          */
         selfish._afterHelper = function(element, aniJSParsedSentence) {
-            var defaultValue = selfish._callbackHelper(element, aniJSParsedSentence, aniJSParsedSentence.after);
-            return defaultValue;
+            var defaultValue =  aniJSParsedSentence.after;
+            // return defaultValue;
+            if(!selfish.Util.beArray(defaultValue))
+                return selfish._callbackHelper(element, aniJSParsedSentence, defaultValue);
+            return this._actionHelper(element, aniJSParsedSentence, defaultValue);
         };
 
         /**
@@ -557,7 +550,24 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
          * @return defaultValue
          */
         selfish._beforeHelper = function(element, aniJSParsedSentence) {
-            var defaultValue = selfish._callbackHelper(element, aniJSParsedSentence, aniJSParsedSentence.before);
+            var defaultValue =  aniJSParsedSentence.before;
+            if(!selfish.Util.beArray(defaultValue))
+                return selfish._callbackHelper(element, aniJSParsedSentence, defaultValue);
+            return this._actionHelper(element, aniJSParsedSentence, defaultValue);
+        };
+
+        selfish._actionHelper = function(element, aniJSParsedSentence, action) {
+            var defaultValue = action || '',
+                executeFunction;
+            if(selfish.Util.beArray(defaultValue)) {
+                executeFunction = selfish._callbackHelper(element, aniJSParsedSentence, defaultValue[0]);
+                if(executeFunction) {
+                    defaultValue[0] = executeFunction;
+                } else {
+                    defaultValue = defaultValue.join(' ');
+                }
+
+            }
             return defaultValue;
         };
 
@@ -651,6 +661,13 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             return defaultValue;
         };
 
+        selfish._paramsHelper = function(paramsArray){
+            var arr = [],
+                i = paramsArray.length;
+            while(i-- > 1) arr[i - 1] = paramsArray[i];
+            return arr;
+        };
+
         /**
          * Parse an String Declaration
          * @method _getParsedAniJSSentenceCollection
@@ -704,8 +721,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
          */
         selfish._endPrefixBrowserDetectionIndex = function() {
             //TODO: Delete de element after create this
-            var el = document.createElement('fakeelement'),
-                animationBrowserDetection = ['animation', 'OAnimation', 'MozAnimation', 'webkitAnimation'];
+            var el = document.createElement('fe'),
+                ANIM = 'Animation',
+                animationBrowserDetection = ['animation', 'O'+ANIM, 'Moz'+ANIM, 'webkit'+ANIM];
 
             for (var i = 0; i < animationBrowserDetection.length; i++) {
                 if (el.style[animationBrowserDetection[i]] !== undefined) {
@@ -770,17 +788,20 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
                 //create event
                 instance.eventSystem.addEventListenerHelper(target, animationEndEvent, function(e) {
-
                     e.stopPropagation();
                     //remove event
                     instance.eventSystem.removeEventListenerHelper(e.target, e.type, arguments.callee);
-
                     // callback handler
                     if (!after) {
                         //removing the animation by default if there are not an after function
                         nodeHelper.removeClass(e.target, behavior);
-                    } else if(selfish.Util.isFunction(after)){
-                        after(e, animationContextInstance);
+                    } else {
+                        if(selfish.Util.isFunction(after)){
+                            after(e, animationContextInstance);
+                        } else if(selfish.Util.beArray(after)) {
+                            console.log(after);
+                            after[0](e, animationContextInstance, selfish._paramsHelper(after));
+                        }
                     }
                 });
             },
@@ -796,10 +817,14 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             animationContextInstance.doFunctionAction = function(target, behavior){
                 var instance = animationContextInstance,
                     after = instance.after,
-                    e = {};
-                behavior[0](e, animationContextInstance, target, behavior);
+                    e = {target:target};
+                behavior[0](e, animationContextInstance, selfish._paramsHelper(behavior));
                 if(selfish.Util.isFunction(after)){
                     after(e, animationContextInstance);
+                } else {
+                    if(selfish.Util.beArray(after)) {
+                        after[0](e, animationContextInstance, selfish._paramsHelper(after));
+                    }
                 }
             },
 
@@ -818,17 +843,15 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
                 animationContextInstance.hasRunned = 1;
                 for (j; j < behaviorTargetListSize; j++) {
-                    if(Array.isArray(behavior)){
+                    if(selfish.Util.beArray(behavior)){
                         animationContextInstance
                             .doFunctionAction(behaviorTargetList[j], behavior);
                     } else{
                         animationContextInstance
                             .doDefaultAction(behaviorTargetList[j], behavior);
                     }
-
                 }
             };
-
             animationContextInstance.init(config);
         });
 
@@ -898,7 +921,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                     parsedDefinition = this.parseDefinition(definitionCollection[i]);
                     parsedSentence[parsedDefinition.key] = parsedDefinition.value;
                 }
-
                 return parsedSentence;
             },
 
@@ -917,39 +939,37 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                     definitionValue,
                     EVENT_KEY = 'event',
                     EVENT_TARGET_KEY = 'eventTarget',
-                    BEHAVIOR_KEY = 'behavior',
+                    BEHAVIOR_KEY = ['behavior', 'after', 'before'],
                     BEHAVIOR_TARGET_KEY = 'behaviorTarget';
 
                 //Performance reasons
-
                 definitionBody = definition.split(':');
-
                 if (definitionBody.length > 1) {
                     definitionKey = definitionBody[0].trim();
-
                     //CSS3 selectors support
                     if(definitionBody.length > 2){
                         definitionValue = definitionBody.slice(1);
                         definitionValue = definitionValue.join(':');
                         definitionValue = definitionValue.trim();
-
                     } else {
                         definitionValue = definitionBody[1].trim();
                     }
                     parsedDefinition.value = definitionValue;
-
                     //Change by reserved words
                     if (definitionKey === EVENT_RESERVED_WORD) {
                         definitionKey = EVENT_KEY;
                     } else if (definitionKey === EVENT_TARGET_RESERVED_WORD) {
                         definitionKey = EVENT_TARGET_KEY;
-                    } else if (definitionKey === BEHAVIOR_RESERVED_WORD) {
-                        definitionKey = BEHAVIOR_KEY;
-                        definitionValue = this.parseDoDefinition(definitionValue);
                     } else if (definitionKey === BEHAVIOR_TARGET_RESERVED_WORD) {
                         definitionKey = BEHAVIOR_TARGET_KEY;
+                    } else {
+                        for (var i = BEHAVIOR_RESERVED_WORD.length - 1; i >= 0; i--) {
+                              if(definitionKey === BEHAVIOR_RESERVED_WORD[i]) {
+                                definitionKey = BEHAVIOR_KEY[i];
+                                definitionValue = this.parseDoDefinition(definitionValue);
+                              }
+                        };
                     }
-
                     parsedDefinition.key = definitionKey;
                     parsedDefinition.value = definitionValue;
                 }
@@ -963,13 +983,22 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
              * @since  2014-09-03
              * @param  {[type]}   doDefinition [description]
              */
-            parseDoDefinition: function(doDefinition){
-                var doDefinitionArray = doDefinition.split('$');
-                if(doDefinitionArray.length > 1){
-                    doDefinitionArray = doDefinitionArray[1].split(' ');
+            parseDoDefinition: function(doDefinition) {
+                var reg = /^\$(\w+)\s*/g,
+                    regMatch = reg.exec(doDefinition),
+                    functionName = "",
+                    parametersArray = [], it = 1;
+
+                if(regMatch !== null) {
+                    functionName = regMatch[1];
+                    doDefinitionArray = doDefinition.split(regMatch[0])[1];
+                    doDefinitionArray = doDefinitionArray !== null ? doDefinitionArray.split(PARAMS_SEPARATOR) : [];
                     doDefinition = [];
-                    doDefinition[0] = doDefinitionArray[0];
-                    doDefinition[1] = doDefinitionArray.slice(1).join(' ');
+                    doDefinition[0] = functionName;
+                    for (var i = 0; i < doDefinitionArray.length; i++) {
+                        doDefinition[it++] = doDefinitionArray[i].trim();
+                    }
+                    return doDefinition;
                 }
                 return doDefinition;
             }
@@ -1043,8 +1072,17 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
              */
             isFunction: function(obj) {
                 return !!(obj && obj.constructor && obj.call && obj.apply);
+            },
+            /**
+             * Test if some object is an array
+             * @author Dariel Noel <darielnoel@gmail.com>
+             * @since  2014-09-09
+             * @return {Boolean}  [description]
+             */
+            beArray:function(object){
+                return Array.isArray(object);
             }
-        }
+        };
 
         /////////////////////////////////////////////////////////
         // Public SubModules
@@ -1194,7 +1232,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                 }
             }
 
-        }
+        };
 
 
         /**
@@ -1206,7 +1244,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
          */
         AniJS.EventTarget = function EventTarget() {
             this._listeners = {};
-        }
+        };
 
         AniJS.EventTarget.prototype = {
 

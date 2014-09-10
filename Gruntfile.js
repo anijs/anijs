@@ -78,6 +78,10 @@ module.exports = function(grunt) {
 		    	{ from: '_helperDefaultIndex', to: '_u' },
 		    	{ from: '_animationEndEvent', to: '_v' },
 		    	{ from: '_classNamesWhenAnim', to: '_w' },
+		    	{ from: 'beArray', to: '_x' },
+		    	{ from: '_actionHelper', to: '_y' },
+		    	{ from: '_paramsHelper', to: '_z' },
+		    	{ from: "Event object missing 'type' property.", to: 'error' },
 		    ]
 		  }
 		}
