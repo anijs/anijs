@@ -497,8 +497,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                 behaviorTarget = aniJSParsedSentence.behaviorTarget;
 
             if (behaviorTarget) {
-                if(behaviorTarget === TARGET && event.target){
-                    behaviorTargetNodeList = [event.target];
+                if(behaviorTarget === TARGET && event.currentTarget){
+                    behaviorTargetNodeList = [event.currentTarget];
                 } else{
                     //Expression regular remplazar caracteres $ por comas
                     //TODO: Estudiar si este caracter no esta agarrado
