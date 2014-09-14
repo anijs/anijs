@@ -1208,6 +1208,22 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             },
 
             /**
+             * Detach all AniJS subscriptions to the all nodes bellow this
+             * @method purgeAllNodes
+             * @param {} element
+             * @return
+             */
+            purgeAllNodes: function(element){
+                //Dame todos los que tengan data-anijs
+                //a cada uno purgue
+                var nodes = element.querySelectorAll("*");
+                    size = nodes.length;
+                for (var i = size - 1; i >= 0; i--) {
+                    this.purgeEventTarget(nodes[i]);
+                }
+            },
+
+            /**
              * Detach all AniJS subscriptions to this element
              * @method purgeEventTarget
              * @param {} element
