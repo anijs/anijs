@@ -40,7 +40,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
      * @param  {[string]}   params           [description]                   [description]
      */
     AniJSDefaultHelper.removeClass = function(e, animationContext, params) {
-        AniJSDefaultHelper.makeAction(e, animationContext, params, 1, e.target);
+        AniJSDefaultHelper.makeClassAction(e, animationContext, params, 1, e.target);
     };
 
     /**
@@ -52,7 +52,118 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
      * @param  {[string]}   params           [description]
      */
     AniJSDefaultHelper.toggleClass = function(e, animationContext, params) {
-        AniJSDefaultHelper.makeAction(e, animationContext, params, 2, e.target);
+        AniJSDefaultHelper.makeClassAction(e, animationContext, params, 2, e.target);
+    };
+
+    /**
+     * Add class to the elements
+     * @author Dariel Noel <darielnoel@gmail.com>
+     * @since  2014-09-03
+     * @param  {object}   e                The event handler
+     * @param  {object}   animationContext AniJS Animation Context Object
+     * @param  {[string]}   params           [description]
+     */
+    AniJSDefaultHelper.addClassToParent = function(e, animationContext, params) {
+        AniJSDefaultHelper.makeClassAction(e, animationContext, params, 0, e.target.parentNode);
+    };
+
+    /**
+     * Remove class to the elements
+     * @author Dariel Noel <darielnoel@gmail.com>
+     * @since  2014-09-03
+     * @param  {object}   e                The event handler
+     * @param  {object}   animationContext AniJS Animation Context Object
+     * @param  {[string]}   params           [description]                   [description]
+     */
+    AniJSDefaultHelper.removeClassToParent = function(e, animationContext, params) {
+        AniJSDefaultHelper.makeClassAction(e, animationContext, params, 1, e.target.parentNode);
+    };
+
+    /**
+     * Toggle class to the elements
+     * @author Dariel Noel <darielnoel@gmail.com>
+     * @since  2014-09-03
+     * @param  {object}   e                The event handler
+     * @param  {object}   animationContext AniJS Animation Context Object
+     * @param  {[string]}   params           [description]
+     */
+    AniJSDefaultHelper.toggleClassToParent = function(e, animationContext, params) {
+        AniJSDefaultHelper.makeClassAction(e, animationContext, params, 2, e.target.parentNode);
+    };
+
+    /**
+     * Add class to the elements
+     * @author Dariel Noel <darielnoel@gmail.com>
+     * @since  2014-09-03
+     * @param  {object}   e                The event handler
+     * @param  {object}   animationContext AniJS Animation Context Object
+     * @param  {[string]}   params           [description]
+     */
+    AniJSDefaultHelper.addClassToClosest = function(e, animationContext, params) {
+        var closestNode = e.target.parentNode;
+        if(params.length > 1){
+            closestNode = closest(e.target.parentNode, params[1]);
+        }
+        AniJSDefaultHelper.makeClassAction(e, animationContext, params, 0, closestNode);
+    };
+
+    /**
+     * Remove class to the elements
+     * @author Dariel Noel <darielnoel@gmail.com>
+     * @since  2014-09-03
+     * @param  {object}   e                The event handler
+     * @param  {object}   animationContext AniJS Animation Context Object
+     * @param  {[string]}   params           [description]                   [description]
+     */
+    AniJSDefaultHelper.removeClassToClosest = function(e, animationContext, params) {
+        var closestNode = e.target.parentNode;
+        if(params.length > 1){
+            closestNode = closest(e.target.parentNode, params[1]);
+        }
+        AniJSDefaultHelper.makeClassAction(e, animationContext, params, 1, closestNode);
+    };
+
+    /**
+     * Toggle class to the elements
+     * @author Dariel Noel <darielnoel@gmail.com>
+     * @since  2014-09-03
+     * @param  {object}   e                The event handler
+     * @param  {object}   animationContext AniJS Animation Context Object
+     * @param  {[string]}   params           [description]
+     */
+    AniJSDefaultHelper.toggleClassToClosest = function(e, animationContext, params) {
+        var closestNode = e.target.parentNode;
+        if(params.length > 1){
+            closestNode = closest(e.target.parentNode, params[1]);
+        }
+        AniJSDefaultHelper.makeClassAction(e, animationContext, params, 2, closestNode);
+    };
+
+
+    /**
+     * Make toggle, remove or addActions
+     * @author Dariel Noel <darielnoel@gmail.com>
+     * @since  2014-09-03
+     * @param  {object}   e                The event handler
+     * @param  {object}   animationContext AniJS Animation Context Object
+     * @param  {[string]}   params           [description]
+     */
+    AniJSDefaultHelper.makeClassAction = function(e, animationContext, params, actionID, target){
+        if(actionID === 0){
+            animationContext.nodeHelper.addClass(target, params[0]);
+        } else if(actionID === 1){
+            animationContext.nodeHelper.removeClass(target, params[0]);
+        } else{
+            if(animationContext.nodeHelper.hasClass(target, params[0])){
+               animationContext.nodeHelper.removeClass(target, params[0]);
+            }else {
+               animationContext.nodeHelper.addClass(target, params[0]);
+            }
+        }
+        //Run the animation
+        if(!animationContext.hasRunned){
+            animationContext.run();
+        }
     };
 
     /**
@@ -94,6 +205,70 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
         return true;
     };
+
+    /**
+     * Remove element or elements from html
+     * Examples:
+     *  Remove current element parent.
+     *   if: click, do: $remove
+     *  Remove the parents of HTML elements with class name .remove
+     *   if: click, do: $remove .remove
+     *  Remove HTML element with id remove
+     *   if: click, do: $remove #remove
+     *  Remove the parents of HTML elements with tag name p
+     *   if: click, do: $remove p
+     *  Remove the parents of all HTML elements that contain class name remove or id remove o tag name p
+     *   if: click, do: $remove .remove & #remove & p
+     *
+     * @author Dariel Noel <darielnoel@gmail.com>
+     * @since  2014-09-11
+     * @param  {object}   e                The event handler
+     * @param  {object}   animationContext AniJS Animation Context Object
+     * @param  {[string]}   params           [description]
+     */
+    AniJSDefaultHelper.removeParent = function(e, animationContext, params) {
+        var paramsLength = params.length,
+            target = e.target,
+            elements = null,
+            parent;
+        if(paramsLength === 0) {
+            removeParent(target);
+        } else {
+            while(paramsLength-- > 0) {
+                elements = all(params[paramsLength]) || [];
+                var i = elements.length;
+                while (i-- > 0) {
+                    removeParent(elements[i]);
+                }
+            }
+        }
+
+        return true;
+    };
+
+    /**
+     * Remove the most closest father Node
+     * @author Dariel Noel <darielnoel@gmail.com>
+     * @since  2014-09-14
+     * @param  {[type]}   e                [description]
+     * @param  {[type]}   animationContext [description]
+     * @param  {[type]}   params           [description]
+     * @return {[type]}                    [description]
+     */
+    AniJSDefaultHelper.removeClosest = function(e, animationContext, params) {
+        var paramsLength = params.length,
+            target = e.target,
+            elements = null,
+            parent;
+        if(paramsLength === 0) {
+            removeParent(target);
+        } else {
+            removeClosest(target, params[0]);
+        }
+
+        return true;
+    };
+
     /**
      * Clone HTML element
      * Examples:
@@ -144,7 +319,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             } else {                            //$clone selectror & 3, to: #clone
                 repeats = parseInt(params[1]) || 1;
             }
-            elements = document.querySelectorAll(params[0]);
+            elements = all(params[0]);
             var i = 0;
             for (; i < elements.length; i++) {
                 cloneAux(elements[i], target, repeats);
@@ -155,28 +330,41 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
     };
 
     /**
-     * Make toggle, remove or addActions
+     * Return all nodes that match witch selector
      * @author Dariel Noel <darielnoel@gmail.com>
-     * @since  2014-09-03
-     * @param  {object}   e                The event handler
-     * @param  {object}   animationContext AniJS Animation Context Object
-     * @param  {[string]}   params           [description]
+     * @since  2014-09-14
+     * @return {[type]}   [description]
      */
-    AniJSDefaultHelper.makeAction = function(e, animationContext, params, actionID, target){
-        if(actionID === 0){
-            animationContext.nodeHelper.addClass(target, params[0]);
-        } else if(actionID === 1){
-            animationContext.nodeHelper.removeClass(target, params[0]);
-        } else{
-            if(animationContext.nodeHelper.hasClass(target, params[0])){
-               animationContext.nodeHelper.removeClass(target, params[0]);
-            }else {
-               animationContext.nodeHelper.addClass(target, params[0]);
+    function all(selector){
+        return document.querySelectorAll(selector);
+    }
+
+    function removeParent(element){
+        var parent = element.parentNode;
+        AniJS.EventSystem.purgeAllNodes(parent);
+        parent.remove();
+    }
+
+    function removeClosest(element, selector){
+        var parent = closest(element.parentNode, selector);
+        if(parent){
+            AniJS.EventSystem.purgeAllNodes(parent);
+            parent.remove();
+        }
+    }
+
+    //http://stackoverflow.com/questions/15329167/closest-ancestor-matching-selector-using-native-dom
+    //by Paul Irish
+    function closest(elem, selector) {
+       var matchesSelector = elem.matches || elem.webkitMatchesSelector || elem.mozMatchesSelector || elem.msMatchesSelector;
+        while (elem) {
+            if (matchesSelector.bind(elem)(selector)) {
+                return elem;
+            } else {
+                elem = elem.parentElement;
             }
         }
-        //Run the animation
-        if(!animationContext.hasRunned){
-            animationContext.run();
-        }
-    };
+        return false;
+    }
+
 }(window));
