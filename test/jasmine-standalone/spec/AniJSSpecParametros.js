@@ -508,38 +508,67 @@ YUI().use('node', 'node-event-simulate', function (Y) {
                     expect(params.length).toEqual(0);
                 });
             });
-            // it("Execute with N params", function() {
-            //     var dataAnijJS = 'if: click, do: bounce, to: body, after: $afterFunction before: $beforeFunction',
-            //         targetNode;
 
-            //     AniJS.getHelper().afterFunction = function(e, animationContext, params) {
-            //         expect(params.length == paramsArray.length).toBeTruthy();
-            //         var i = paramsArray.length;
-            //         while(i-- > 0) {
-            //             expect(params[i] ===  paramsArray[i]).toBeTruthy();
-            //         }
-            //     };
+            describe("cuando las funciones son configuradas con (n) parametros", function() {
+                beforeEach(function(done) {
+                    //Se configuran las precondiciones para la prueba
+                    var dataAnijJS = 'if: click, do: bounce animated, to: body, after: $afterFunction '
+                                        + paramsN + ', before: $beforeFunction ' + paramsN ,
+                        targetNode;
 
-            //     AniJS.getHelper().beforeFunction = function(e, animationContext, params) {
-            //         expect(params.length == paramsArray.length).toBeTruthy();
-            //         var i = paramsArray.length;
-            //         while(i-- > 0) {
-            //             expect(params[i] ===  paramsArray[i]).toBeTruthy();
-            //         }
-            //         animationContext.run();
-            //     };
+                    targetNode = AniJSTest.Utils.settingEnviroment(dataAnijJS);
 
-            //     targetNode = Y.one('#testzone .test');
-            //     targetNode.setAttribute('data-anijs', dataAnijJS);
-            //     AniJS.run();
+                    //Se obtiene el helper por defecto
+                    AniJSDefaultHelper = AniJS.getHelper();
 
-            //     targetNode.on('click', function(e) {
-            //         expect(Y.one('body').hasClass('bounce')).toBeTruthy();
-            //     }, this, true);
+                    AniJS.getHelper().afterFunction = function(e, animationContext, params) {
+                        done();
+                    };
 
-            //     targetNode.simulate("click");
-            // });
+                    AniJS.getHelper().beforeFunction = function(e, animationContext, params) {
+                        animationContext.run();
+                    };
 
+                    // Ponemos un spy a dicha funcion para saber cuando se llama
+                    // y con que parametros etc
+                    // http://jasmine.github.io/2.0/introduction.html#section-Spies
+                    // callThrough luego ejecuta el comportamiento por defecto
+                    spyOn(AniJSDefaultHelper, 'beforeFunction').and.callThrough();
+                    spyOn(AniJSDefaultHelper, 'afterFunction').and.callThrough();
+
+                    //corremos AniJS
+                    AniJS.run();
+
+                    //Simulamos el evento click
+                    targetNode.simulate("click");
+                });
+                it("entonces la funcion es invocada con (n) parametros", function() {
+                    var params;
+
+                    //Permite comprobar que la funcion se ha llamado correctamente
+                    expect(AniJSDefaultHelper.beforeFunction).toHaveBeenCalled();
+                    expect(AniJSDefaultHelper.afterFunction).toHaveBeenCalled();
+
+                    params = AniJSDefaultHelper.beforeFunction.calls.argsFor(0)[2];
+
+                    //Chequeamos con cuantos argumentos fue llamada la funcion
+                    expect(params.length).toEqual(paramsArray.length);
+
+                    var i = paramsArray.length;
+                    while(i-- > 0) {
+                        expect(params[i] ===  paramsArray[i]).toBeTruthy();
+                    }
+
+                    params = AniJSDefaultHelper.afterFunction.calls.argsFor(0)[2];
+                    //Chequeamos con cuantos argumentos fue llamada la funcion
+                    expect(params.length).toEqual(paramsArray.length);
+
+                    i = paramsArray.length;
+                    while(i-- > 0) {
+                        expect(params[i] ===  paramsArray[i]).toBeTruthy();
+                    }
+                });
+            });
         });
 
     });

@@ -1,8 +1,6 @@
 YUI().use('node', 'node-event-simulate', function (Y) {
 
 
-    console.log(AniJS);
-
     describe("AniJS Advanced", function() {
 
         //Aqui se pueden poner variables para tener acceso globalmente
@@ -175,7 +173,7 @@ YUI().use('node', 'node-event-simulate', function (Y) {
                 targetNode.setAttribute('data-anijs', dataAnijJS);
                 AniJS.run();
 
-               
+
 
                 expect(AniJS.getEventProvider('customEventProvider') !== undefined).toBeTruthy();
 
@@ -193,7 +191,7 @@ YUI().use('node', 'node-event-simulate', function (Y) {
                 targetNode = Y.one('#testzone .test');
                 targetNode.setAttribute('data-anijs', dataAnijJS);
                 AniJS.run();
-           
+
 
                 expect(AniJS.getEventProvider('customEventProvider') !== undefined).toBeTruthy();
 
@@ -252,9 +250,9 @@ YUI().use('node', 'node-event-simulate', function (Y) {
 
                     AniJS.run();
 
-                    
 
-                   
+
+
 
                     expect(AniJS.getEventProvider('customEventProvider') !== undefined).toBeTruthy();
 
@@ -285,9 +283,9 @@ YUI().use('node', 'node-event-simulate', function (Y) {
 
                     AniJS.run();
 
-                    
 
-                   
+
+
 
                     expect(AniJS.getEventProvider('customEventProvider') !== undefined).toBeTruthy();
 
@@ -316,7 +314,7 @@ YUI().use('node', 'node-event-simulate', function (Y) {
                     targetNode.setAttribute('data-anijs', dataAnijJS);
 
                     AniJS.run();
-                    
+
                     expect(AniJS.getEventProvider('customEventProvider')).not.toBeUndefined();
                     expect(AniJS.getEventProvider('customEventProvider2')).not.toBeUndefined();
 
