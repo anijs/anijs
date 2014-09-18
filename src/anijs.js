@@ -45,7 +45,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             MULTIPLE_CLASS_SEPARATOR = '$',
             EVENT_RESERVED_WORD = 'if',
             EVENT_TARGET_RESERVED_WORD = 'on',
-            BEHAVIOR_RESERVED_WORD = ['do', 'after', 'before'],
+            BEHAVIOR_RESERVED_WORD = ['do', 'after', 'before', 'to'],
             BEHAVIOR_TARGET_RESERVED_WORD = 'to',
             REGEX_BEGIN = '(\\s+|^)',
             REGEX_END = '(\\s+|$)',
@@ -395,7 +395,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                                 after: after,
                                 eventSystem: AniJS.EventSystem,
                                 eventTarget: event.target,
-                                afterFunctionName: afterFunctionName
+                                afterFunctionName: afterFunctionName,
+                                dataAniJSOwner: element
                                 //TODO: eventSystem should be called directly
                             },
 
@@ -503,21 +504,43 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                 behaviorTarget = aniJSParsedSentence.behaviorTarget;
 
             if (behaviorTarget) {
-                if(behaviorTarget === TARGET && event.target){
-                    behaviorTargetNodeList = [event.target];
+                if(!selfish.Util.beArray(behaviorTarget)){
+                    if(behaviorTarget === TARGET && event.target){
+                        behaviorTargetNodeList = [event.target];
+                    } else{
+                        //Expression regular remplazar caracteres $ por comas
+                        //TODO: Estudiar si este caracter no esta agarrado
+                        behaviorTarget = behaviorTarget.split(MULTIPLE_CLASS_SEPARATOR).join(',');
+                        try {
+                            behaviorTargetNodeList = rootDOMTravelScope.querySelectorAll(behaviorTarget);
+                        } catch (e) {
+                            behaviorTargetNodeList = [];
+                        }
+                    }
                 } else{
-                    //Expression regular remplazar caracteres $ por comas
-                    //TODO: Estudiar si este caracter no esta agarrado
-                    behaviorTarget = behaviorTarget.split(MULTIPLE_CLASS_SEPARATOR).join(',');
-                    try {
-                        behaviorTargetNodeList = rootDOMTravelScope.querySelectorAll(behaviorTarget);
-                    } catch (e) {
-                        behaviorTargetNodeList = [];
+                    var behaviorObject = this._actionHelper(element, aniJSParsedSentence, behaviorTarget);
+                    if(behaviorObject && selfish.Util.isFunction(behaviorObject[0])){
+                        behaviorTargetNodeList = behaviorObject[0]
+                                                    (event,{dataAniJSOwner:element},
+                                                    selfish._paramsHelper(behaviorObject));
                     }
                 }
-
-
             }
+
+            // if (behaviorTarget) {
+            //     if(behaviorTarget === TARGET && event.target){
+            //         behaviorTargetNodeList = [event.target];
+            //     } else{
+            //         //Expression regular remplazar caracteres $ por comas
+            //         //TODO: Estudiar si este caracter no esta agarrado
+            //         behaviorTarget = behaviorTarget.split(MULTIPLE_CLASS_SEPARATOR).join(',');
+            //         try {
+            //             behaviorTargetNodeList = rootDOMTravelScope.querySelectorAll(behaviorTarget);
+            //         } catch (e) {
+            //             behaviorTargetNodeList = [];
+            //         }
+            //     }
+            // }
             return behaviorTargetNodeList;
         };
 
@@ -556,8 +579,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
          */
         selfish._beforeHelper = function(element, aniJSParsedSentence) {
             var defaultValue =  aniJSParsedSentence.before;
-            // if(!selfish.Util.beArray(defaultValue))
-            //     return selfish._callbackHelper(element, aniJSParsedSentence, defaultValue);
+            if(!selfish.Util.beArray(defaultValue))
+                return selfish._callbackHelper(element, aniJSParsedSentence, defaultValue);
             return this._actionHelper(element, aniJSParsedSentence, defaultValue);
         };
         /**
@@ -785,6 +808,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
                 animationContextInstance.afterFunctionName = config.afterFunctionName;
 
+                animationContextInstance.dataAniJSOwner = config.dataAniJSOwner;
+
             },
 
             /**
@@ -962,8 +987,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                     definitionValue,
                     EVENT_KEY = 'event',
                     EVENT_TARGET_KEY = 'eventTarget',
-                    BEHAVIOR_KEY = ['behavior', 'after', 'before'],
-                    BEHAVIOR_TARGET_KEY = 'behaviorTarget';
+                    BEHAVIOR_KEY = ['behavior', 'after', 'before', 'behaviorTarget'];
 
                 //Performance reasons
                 definitionBody = definition.split(':');
@@ -983,12 +1007,16 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                         definitionKey = EVENT_KEY;
                     } else if (definitionKey === EVENT_TARGET_RESERVED_WORD) {
                         definitionKey = EVENT_TARGET_KEY;
-                    } else if (definitionKey === BEHAVIOR_TARGET_RESERVED_WORD) {
-                        definitionKey = BEHAVIOR_TARGET_KEY;
                     } else {
                         for (var i = BEHAVIOR_RESERVED_WORD.length - 1; i >= 0; i--) {
                               if(definitionKey === BEHAVIOR_RESERVED_WORD[i]) {
                                 definitionKey = BEHAVIOR_KEY[i];
+                                /**
+                                 * TODO: This code is deprecated for next version
+                                 */
+                                if((definitionKey === 'after' || definitionKey === 'before') && definitionValue[0]!== '$') {
+                                    definitionValue = '$' + definitionValue;
+                                }
                                 definitionValue = this.parseDoDefinition(definitionValue);
                               }
                         }
@@ -1048,7 +1076,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                 }
                 for (var i = 0, len = string.length; i < len; ++i) {
                     if (string[i] && !new RegExp(REGEX_BEGIN + string[i] + REGEX_END).test(elem.className)) {
-                        elem.className = elem.className.trim() + ' ' + string[i];
+                        elem.className = (elem.className === "") ?  string[i] : elem.className.trim() + ' ' + string[i];
                     }
                 }
             },

@@ -19,6 +19,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
     //Obtaining  the default helper
     var AniJSDefaultHelper = AniJS.getHelper();
 
+
     /**
      * Add class to the elements
      * @author Dariel Noel <darielnoel@gmail.com>
@@ -28,7 +29,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
      * @param  {[string]}   params           [description]
      */
     AniJSDefaultHelper.addClass = function(e, animationContext, params) {
-        AniJSDefaultHelper.makeAction(e, animationContext, params, 0, e.target);
+        AniJSDefaultHelper.makeClassAction(e, animationContext, params, 0, e.target);
     };
 
     /**
@@ -54,91 +55,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
     AniJSDefaultHelper.toggleClass = function(e, animationContext, params) {
         AniJSDefaultHelper.makeClassAction(e, animationContext, params, 2, e.target);
     };
-
-    /**
-     * Add class to the elements
-     * @author Dariel Noel <darielnoel@gmail.com>
-     * @since  2014-09-03
-     * @param  {object}   e                The event handler
-     * @param  {object}   animationContext AniJS Animation Context Object
-     * @param  {[string]}   params           [description]
-     */
-    AniJSDefaultHelper.addClassToParent = function(e, animationContext, params) {
-        AniJSDefaultHelper.makeClassAction(e, animationContext, params, 0, e.target.parentNode);
-    };
-
-    /**
-     * Remove class to the elements
-     * @author Dariel Noel <darielnoel@gmail.com>
-     * @since  2014-09-03
-     * @param  {object}   e                The event handler
-     * @param  {object}   animationContext AniJS Animation Context Object
-     * @param  {[string]}   params           [description]                   [description]
-     */
-    AniJSDefaultHelper.removeClassToParent = function(e, animationContext, params) {
-        AniJSDefaultHelper.makeClassAction(e, animationContext, params, 1, e.target.parentNode);
-    };
-
-    /**
-     * Toggle class to the elements
-     * @author Dariel Noel <darielnoel@gmail.com>
-     * @since  2014-09-03
-     * @param  {object}   e                The event handler
-     * @param  {object}   animationContext AniJS Animation Context Object
-     * @param  {[string]}   params           [description]
-     */
-    AniJSDefaultHelper.toggleClassToParent = function(e, animationContext, params) {
-        AniJSDefaultHelper.makeClassAction(e, animationContext, params, 2, e.target.parentNode);
-    };
-
-    /**
-     * Add class to the elements
-     * @author Dariel Noel <darielnoel@gmail.com>
-     * @since  2014-09-03
-     * @param  {object}   e                The event handler
-     * @param  {object}   animationContext AniJS Animation Context Object
-     * @param  {[string]}   params           [description]
-     */
-    AniJSDefaultHelper.addClassToClosest = function(e, animationContext, params) {
-        var closestNode = e.target.parentNode;
-        if(params.length > 1){
-            closestNode = closest(e.target.parentNode, params[1]);
-        }
-        AniJSDefaultHelper.makeClassAction(e, animationContext, params, 0, closestNode);
-    };
-
-    /**
-     * Remove class to the elements
-     * @author Dariel Noel <darielnoel@gmail.com>
-     * @since  2014-09-03
-     * @param  {object}   e                The event handler
-     * @param  {object}   animationContext AniJS Animation Context Object
-     * @param  {[string]}   params           [description]                   [description]
-     */
-    AniJSDefaultHelper.removeClassToClosest = function(e, animationContext, params) {
-        var closestNode = e.target.parentNode;
-        if(params.length > 1){
-            closestNode = closest(e.target.parentNode, params[1]);
-        }
-        AniJSDefaultHelper.makeClassAction(e, animationContext, params, 1, closestNode);
-    };
-
-    /**
-     * Toggle class to the elements
-     * @author Dariel Noel <darielnoel@gmail.com>
-     * @since  2014-09-03
-     * @param  {object}   e                The event handler
-     * @param  {object}   animationContext AniJS Animation Context Object
-     * @param  {[string]}   params           [description]
-     */
-    AniJSDefaultHelper.toggleClassToClosest = function(e, animationContext, params) {
-        var closestNode = e.target.parentNode;
-        if(params.length > 1){
-            closestNode = closest(e.target.parentNode, params[1]);
-        }
-        AniJSDefaultHelper.makeClassAction(e, animationContext, params, 2, closestNode);
-    };
-
 
     /**
      * Make toggle, remove or addActions
@@ -191,82 +107,17 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             target = e.target,
             elements = null;
         if(paramsLength === 0) {
-            AniJS.purgeEventTarget(target);
-            target.remove();
+            wipeOff([target]);
         } else {
             while(paramsLength-- > 0) {
-                elements = document.querySelectorAll(params[paramsLength]) || [];
-                var i = elements.length;
-                while (i-- > 0) {
-                    elements[i].remove();
-                }
+                elements = queryAll(params[paramsLength]) || [];
+                wipeOff(elements);
             }
         }
-
-        return true;
-    };
-
-    /**
-     * Remove element or elements from html
-     * Examples:
-     *  Remove current element parent.
-     *   if: click, do: $remove
-     *  Remove the parents of HTML elements with class name .remove
-     *   if: click, do: $remove .remove
-     *  Remove HTML element with id remove
-     *   if: click, do: $remove #remove
-     *  Remove the parents of HTML elements with tag name p
-     *   if: click, do: $remove p
-     *  Remove the parents of all HTML elements that contain class name remove or id remove o tag name p
-     *   if: click, do: $remove .remove & #remove & p
-     *
-     * @author Dariel Noel <darielnoel@gmail.com>
-     * @since  2014-09-11
-     * @param  {object}   e                The event handler
-     * @param  {object}   animationContext AniJS Animation Context Object
-     * @param  {[string]}   params           [description]
-     */
-    AniJSDefaultHelper.removeParent = function(e, animationContext, params) {
-        var paramsLength = params.length,
-            target = e.target,
-            elements = null,
-            parent;
-        if(paramsLength === 0) {
-            removeParent(target);
-        } else {
-            while(paramsLength-- > 0) {
-                elements = all(params[paramsLength]) || [];
-                var i = elements.length;
-                while (i-- > 0) {
-                    removeParent(elements[i]);
-                }
-            }
+        //Run the animation
+        if(!animationContext.hasRunned){
+            animationContext.run();
         }
-
-        return true;
-    };
-
-    /**
-     * Remove the most closest father Node
-     * @author Dariel Noel <darielnoel@gmail.com>
-     * @since  2014-09-14
-     * @param  {[type]}   e                [description]
-     * @param  {[type]}   animationContext [description]
-     * @param  {[type]}   params           [description]
-     * @return {[type]}                    [description]
-     */
-    AniJSDefaultHelper.removeClosest = function(e, animationContext, params) {
-        var paramsLength = params.length,
-            target = e.target,
-            elements = null,
-            parent;
-        if(paramsLength === 0) {
-            removeParent(target);
-        } else {
-            removeClosest(target, params[0]);
-        }
-
-        return true;
     };
 
     /**
@@ -293,41 +144,219 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             eventTarget = animationContext.eventTarget, //quien origina el evento
             elements = null,
             fnCloneNode = animationContext.nodeHelper.cloneNode,
-            repeats = 0;
+            repeats = 1;
 
-        function cloneAux(el, parent, repeats) {
-            var i = 0;
-            while(repeats > i++) {
-                if(parent === el) {                             //Whitout to
-                    fnCloneNode(parent, parent.parentNode);
-                } else {                                        //With to
-                    fnCloneNode(el, parent);
-                }
-            }
-        }
         if(paramsLength == 0 ) {                //$clone
-            cloneAux(eventTarget, target, 1);
+            cloneNode(eventTarget, target, repeats, fnCloneNode);
         } else {
             if(paramsLength == 1) {             //$clone 3, to: #clone
                 repeats = parseInt(params[0]) || null;
                 if(repeats !== null) {
-                    cloneAux(eventTarget, target, repeats);
-                    return true;
+                    cloneNode(eventTarget, target, repeats, fnCloneNode);
+                    //Run the animation
+                    if(!animationContext.hasRunned){
+                        animationContext.run();
+                    }
+                    return;
                 } else {
                     repeats = 1;
                 }
             } else {                            //$clone selectror & 3, to: #clone
                 repeats = parseInt(params[1]) || 1;
             }
-            elements = all(params[0]);
+            elements = queryAll(params[0]);
             var i = 0;
             for (; i < elements.length; i++) {
-                cloneAux(elements[i], target, repeats);
+                cloneNode(elements[i], target, repeats, fnCloneNode);
             }
         }
-
-        return true;
+        //Run the animation
+        if(!animationContext.hasRunned){
+            animationContext.run();
+        }
     };
+
+    /**
+     * Parent for element
+     * Examples:
+     *  Remove li parent
+     *   if: click, on: li, do: $remove, to: $parent
+     *  Se remueve el parent del li que dispara el evento
+     *   if: click, on: li, do: $remove, to: $parent target
+     *  Se remueve el parent de todos los elementos de clase .primary
+     *   if: click, on: li, do: $remove, to: $parent .primary
+     *
+     * @author Dariel Noel <darielnoel@gmail.com>
+     * @author Yolier Galan Tasse <gallegogt@gmail.com>
+     * @since  2014-09-14
+     * @param  {object}   e                The event handler
+     * @param  {object}   ctx              AniJS Animation Context Object
+     * @param  {[string]} params           [description]
+     */
+    AniJSDefaultHelper.parent = function(e, ctx, params) {
+        var parsedInput = parseSelectorFunctionInput(e, ctx, params),
+            elements = parsedInput.elements,
+            parents = [],
+            i = elements.length,
+            parentNode;
+        while(i-- > 0) {
+            parentNode = elements[i].parentNode;
+            if(!isContains(parents, parentNode)) {
+                parents.push(parentNode);
+            }
+        }
+        return parents;
+    };
+
+    /**
+     * Parents for element
+     * Examples:
+     *  Se remueven todos los ancestros del div
+     *   if: click, on: li, do: $remove, to: $ancestors
+     *  Se remueven todos los ancestros con clase ".red-ancestors" de div
+     *   if: click, on: li, do: $remove, to: $ancestors .red-ancestors
+     *  Se remueven todos los ancestros con clase ".red-ancestors" de li que dispara el evento
+     *   if: click, on: li, do: $remove, to: $ancestors target & .red-ancestors
+     *  Se remueven todos los ancestros con clase ".red-ancestors" de los elementos con clase .primary
+     *   if: click, on: li, do: $remove, to: $ancestors .primary & .red-ancestors
+     *
+     * @author Dariel Noel <darielnoel@gmail.com>
+     * @author Yolier Galan Tasse <gallegogt@gmail.com>
+     * @since  2014-09-14
+     * @param  {object}   e                The event handler
+     * @param  {object}   ctx              AniJS Animation Context Object
+     * @param  {[string]} params           [description]
+     */
+    AniJSDefaultHelper.ancestors = function(e, ctx, params) {
+        var psfi = parseSelectorFunctionInput(e, ctx, params),
+            elements = psfi.elements,
+            selector = psfi.selector,
+            ancs = [], currentAncs = [], i = 0, j = 0;
+        i = elements.length;
+        while(i-- > 0) {
+            // TODO: Este mecanismo debe ser optimizado ya que no sea necesario tener
+            // todos los ancestros para entonces hacer las comparaciones
+            currentAncs = ancestor(elements[i].parentNode, selector);
+            j = currentAncs.length;
+            //para cada ancestro si no esta contenido entonces se pone en la lista
+            while(j-- > 0) {
+                if(!isContains(ancs, currentAncs[j])) {
+                    ancs.push(currentAncs[j]);
+                }
+            }
+        }
+        return ancs;
+    };
+
+    /**
+     * Closets
+     * Examples:
+     *   Remueve el ancestro mas cercano del div
+     *   if: click, on: li, do: $remove, to: $closest
+     *   Remueve el ancestro mas cercano del li
+     *   if: click, on: li, do: $remove, to: $closest target
+     *   Remueve el ancestro mas cercano de div con clase .primary
+     *   if: click, on: li, do: $remove, to: $closest .primary
+     *
+     * @author Dariel Noel <darielnoel@gmail.com>
+     * @since  2014-09-14
+     * @param  {object}   e                The event handler
+     * @param  {object}   ctx              AniJS Animation Context Object
+     * @param  {[string]} params           [description]
+     */
+    AniJSDefaultHelper.closest = function(e, ctx, params) {
+        var parsedInput = parseSelectorFunctionInput(e, ctx, params),
+            elements = parsedInput.elements,
+            selector = parsedInput.selector,
+            i = elements.length,
+            closestList = [],
+            closestNode;
+        while(i-- > 0) {
+            closestNode = closest(elements[i].parentNode, selector);
+            if(closestNode && !isContains(closestList, closestNode)) {
+                closestList.push(closestNode);
+            }
+        }
+        return closestList;
+    };
+
+    /**
+     * Find
+     * Examples:
+     *
+     *  Elimina todos los elemntos hijos del elemento actual
+     *   if: click, on: li, do: $find, to: $find
+     *  Elimina todos los elemntos hijos del elemento li
+     *   if: click, on: li, do: $find, to: $find target
+     *  Elimina todos los elemntos hijos del elemento actual que contengan la clase css .primary
+     *   if: click, on: li, do: $find, to: $find .primary
+     *
+     * @author Dariel Noel <darielnoel@gmail.com>
+     * @since  2014-09-14
+     * @param  {object}   e                The event handler
+     * @param  {object}   ctx              AniJS Animation Context Object
+     * @param  {[string]} params           [description]
+     */
+    AniJSDefaultHelper.find = function(e, ctx, params) {
+        var parsedInput = parseSelectorFunctionInput(e, ctx, params),
+            elements = parsedInput.elements,
+            selector = parsedInput.selector,
+            i = elements.length,
+            foundedList = [];
+        while(i-- > 0) {
+            tempFoundedNodeList = findNodes(elements[i], selector);
+            foundedList = mergeArray(tempFoundedNodeList, foundedList);
+        }
+        return foundedList;
+    };
+    /**
+     * Children
+     * Examples:
+     *
+     *   if: click, on: li, do: $remove, to: $children
+     *
+     *   if: click, on: li, do: $remove, to: $children target & h1
+     *
+     *   if: click, on: li, do: $remove, to: $children .primary
+     *
+     * @author Dariel Noel <darielnoel@gmail.com>
+     * @author Yolier Galan Tasse <gallegogt@gmail.com>
+     * @since  2014-09-14
+     * @param  {object}   e                The event handler
+     * @param  {object}   ctx              AniJS Animation Context Object
+     * @param  {[string]} params           [description]
+     */
+    AniJSDefaultHelper.children = function(e, ctx, params) {
+        var parsedInput = parseSelectorFunctionInput(e, ctx, params),
+            elements = parsedInput.elements,
+            selector = parsedInput.selector,
+            i = elements.length, j = 0,
+            foundedList = [], tmpItems = null;
+
+        while(i-- > 0) {
+            tmpItems = elements[i].children;
+            for (; j < tmpItems.length; j++) {
+                if(matchesSelector(tmpItems[j], selector)) {
+                    mergeArray([ tmpItems[j] ], foundedList);
+                }
+            };
+        }
+        return foundedList;
+    };
+
+
+
+    //-----------------------------------------------------------
+    //           AUXILIARY FUCTIONS
+    //-----------------------------------------------------------
+
+    function matchesSelector(elem, selector) {
+        var ms = elem.matches ||
+                  elem.webkitMatchesSelector ||
+                  elem.mozMatchesSelector ||
+                  elem.msMatchesSelector;
+        return ms.call(elem, selector);
+    }
 
     /**
      * Return all nodes that match witch selector
@@ -335,30 +364,59 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
      * @since  2014-09-14
      * @return {[type]}   [description]
      */
-    function all(selector){
+    function queryAll(selector){
         return document.querySelectorAll(selector);
     }
 
-    function removeParent(element){
-        var parent = element.parentNode;
-        AniJS.EventSystem.purgeAllNodes(parent);
-        parent.remove();
+    /**
+     * Function for erease elements form html
+     * @author Yolier Galan Tasse <gallegogt@gmail.com>
+     * @since  2014-09-14
+     */
+    function wipeOff(elements) {
+        var i = elements.length;
+        while (i-- > 0) {
+            AniJS.EventSystem.purgeAllNodes(elements[i]);
+            elements[i].remove();
+        }
     }
 
-    function removeClosest(element, selector){
-        var parent = closest(element.parentNode, selector);
-        if(parent){
-            AniJS.EventSystem.purgeAllNodes(parent);
-            parent.remove();
+    /**
+     * Return all nodes that match witch selector
+     * @author Dariel Noel <darielnoel@gmail.com>
+     * @since  2014-09-14
+     * @return {[type]}   [description]
+     */
+    function isContains(array, el) {
+        var found = false;
+        for (var i = 0; i < array.length && !found; i++) {
+            found = (array[i] === el);
+        };
+        return found;
+    }
+
+    /**
+     * Function to clone element
+     * @author Yolier Galan Tasse <gallegogt@gmail.com>
+     * @since  2014-09-14
+     */
+    function cloneNode(el, parent, repeats, fnCloneNode) {
+        var i = 0;
+        while(repeats > i++) {
+            if(parent === el) {                             //Whitout to
+                fnCloneNode(parent, parent.parentNode);
+            } else {                                        //With to
+                fnCloneNode(el, parent);
+            }
         }
     }
 
     //http://stackoverflow.com/questions/15329167/closest-ancestor-matching-selector-using-native-dom
     //by Paul Irish
     function closest(elem, selector) {
-       var matchesSelector = elem.matches || elem.webkitMatchesSelector || elem.mozMatchesSelector || elem.msMatchesSelector;
+        var matchesSelector = elem.matches || elem.webkitMatchesSelector || elem.mozMatchesSelector || elem.msMatchesSelector;
         while (elem) {
-            if (matchesSelector.bind(elem)(selector)) {
+            if (matchesSelector.call(elem, selector)) {
                 return elem;
             } else {
                 elem = elem.parentElement;
@@ -366,5 +424,72 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         }
         return false;
     }
+
+    /**
+     * Ancestor
+     * @author Dariel Noel <darielnoel@gmail.com>
+     * @since  2014-09-14
+     * @return {[type]}   [description]
+     */
+    function ancestor(elem, selector) {
+        var ancestorList = [];
+        if(selector === null) { selector = '*'; }
+        while (elem && elem.tagName !== 'html') {
+            if (matchesSelector(elem, selector)) {
+                ancestorList.push(elem);
+            }
+            elem = elem.parentElement;
+        }
+        return ancestorList;
+    }
+    /**
+     * Parse selector function input
+     * @author Dariel Noel <darielnoel@gmail.com>
+     * @since  2014-09-14
+     * @return {[type]}   [description]
+     */
+    function parseSelectorFunctionInput(e, ctx, params) {
+        var elements = [],
+            selector = '*';
+
+        if(params.length === 0) {
+            elements = [ctx.dataAniJSOwner];
+        }
+        else {
+            elements = ( params[0] === 'target' ) ? [e.target] : queryAll(params[0]);
+        }
+        if(params.length > 1) {
+            selector = params[1];
+        }
+
+        return { elements: elements,  selector: selector };
+    }
+    /**
+     * Find nodes
+     * @author Dariel Noel <darielnoel@gmail.com>
+     * @since  2014-09-14
+     * @return {[type]}   [description]
+     */
+    function findNodes(root, selector){
+        return root.querySelectorAll(selector);
+    }
+    /**
+     * Merge array
+     * @author Dariel Noel <darielnoel@gmail.com>
+     * @since  2014-09-14
+     * @return {[type]}   [description]
+     */
+    function mergeArray(from, receiver){
+        var j = from.length,
+            tempItem;
+        while(j-- > 0) {
+            tempItem = from[j];
+            if(tempItem && !isContains(receiver, tempItem)) {
+                receiver.push(tempItem);
+            }
+        }
+        return receiver;
+    }
+
 
 }(window));

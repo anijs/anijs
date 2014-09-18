@@ -354,7 +354,7 @@ YUI().use('node', 'node-event-simulate', function (Y) {
                 });
             });
 
-            describe('y se pone la sentencia (on) con selectores Reales', function(){
+            describe('y se pone la sentencia (to) con selectores Reales', function(){
                 beforeEach(function(done) {
                     //Se configuran las precondiciones para la prueba
                 var dataAnijJS = 'if: click, on: .test, do: bounce animated, to: body, after: $afterFunction',
@@ -371,6 +371,32 @@ YUI().use('node', 'node-event-simulate', function (Y) {
                 });
 
                 it("entonces la interaccion SI es ejecutada", function() {
+                    expect(AniJSDefaultHelper.afterFunction).toHaveBeenCalled();
+                });
+            });
+            describe('y se pone la sentencia (to) con una funcion ayudante de tipo parent', function(){
+                beforeEach(function(done) {
+                    //Se configuran las precondiciones para la prueba
+                var dataAnijJS = 'if: click, on: .test, do: bounce animated, to: $testFunction .test, after: $afterFunction',
+                    targetNode;
+
+                    targetNode = AniJSTest.Utils.settingEnviroment(dataAnijJS);
+
+                    AniJSDefaultHelper = AniJS.getHelper();
+                    AniJSDefaultHelper.testFunction = function(e, animationContext, params) {
+                        return [e.target];
+                    };
+
+
+                    AniJSTest.Utils.settingAfterFunctionSpy(done);
+
+                    //corremos AniJS
+                    AniJS.run();
+
+                    targetNode.simulate("click");
+                });
+
+                it("entonces los nodos incluidos en behaviorTarget list son los devueltos por dicha funcion", function() {
                     expect(AniJSDefaultHelper.afterFunction).toHaveBeenCalled();
                 });
             });
@@ -395,7 +421,9 @@ YUI().use('node', 'node-event-simulate', function (Y) {
         //Se agrega una funcion before
         AniJSDefaultHelper.afterFunction = function(e, animationContext){
             //Permite seguir con las pruebas
-            callback();
+            if(callback){
+                callback();
+            }
         };
 
         // Ponemos un spy a dicha funcion para saber cuando se ejecuta la animacion
