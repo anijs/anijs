@@ -456,7 +456,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             elements = [ctx.dataAniJSOwner];
         }
         else {
-            elements = ( params[0] === 'target' ) ? [e.target] : queryAll(params[0]);
+            elements = ( params[0] === 'target' ) ? [e.currentTarget] : queryAll(params[0]);
         }
         if(params.length > 1) {
             selector = params[1];
