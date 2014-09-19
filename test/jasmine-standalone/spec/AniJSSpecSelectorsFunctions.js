@@ -9,7 +9,7 @@ YUI().use('node', 'node-event-simulate', function (Y) {
         //Se agrega una funcion before
         AniJSDefaultHelper.afterFunction = function(e, animationContext){
             //Permite seguir con las pruebas
-            if(count && count > 0){
+            if(count && count > 1){
                 count--;
             } else{
                 callback();
@@ -133,12 +133,12 @@ YUI().use('node', 'node-event-simulate', function (Y) {
                 });
                 describe('cuando recibe 1 parametro cuyo valor es algun "selector CSS"', function(){
                     beforeEach(function(done){
-                        var dataAnijJS = 'if: click, on: #contenedor,do: $addClass testingBehavior, to: $parent div, after: $afterFunction',
+                        var dataAnijJS = 'if: click, on: #contenedor,do: $addClass testingBehavior, to: $parent #a-1-2, after: $afterFunction',
                             targetNode;
 
                         targetNode = AniJSTest.Utils.settingEnviroment(dataAnijJS);
 
-                        AniJSTest.Utils.settingAfterFunctionSpy(done, 6);
+                        AniJSTest.Utils.settingAfterFunctionSpy(done, 1);
 
                         AniJSTest.Utils.settingHelperFunctionSpy('parent');
 
@@ -151,8 +151,7 @@ YUI().use('node', 'node-event-simulate', function (Y) {
                     it('entonces se devuelve los padres de todos los elementos que matchen con' +
                         'dicho selector', function(){
                         expect(AniJSDefaultHelper.parent).toHaveBeenCalled();
-                        expect(Y.one('div.a').hasClass('testingBehavior')).toBeTruthy();
-                        expect(Y.one('div.test').hasClass('testingBehavior')).toBeTruthy();
+                        expect(Y.one('.a-1').hasClass('testingBehavior')).toBeTruthy();
                     });
                 });
             });
@@ -182,7 +181,7 @@ YUI().use('node', 'node-event-simulate', function (Y) {
                 });
                 describe('cuando recibe 1 parametro cuyo valor es un selector CSS', function(){
                     beforeEach(function(done){
-                        var dataAnijJS = 'if: click, on:#contenedor, do: $addClass testingBehavior, to: $closest .test, after: $afterFunction',
+                        var dataAnijJS = 'if: click, on:#contenedor, do: $addClass testingBehavior, to: $closest .a, after: $afterFunction',
                             targetNode;
 
                         targetNode = AniJSTest.Utils.settingEnviroment(dataAnijJS, '#contenedor');
@@ -197,8 +196,8 @@ YUI().use('node', 'node-event-simulate', function (Y) {
                         //Simulamos el evento click
                         Y.one('#contenedor').simulate("click");
                     });
-                    it('entonces se devuelve "el ancestro mas cercano" que matchee con dicho selector ' +
-                        'del elemento que es propietario de la definicion data-anijs',
+                    it('entonces se devuelve "el ancestro mas cercano" de los elementos que matcheen con ' +
+                        'dicho selector',
                     function(){
                         expect(AniJSDefaultHelper.closest).toHaveBeenCalled();
                         expect(Y.one('.test').hasClass('testingBehavior')).toBeTruthy();
@@ -261,9 +260,9 @@ YUI().use('node', 'node-event-simulate', function (Y) {
                         var dataAnijJS = 'if: click, do: $addClass testingBehavior, to: $find, after: $afterFunction',
                             targetNode;
 
-                        targetNode = AniJSTest.Utils.settingEnviroment(dataAnijJS, '.a');
+                        targetNode = AniJSTest.Utils.settingEnviroment(dataAnijJS, '#a-1-2');
 
-                        AniJSTest.Utils.settingAfterFunctionSpy(done, 2);
+                        AniJSTest.Utils.settingAfterFunctionSpy(done, 1);
 
                         AniJSTest.Utils.settingHelperFunctionSpy('find');
 
@@ -276,13 +275,35 @@ YUI().use('node', 'node-event-simulate', function (Y) {
                     it('entonces se devuelve "TODOS los elementos descendientes" del elemento que es propietario de la' +
                         'definicion data-anijs', function(){
                         expect(AniJSDefaultHelper.find).toHaveBeenCalled();
-                        expect(Y.one('ul').hasClass('testingBehavior')).toBeTruthy();
                         expect(Y.one('li').hasClass('testingBehavior')).toBeTruthy();
                     });
                 });
                 describe('cuando recibe 1 parametro cuyo valor es "target"', function(){
                     beforeEach(function(done){
                         var dataAnijJS = 'if: click, on:#contenedor, do: $addClass testingBehavior, to: $find target, after: $afterFunction',
+                            targetNode;
+
+                        targetNode = AniJSTest.Utils.settingEnviroment(dataAnijJS, '#a-1-2');
+
+                        AniJSTest.Utils.settingAfterFunctionSpy(done);
+
+                        AniJSTest.Utils.settingHelperFunctionSpy('find');
+
+                        //corremos AniJS
+                        AniJS.run();
+
+                        //Simulamos el evento click
+                        Y.one('#a-1-2').simulate("click");
+                    });
+                    it('entonces se devuelve "los elementos descendientes" del elemento que dispara el evento',
+                    function(){
+                        expect(AniJSDefaultHelper.find).toHaveBeenCalled();
+                        expect(Y.one('.a-1-2-3').hasClass('testingBehavior')).toBeTruthy();
+                    });
+                });
+                describe('cuando recibe 1 parametro cuyo valor es algun "selector CSS"', function(){
+                    beforeEach(function(done){
+                        var dataAnijJS = 'if: click, on: #contenedor,do: $addClass testingBehavior, to: $find #a-1-2, after: $afterFunction',
                             targetNode;
 
                         targetNode = AniJSTest.Utils.settingEnviroment(dataAnijJS, '.a');
@@ -297,34 +318,9 @@ YUI().use('node', 'node-event-simulate', function (Y) {
                         //Simulamos el evento click
                         Y.one('#contenedor').simulate("click");
                     });
-                    it('entonces se devuelve "los elementos descendientes" del elemento que dispara el evento',
-                    function(){
+                    it('entonces se devuelve "los elementos descendientes" de los elementos ' +
+                        'que matchen con dicho selector', function(){
                         expect(AniJSDefaultHelper.find).toHaveBeenCalled();
-                        expect(Y.one('ul').hasClass('testingBehavior')).toBeTruthy();
-                        expect(Y.one('li').hasClass('testingBehavior')).toBeTruthy();
-                    });
-                });
-                describe('cuando recibe 1 parametro cuyo valor es algun "selector CSS"', function(){
-                    beforeEach(function(done){
-                        var dataAnijJS = 'if: click, on: #contenedor,do: $addClass testingBehavior, to: $find div, after: $afterFunction',
-                            targetNode;
-
-                        targetNode = AniJSTest.Utils.settingEnviroment(dataAnijJS, '.a');
-
-                        AniJSTest.Utils.settingAfterFunctionSpy(done, 22);
-
-                        AniJSTest.Utils.settingHelperFunctionSpy('find');
-
-                        //corremos AniJS
-                        AniJS.run();
-
-                        //Simulamos el evento click
-                        Y.one('#contenedor').simulate("click");
-                    });
-                    it('entonces se devuelve "los elementos descendientes" del propietario ' +
-                        'de la definicion data-anijs que matchen con dicho selector', function(){
-                        expect(AniJSDefaultHelper.find).toHaveBeenCalled();
-                        expect(Y.one('#a-1-2').hasClass('testingBehavior')).toBeTruthy();
                         expect(Y.one('.a-1-2-3').hasClass('testingBehavior')).toBeTruthy();
                     });
                 });
@@ -379,41 +375,6 @@ YUI().use('node', 'node-event-simulate', function (Y) {
                     });
                 });
             });
-            // describe('y esa funcion es de tipo $ancestors', function(){
-            //     describe('cuando no recibe parametros', function(){
-            //         it('entonces se devuelven "todos los ancestros" del elemento que es propietario de la' +
-            //             'definicion data-anijs', function(){
-
-            //         });
-            //     });
-            //     describe('cuando recibe 1 parametro cuyo valor es "target"', function(){
-            //         it('entonces se devuelven "todos los ancestros" del elemento que dispara el evento',
-            //         function(){
-
-            //         });
-            //     });
-            //     describe('cuando recibe 1 parametro cuyo valor es algun "selector CSS"', function(){
-            //         it('entonces se devuelven "todos los ancestros" de todos los elementos que matchen con' +
-            //             'dicho selector', function(){
-
-            //         });
-            //     });
-            //     describe('cuando se reciben 2 parametros cuyos valores son "target" & selector CSS',
-            //         function(){
-            //         it('entonces se devuelven "todos los ancestros que matcheen con el selector" ' +
-            //            'del elemento que dispara el evento',
-            //         function(){
-
-            //         });
-            //     });
-            //     describe('cuando se reciben 2 parametros cuyos valores son "selector CSS" & selector CSS', function(){
-            //         it('entonces se devuelven "todos los ancestros que matcheen con el selector" ' +
-            //            'de los elementos que matcheen con el selector CSS',
-            //         function(){
-
-            //         });
-            //     });
-            // });
         });
     });
 });

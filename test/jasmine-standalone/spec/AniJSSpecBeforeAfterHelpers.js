@@ -73,20 +73,14 @@ YUI().use('node', 'node-event-simulate', function (Y) {
                     AniJSDefaultHelper = AniJS.getHelper();
 
                     //Se agrega una funcion before
-                    AniJSDefaultHelper.beforeFunction = function(e, animationContext){
+                    AniJSDefaultHelper.beforeFunction = function(e, animationContext, params){
                         animationContext.run();
                     };
 
-                    // proseguimos con las pruebas una vez que hallamos terminadocompletamente la animacion
-                    AniJSDefaultHelper.afterFunction = function(e, animationContext){
-                        //Permite seguir con las pruebas
+                    AniJSDefaultHelper.afterFunction = function(e, animationContext, params){
                         done();
                     };
 
-                    // Ponemos un spy a dicha funcion para saber cuando se llama
-                    // y con que parametros etc
-                    // http://jasmine.github.io/2.0/introduction.html#section-Spies
-                    // callThrough luego ejecuta el comportamiento por defecto
                     spyOn(AniJSDefaultHelper, 'beforeFunction').and.callThrough();
                     spyOn(AniJSDefaultHelper, 'afterFunction').and.callThrough();
 
@@ -98,6 +92,7 @@ YUI().use('node', 'node-event-simulate', function (Y) {
                 });
 
                 it("then the animation is executed", function() {
+                    expect(AniJSDefaultHelper.beforeFunction).toHaveBeenCalled();
                     expect(AniJSDefaultHelper.afterFunction).toHaveBeenCalled();
                 });
             });
