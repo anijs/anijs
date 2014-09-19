@@ -23,11 +23,11 @@ YUI().use('node', 'node-event-simulate', function (Y) {
                 var paramsLength = Math.round( Math.random(10) * 100 )
                 paramsN = "";
                 while(paramsLength-- > 1) {
-                    paramsN += "test"+ paramsLength + " & ";
+                    paramsN += "test"+ paramsLength + " | ";
                 }
                 paramsN += "test"+ paramsLength;
 
-                var paramsArrayTmp = paramsN.split("&");
+                var paramsArrayTmp = paramsN.split("|");
                 paramsLength = paramsArrayTmp.length;
 
                  while(paramsLength-- > 0) {
@@ -152,10 +152,10 @@ YUI().use('node', 'node-event-simulate', function (Y) {
                     expect(AniJSDefaultHelper.beforeFunction.calls.argsFor(0)[2][0]).toEqual("test");
                 });
             });
-            describe("and the before function is setting with (2 param) cuyos valores son (test) & (test2)", function() {
+            describe("and the before function is setting with (2 param) cuyos valores son (test) | (test2)", function() {
                 beforeEach(function(done) {
                     //Se configuran las precondiciones para la prueba
-                var dataAnijJS = 'if: click, do: bounce, to: body, before: $beforeFunction test & test2',
+                var dataAnijJS = 'if: click, do: bounce, to: body, before: $beforeFunction test | test2',
                     targetNode;
 
                     targetNode = AniJSTest.Utils.settingEnviroment(dataAnijJS);
@@ -247,11 +247,11 @@ YUI().use('node', 'node-event-simulate', function (Y) {
                 var paramsLength = Math.round( Math.random(10) * 100 )
                 paramsN = "";
                 while(paramsLength-- > 1) {
-                    paramsN += "test"+ paramsLength + " & ";
+                    paramsN += "test"+ paramsLength + " | ";
                 }
                 paramsN += "test"+ paramsLength;
 
-                var paramsArrayTmp = paramsN.split("&");
+                var paramsArrayTmp = paramsN.split("|");
                 paramsLength = paramsArrayTmp.length;
 
                  while(paramsLength-- > 0) {
@@ -344,10 +344,10 @@ YUI().use('node', 'node-event-simulate', function (Y) {
                     expect(AniJSDefaultHelper.afterFunction.calls.argsFor(0)[2][0]).toEqual("test");
                 });
             });
-            describe("and the after function is setting with (2 param) cuyos valores son (test) & (test2)", function() {
+            describe("and the after function is setting with (2 param) cuyos valores son (test) | (test2)", function() {
                 beforeEach(function(done) {
                     //Se configuran las precondiciones para la prueba
-                var dataAnijJS = 'if: click, do: bounce animated 2param, to: body, after: $afterFunction test & test2',
+                var dataAnijJS = 'if: click, do: bounce animated 2param, to: body, after: $afterFunction test | test2',
                     targetNode;
 
                     targetNode = AniJSTest.Utils.settingEnviroment(dataAnijJS);
@@ -441,11 +441,11 @@ YUI().use('node', 'node-event-simulate', function (Y) {
                 var paramsLength = Math.round( Math.random(10) * 100 )
                 paramsN = "";
                 while(paramsLength-- > 1) {
-                    paramsN += "test"+ paramsLength + " & ";
+                    paramsN += "test"+ paramsLength + " | ";
                 }
                 paramsN += "test"+ paramsLength;
 
-                var paramsArrayTmp = paramsN.split("&");
+                var paramsArrayTmp = paramsN.split("|");
                 paramsLength = paramsArrayTmp.length;
 
                  while(paramsLength-- > 0) {

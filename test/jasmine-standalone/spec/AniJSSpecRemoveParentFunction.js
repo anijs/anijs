@@ -150,7 +150,7 @@ YUI().use('node', 'node-event-simulate', function (Y) {
                  * the wrapper function removeWrapper is created for execute the
                  * helper function remove on AniJSDefaultHelper object.
                  */
-                var dataAnijJS = 'if: click, do: $removeWrapper .classRemove & #idRemove',
+                var dataAnijJS = 'if: click, do: $removeWrapper .classRemove | #idRemove',
                     targetNode = AniJSTest.Utils.settingEnviroment(dataAnijJS);
 
                 AniJSDefaultHelper = AniJS.getHelper();

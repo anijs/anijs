@@ -203,10 +203,10 @@ YUI().use('node', 'node-event-simulate', function (Y) {
                         expect(Y.one('.test').hasClass('testingBehavior')).toBeTruthy();
                     });
                 });
-                describe('cuando se reciben 2 parametros cuyos valores son "target" & selector CSS',
+                describe('cuando se reciben 2 parametros cuyos valores son "target" | selector CSS',
                     function(){
                     beforeEach(function(done){
-                        var dataAnijJS = 'if: click, on: ul,do: $addClass testingBehavior, to: $closest target & .a, after: $afterFunction',
+                        var dataAnijJS = 'if: click, on: ul,do: $addClass testingBehavior, to: $closest target | .a, after: $afterFunction',
                             targetNode;
 
                         targetNode = AniJSTest.Utils.settingEnviroment(dataAnijJS);
@@ -229,9 +229,9 @@ YUI().use('node', 'node-event-simulate', function (Y) {
                         expect(Y.one('div.a').hasClass('testingBehavior')).toBeTruthy();
                     });
                 });
-                describe('cuando se reciben 2 parametros cuyos valores son "selector CSS" & selector CSS', function(){
+                describe('cuando se reciben 2 parametros cuyos valores son "selector CSS" | selector CSS', function(){
                     beforeEach(function(done){
-                        var dataAnijJS = 'if: click, on: ul,do: $addClass testingBehavior, to: $closest ul & .a, after: $afterFunction',
+                        var dataAnijJS = 'if: click, on: ul,do: $addClass testingBehavior, to: $closest ul | .a, after: $afterFunction',
                             targetNode;
 
                         targetNode = AniJSTest.Utils.settingEnviroment(dataAnijJS);
@@ -280,12 +280,12 @@ YUI().use('node', 'node-event-simulate', function (Y) {
                 });
                 describe('cuando recibe 1 parametro cuyo valor es "target"', function(){
                     beforeEach(function(done){
-                        var dataAnijJS = 'if: click, on:#contenedor, do: $addClass testingBehavior, to: $find target, after: $afterFunction',
+                        var dataAnijJS = 'if: click, on:#a-1-2, do: $addClass testingBehavior, to: $find target, after: $afterFunction',
                             targetNode;
 
                         targetNode = AniJSTest.Utils.settingEnviroment(dataAnijJS, '#a-1-2');
 
-                        AniJSTest.Utils.settingAfterFunctionSpy(done);
+                        AniJSTest.Utils.settingAfterFunctionSpy(done, 1);
 
                         AniJSTest.Utils.settingHelperFunctionSpy('find');
 
@@ -324,10 +324,10 @@ YUI().use('node', 'node-event-simulate', function (Y) {
                         expect(Y.one('.a-1-2-3').hasClass('testingBehavior')).toBeTruthy();
                     });
                 });
-                describe('cuando se reciben 2 parametros cuyos valores son "target" & selector CSS',
+                describe('cuando se reciben 2 parametros cuyos valores son "target" | selector CSS',
                     function(){
                     beforeEach(function(done){
-                        var dataAnijJS = 'if: click, on: .test,do: $addClass testingBehavior, to: $find target & .a, after: $afterFunction',
+                        var dataAnijJS = 'if: click, on: .test,do: $addClass testingBehavior, to: $find target | .a, after: $afterFunction',
                             targetNode;
 
                         targetNode = AniJSTest.Utils.settingEnviroment(dataAnijJS, '.a');
@@ -350,9 +350,9 @@ YUI().use('node', 'node-event-simulate', function (Y) {
                         expect(Y.one('div.a').hasClass('testingBehavior')).toBeTruthy();
                     });
                 });
-                describe('cuando se reciben 2 parametros cuyos valores son "selector CSS" & selector CSS', function(){
+                describe('cuando se reciben 2 parametros cuyos valores son "selector CSS" | selector CSS', function(){
                     beforeEach(function(done){
-                        var dataAnijJS = 'if: click, on: ul,do: $addClass testingBehavior, to: $find .a & ul, after: $afterFunction',
+                        var dataAnijJS = 'if: click, on: ul,do: $addClass testingBehavior, to: $find .a | ul, after: $afterFunction',
                             targetNode;
 
                         targetNode = AniJSTest.Utils.settingEnviroment(dataAnijJS, '.a');

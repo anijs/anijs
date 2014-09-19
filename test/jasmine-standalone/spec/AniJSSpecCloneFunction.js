@@ -144,7 +144,7 @@ YUI().use('node', 'node-event-simulate', function (Y) {
                  * the wrapper function cloneWrapper is created for execute the
                  * helper function clone on AniJSDefaultHelper object.
                  */
-                var dataAnijJS = 'if: click, do: $cloneWrapper #foo & 1000, to: #holdCloned',
+                var dataAnijJS = 'if: click, do: $cloneWrapper #foo | 1000, to: #holdCloned',
                     targetNode = AniJSTest.Utils.settingCloneEnviromentWithParams(dataAnijJS);
 
                 AniJSDefaultHelper = AniJS.getHelper();

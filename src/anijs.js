@@ -41,7 +41,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         var ANIJS_DATATAG_NAME = 'data-anijs',
             DEFAULT = 'default',
             BODY = 'body',
-            PARAMS_SEPARATOR = '&',
+            PARAMS_SEPARATOR = '|',
             MULTIPLE_CLASS_SEPARATOR = '$',
             EVENT_RESERVED_WORD = 'if',
             EVENT_TARGET_RESERVED_WORD = 'on',

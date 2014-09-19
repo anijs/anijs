@@ -64,7 +64,7 @@ YUI().use('node', 'node-event-simulate', function (Y) {
 
         describe("on do action, with params. ", function() {
             beforeEach(function(done) {
-                var dataAnijJS = 'if: click, do: $addClass hiden, to: $children target & li, after: $afterFunction';
+                var dataAnijJS = 'if: click, do: $addClass hiden, to: $children target | li, after: $afterFunction';
                 AniJSTest.Utils.settingHelper(dataAnijJS, done, 0)
                 done();
             });

@@ -52,7 +52,7 @@ YUI().use('node', 'node-event-simulate', function (Y) {
         });
         describe("on do action, without params. ", function() {
             beforeEach(function(done) {
-                var dataAnijJS = 'if: click, do: $addClass hidden, to: $ancestors target & .red-ancestors, after: $afterFunction';
+                var dataAnijJS = 'if: click, do: $addClass hidden, to: $ancestors target | .red-ancestors, after: $afterFunction';
                 AniJSTest.Utils.settingHelper(dataAnijJS, done, 1)
             });
 
