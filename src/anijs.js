@@ -315,6 +315,49 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                  * @return
                  */
                 holdAnimClass: function(e, animationContext) {
+                },
+
+                /**
+                 * Fire custom event
+                 *
+                 * Examples:
+                 *
+                 *  Fire dummyEvent event of customEventProvider
+                 *
+                 *  if: click, do: $addClass fadeIn animated, to: #container, after: emit customEventProvider.dummyEvent
+                 *  if: dummyEvent, on: $customEventProvider, do: $addClass hidden,  to: $children #container | div
+                 *
+                 *  Fire fooEvent event of defaultEventProvider
+                 *
+                 *  if: click, do: $addClass fadeIn animated, to: #container, after: emit fooEvent
+                 *  if: fooEvent, on: $defaultEventProvider, do: $addClass hidden,  to: $children #container | div
+                *
+                 * @author Yolier Galan Tasse <gallegogt@gmail.com>
+                 * @since  2014-09-20
+                 * @param  {object}   e          The event handler
+                 * @param  {object}   ctx        AniJS Animation Context Object
+                 * @param  {[string]} params     [description]
+                 */
+                emit: function(e, ctx, params) {
+                    var cevent = params[0] || null,
+                        provider = "";
+                    if(cevent !== null) {
+                        cevent = cevent.split('.');
+                        if(cevent.length > 1) {
+                            provider = cevent[0];
+                            cevent = cevent[1];
+                        } else {
+                            provider = "";
+                            cevent = cevent[0];
+                        }
+                        var customEventProvider = AniJS.getEventProvider(provider) || null;
+                        if(customEventProvider !== null)
+                            customEventProvider.dispatchEvent(cevent);
+                    }
+                    //Run the animation
+                    if(!ctx.hasRunned){
+                        ctx.run();
+                    }
                 }
             };
 
