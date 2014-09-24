@@ -61,7 +61,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
             rootDOMTravelScope: {},
 
-            eventProviderCollection: {},
+            notifierCollection: {},
 
             /**
              * Initializer Function
@@ -129,7 +129,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                 //Clear all node listener
                 AniJS.purgeAll();
 
-                AniJS.eventProviderCollection = {};
+                AniJS.notifierCollection = {};
 
                 aniJSNodeCollection = selfish._findAniJSNodeCollection(AniJS.rootDOMTravelScope);
 
@@ -148,9 +148,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                 }
 
                 //We can use this for supply the window load and DomContentLoaded in some context
-                var aniJSEventsEventProvider = AniJS.getEventProvider('AniJSEventProvider');
-                if(aniJSEventsEventProvider){
-                    aniJSEventsEventProvider.dispatchEvent('onRunFinished');
+                var aniJSEventsNotifier = AniJS.getNotifier('AniJSNotifier');
+                if(aniJSEventsNotifier){
+                    aniJSEventsNotifier.dispatchEvent('onRunFinished');
                 }
             },
 
@@ -242,25 +242,25 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
             /**
              * Create an EventTarget
-             * @method createEventProvider
+             * @method createNotifier
              * @return EventTarget
              */
-            createEventProvider: function() {
+            createNotifier: function() {
                 return AniJS.EventSystem.createEventTarget();
             },
 
             /**
-             * Put an event provider in the eventProviderCollection
-             * @method registerEventProvider
-             * @param {} eventProvider
+             * Put an event Notifier in the notifierCollection
+             * @method registerNotifier
+             * @param {} notifier
              * @return Literal
              */
-            registerEventProvider: function(eventProvider) {
-                var eventProviderCollection = AniJS.eventProviderCollection;
+            registerNotifier: function(notifier) {
+                var notifierCollection = AniJS.notifierCollection;
 
                 //TODO: Optimize lookups here
-                if (eventProvider.id && eventProvider.value && AniJS.EventSystem.isEventTarget(eventProvider.value)) {
-                    eventProviderCollection[eventProvider.id] = eventProvider.value;
+                if (notifier.id && notifier.value && AniJS.EventSystem.isEventTarget(notifier.value)) {
+                    notifierCollection[notifier.id] = notifier.value;
                     return 1;
                 }
 
@@ -268,13 +268,13 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             },
 
             /**
-             * Return an eventProvider instance
-             * @method getEventProvider
-             * @param {} eventProviderID
-             * @return eventProvider
+             * Return an notifier instance
+             * @method getNotifier
+             * @param {} notifierID
+             * @return notifier
              */
-            getEventProvider: function(eventProviderID) {
-                return AniJS.eventProviderCollection[eventProviderID];
+            getNotifier: function(notifierID) {
+                return AniJS.notifierCollection[notifierID];
             }
 
         };
@@ -322,16 +322,12 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                  *
                  * Examples:
                  *
-                 *  Fire dummyEvent event of customEventProvider
+                 *  Fire dummyEvent event of customNotifier
                  *
-                 *  if: click, do: $addClass fadeIn animated, to: #container, after: emit customEventProvider.dummyEvent
-                 *  if: dummyEvent, on: $customEventProvider, do: $addClass hidden,  to: $children #container | div
+                 *  if: click, do: $addClass fadeIn animated, to: #container, after: emit customNotifier.dummyEvent
+                 *  if: dummyEvent, on: $customNotifier, do: $addClass hidden,  to: $children #container | div
                  *
-                 *  Fire fooEvent event of defaultEventProvider
                  *
-                 *  if: click, do: $addClass fadeIn animated, to: #container, after: emit fooEvent
-                 *  if: fooEvent, on: $defaultEventProvider, do: $addClass hidden,  to: $children #container | div
-                *
                  * @author Yolier Galan Tasse <gallegogt@gmail.com>
                  * @since  2014-09-20
                  * @param  {object}   e          The event handler
@@ -340,19 +336,19 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                  */
                 emit: function(e, ctx, params) {
                     var cevent = params[0] || null,
-                        provider = "";
+                        notifier = "";
                     if(cevent !== null) {
                         cevent = cevent.split('.');
                         if(cevent.length > 1) {
-                            provider = cevent[0];
+                            notifier = cevent[0];
                             cevent = cevent[1];
                         } else {
-                            provider = "";
+                            notifier = "";
                             cevent = cevent[0];
                         }
-                        var customEventProvider = AniJS.getEventProvider(provider) || null;
-                        if(customEventProvider !== null)
-                            customEventProvider.dispatchEvent(cevent);
+                        var customNotifier = AniJS.getNotifier(notifier) || null;
+                        if(customNotifier !== null)
+                            customNotifier.dispatchEvent(cevent);
                     }
                     //Run the animation
                     if(!ctx.hasRunned){
@@ -507,15 +503,15 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             var defaultValue = element,
                 eventTargetList = [defaultValue],
                 rootDOMTravelScope = AniJS.rootDOMTravelScope,
-                eventProviderList;
+                notifierList;
 
             //TODO: We could add other non direct DOM Objects
             if (aniJSParsedSentence.eventTarget) {
 
-                eventProviderList = selfish._eventProviderHelper(aniJSParsedSentence.eventTarget);
+                notifierList = selfish._notifierHelper(aniJSParsedSentence.eventTarget);
 
-                if (eventProviderList.length > 0) {
-                    eventTargetList = eventProviderList;
+                if (notifierList.length > 0) {
+                    eventTargetList = notifierList;
                 } else if (aniJSParsedSentence.eventTarget === 'document') {
                     eventTargetList = [document];
                 } else if (aniJSParsedSentence.eventTarget === 'window') {
@@ -569,21 +565,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                     }
                 }
             }
-
-            // if (behaviorTarget) {
-            //     if(behaviorTarget === TARGET && event.target){
-            //         behaviorTargetNodeList = [event.target];
-            //     } else{
-            //         //Expression regular remplazar caracteres $ por comas
-            //         //TODO: Estudiar si este caracter no esta agarrado
-            //         behaviorTarget = behaviorTarget.split(MULTIPLE_CLASS_SEPARATOR).join(',');
-            //         try {
-            //             behaviorTargetNodeList = rootDOMTravelScope.querySelectorAll(behaviorTarget);
-            //         } catch (e) {
-            //             behaviorTargetNodeList = [];
-            //         }
-            //     }
-            // }
             return behaviorTargetNodeList;
         };
 
@@ -691,43 +672,43 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         };
 
         /**
-         * Helper to setup the eventProvider
-         * @method _eventProviderHelper
+         * Helper to setup the notifier
+         * @method _notifierHelper
          * @param {} eventTargetDefinition
          * @return defaultValue
          */
-        selfish._eventProviderHelper = function(eventTargetDefinition) {
+        selfish._notifierHelper = function(eventTargetDefinition) {
             var defaultValue = [],
-                eventProviderCollection = AniJS.eventProviderCollection;
+                notifierCollection = AniJS.notifierCollection;
 
             if (eventTargetDefinition) {
-                //{id: eventProviderID, value:eventProviderObject}
+                //{id: notifierID, value:notifierObject}
                 if (eventTargetDefinition.id && AniJS.EventSystem.isEventTarget(eventTargetDefinition.value)) {
 
                     //TODO: In the near future could be an object list
                     defaultValue.push(eventTargetDefinition.value);
 
-                    AniJS.registerEventProvider(eventTargetDefinition);
+                    AniJS.registerNotifier(eventTargetDefinition);
 
                 } else if (eventTargetDefinition.split) {
-                    //Picar por signo de peso y obtener la lista de id de events providers
-                    eventProviderIDList = eventTargetDefinition.split('$');
-                    var size = eventProviderIDList.length,
+                    //Picar por signo de peso y obtener la lista de id de events Notifiers
+                    notifierIDList = eventTargetDefinition.split('$');
+                    var size = notifierIDList.length,
                         i = 1,
-                        eventProviderID;
+                        notifierID;
 
                     for (i; i < size; i++) {
-                        eventProviderID = eventProviderIDList[i];
-                        if (eventProviderID && eventProviderID !== ' ') {
+                        notifierID = notifierIDList[i];
+                        if (notifierID && notifierID !== ' ') {
                             //limpiarle los espacios alante y atras (trim)
-                            eventProviderID = eventProviderID.trim();
+                            notifierID = notifierID.trim();
 
                             //TODO: Big Refactoring here
-                            var value = AniJS.getEventProvider(eventProviderID);
+                            var value = AniJS.getNotifier(notifierID);
                             if (!value) {
                                 value = AniJS.EventSystem.createEventTarget();
-                                AniJS.registerEventProvider({
-                                    id: eventProviderID,
+                                AniJS.registerNotifier({
+                                    id: notifierID,
                                     value: value
                                 });
                             }
@@ -853,7 +834,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
                 animationContextInstance.dataAniJSOwner = config.dataAniJSOwner;
 
-            },
+            };
 
             /**
              * Custom AniJS animation behavior
@@ -895,7 +876,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                   nodeHelper.addClass(target, behavior);
                 }, 0);
 
-            },
+            };
 
             /**
              * Allows to use a custom helpers function via do definitions
@@ -917,7 +898,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                         after[0](e, animationContextInstance, selfish._paramsHelper(after));
                     }
                 }
-            },
+            };
 
             /**
              * Execute an animation context instance
