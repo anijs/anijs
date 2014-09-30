@@ -1,6 +1,6 @@
 # AniJS
 
-Declarative handling library for CSS animations. The main objective is to provide an eloquent, easy to translate, and quick to develop environment.
+UI interaction Library for Web Designers in plain English. Provides an eloquent, easy to translate, and quick to develop environment.
 
 
 ## Try It!!

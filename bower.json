@@ -2,7 +2,7 @@
   "name": "AniJS",
   "version": "0.7.1",
   "homepage": "http://anijs.github.io/",
-  "description": "Declarative handling library for CSS animations.",
+  "description": "UI interaction Library for Web Designers in plain English.",
   "main": "dist/anijs-min.js",
   "keywords": [
     "declarative",
