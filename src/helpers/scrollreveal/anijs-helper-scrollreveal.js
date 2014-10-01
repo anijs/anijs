@@ -24,10 +24,10 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
      * @method scrollReveal
      * @param {} e
      * @param {} animationContext
-     * @return 
+     * @return
      */
-    AniJSDefaultHelper.scrollReveal = function(e, animationContext) {
-
+    AniJSDefaultHelper.scrollReveal = function(e, animationContext, params) {
+        var viewportRatio = params[0] || 0.33;
         //Current elements that will be animated
         animationContextBehaviorTargetList = animationContext.behaviorTargetList;
 
@@ -38,7 +38,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             element = animationContextBehaviorTargetList[i];
 
             //Check if the element is visible
-            if (ScrollRevealHelper.isElementInViewport(element, 0.33)) {
+            if (ScrollRevealHelper.isElementInViewport(element, viewportRatio)) {
 
                 //The element is not animated again if it's visible
                 if (!element.isRevealed) {
@@ -56,7 +56,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
         //Run the animation
         animationContext.run();
-    }
+    };
 
     /**
      * Helper the custom EventTarget
@@ -68,7 +68,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
     var ScrollRevealHelper = {
 
         //ATTRS
-        
+
         //TODO: This attrs should be customizable
         viewportFactor: 1,
         docElem: window.document.documentElement,
@@ -97,8 +97,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
          * @return ConditionalExpression
          */
         _getViewportH: function() {
-            var client = this.docElem['clientHeight'],
-                inner = window['innerHeight'];
+            var client = this.docElem.clientHeight,
+                inner = window.innerHeight;
 
             return (client < inner) ? inner : client;
         },

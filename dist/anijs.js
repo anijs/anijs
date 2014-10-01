@@ -18,7 +18,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             factory(root, true) :
             function(w) {
                 if (!w.document) {
-                    throw new Error("AniJS requires a window with a document");
+                    throw new Error("AniJS-RWWD");
                 }
                 return factory(w);
         };
@@ -41,10 +41,11 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         var ANIJS_DATATAG_NAME = 'data-anijs',
             DEFAULT = 'default',
             BODY = 'body',
+            PARAMS_SEPARATOR = '|',
             MULTIPLE_CLASS_SEPARATOR = '$',
             EVENT_RESERVED_WORD = 'if',
             EVENT_TARGET_RESERVED_WORD = 'on',
-            BEHAVIOR_RESERVED_WORD = 'do',
+            BEHAVIOR_RESERVED_WORD = ['do', 'after', 'before', 'to'],
             BEHAVIOR_TARGET_RESERVED_WORD = 'to',
             REGEX_BEGIN = '(\\s+|^)',
             REGEX_END = '(\\s+|$)',
@@ -60,7 +61,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
             rootDOMTravelScope: {},
 
-            eventProviderCollection: {},
+            notifierCollection: {},
 
             /**
              * Initializer Function
@@ -128,7 +129,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                 //Clear all node listener
                 AniJS.purgeAll();
 
-                AniJS.eventProviderCollection = {};
+                AniJS.notifierCollection = {};
 
                 aniJSNodeCollection = selfish._findAniJSNodeCollection(AniJS.rootDOMTravelScope);
 
@@ -147,9 +148,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                 }
 
                 //We can use this for supply the window load and DomContentLoaded in some context
-                var aniJSEventsEventProvider = AniJS.getEventProvider('AniJSEventProvider');
-                if(aniJSEventsEventProvider){
-                    aniJSEventsEventProvider.dispatchEvent('onRunFinished');
+                var aniJSEventsNotifier = AniJS.getNotifier('AniJSNotifier');
+                if(aniJSEventsNotifier){
+                    aniJSEventsNotifier.dispatchEvent('onRunFinished');
                 }
             },
 
@@ -241,25 +242,25 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
             /**
              * Create an EventTarget
-             * @method createEventProvider
+             * @method createNotifier
              * @return EventTarget
              */
-            createEventProvider: function() {
+            createNotifier: function() {
                 return AniJS.EventSystem.createEventTarget();
             },
 
             /**
-             * Put an event provider in the eventProviderCollection
-             * @method registerEventProvider
-             * @param {} eventProvider
+             * Put an event Notifier in the notifierCollection
+             * @method registerNotifier
+             * @param {} notifier
              * @return Literal
              */
-            registerEventProvider: function(eventProvider) {
-                var eventProviderCollection = AniJS.eventProviderCollection;
+            registerNotifier: function(notifier) {
+                var notifierCollection = AniJS.notifierCollection;
 
                 //TODO: Optimize lookups here
-                if (eventProvider.id && eventProvider.value && AniJS.EventSystem.isEventTarget(eventProvider.value)) {
-                    eventProviderCollection[eventProvider.id] = eventProvider.value;
+                if (notifier.id && notifier.value && AniJS.EventSystem.isEventTarget(notifier.value)) {
+                    notifierCollection[notifier.id] = notifier.value;
                     return 1;
                 }
 
@@ -267,16 +268,16 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             },
 
             /**
-             * Return an eventProvider instance
-             * @method getEventProvider
-             * @param {} eventProviderID
-             * @return eventProvider
+             * Return an notifier instance
+             * @method getNotifier
+             * @param {} notifierID
+             * @return notifier
              */
-            getEventProvider: function(eventProviderID) {
-                return AniJS.eventProviderCollection[eventProviderID];
+            getNotifier: function(notifierID) {
+                return AniJS.notifierCollection[notifierID];
             }
 
-        }
+        };
 
         /////////////////////////////////////////////////////////
         // Private Methods an Vars
@@ -284,7 +285,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
         var selfish = {
 
-        }
+        };
 
         /**
          * Description
@@ -302,7 +303,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                  * @return
                  */
                 removeAnim: function(e, animationContext) {
-                    if(e.target){
+                    if(e.target && e.type){
                       animationContext.nodeHelper.removeClass(e.target, animationContext.behavior);
                     }
                 },
@@ -314,6 +315,45 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                  * @return
                  */
                 holdAnimClass: function(e, animationContext) {
+                },
+
+                /**
+                 * Fire custom event
+                 *
+                 * Examples:
+                 *
+                 *  Fire dummyEvent event of customNotifier
+                 *
+                 *  if: click, do: $addClass fadeIn animated, to: #container, after: emit customNotifier.dummyEvent
+                 *  if: dummyEvent, on: $customNotifier, do: $addClass hidden,  to: $children #container | div
+                 *
+                 *
+                 * @author Yolier Galan Tasse <gallegogt@gmail.com>
+                 * @since  2014-09-20
+                 * @param  {object}   e          The event handler
+                 * @param  {object}   ctx        AniJS Animation Context Object
+                 * @param  {[string]} params     [description]
+                 */
+                emit: function(e, ctx, params) {
+                    var cevent = params[0] || null,
+                        notifier = "";
+                    if(cevent !== null) {
+                        cevent = cevent.split('.');
+                        if(cevent.length > 1) {
+                            notifier = cevent[0];
+                            cevent = cevent[1];
+                        } else {
+                            notifier = "";
+                            cevent = cevent[0];
+                        }
+                        var customNotifier = AniJS.getNotifier(notifier) || null;
+                        if(customNotifier !== null)
+                            customNotifier.dispatchEvent(cevent);
+                    }
+                    //Run the animation
+                    if(!ctx.hasRunned){
+                        ctx.run();
+                    }
                 }
             };
 
@@ -358,18 +398,21 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         selfish._setupElementSentenceAnim = function(element, aniJSParsedSentence) {
             //TODO: If the user use animationend or transitionend names to custom events the eventdispach will be not executed
             var event = selfish._eventHelper(aniJSParsedSentence),
-                eventTargetList = selfish._eventTargetHelper(element, aniJSParsedSentence);
+                eventTargetList = selfish._eventTargetHelper(element, aniJSParsedSentence),
+                afterFunctionName;
+
+            if(aniJSParsedSentence.after && selfish.Util.beArray(aniJSParsedSentence.after)){
+                afterFunctionName =  aniJSParsedSentence.after[0];
+            }
 
             //Es obligatorio definir de eventTarget ATTR
             if (event !== '') {
-
                 var size = eventTargetList.length,
                     i = 0,
                     eventTargetItem;
 
                 for (i; i < size; i++) {
                     eventTargetItem = eventTargetList[i];
-
                     if (AniJS.EventSystem.isEventTarget(eventTargetItem)) {
                         var listener = function(event) {
 
@@ -378,12 +421,10 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                                 behavior = selfish._behaviorHelper(aniJSParsedSentence),
                                 before = selfish._beforeHelper(element, aniJSParsedSentence),
                                 after = selfish._afterHelper(element, aniJSParsedSentence);
-
                             if (selfish._classNamesWhenAnim !== '') {
-                                if(!Array.isArray(behavior))
+                                if(!selfish.Util.beArray(behavior))
                                     behavior += selfish._classNamesWhenAnim;
                             }
-
                             //Creo un nuevo animation context
                             var animationContextConfig = {
                                 behaviorTargetList: behaviorTargetList,
@@ -391,16 +432,23 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                                 animationEndEvent: selfish._animationEndEvent,
                                 behavior: behavior,
                                 after: after,
-                                eventSystem: AniJS.EventSystem
+                                eventSystem: AniJS.EventSystem,
+                                eventTarget: event.target,
+                                afterFunctionName: afterFunctionName,
+                                dataAniJSOwner: element
                                 //TODO: eventSystem should be called directly
                             },
 
-                                animationContextInstance = new AniJS.AnimationContext(animationContextConfig);
+                            animationContextInstance = new AniJS.AnimationContext(animationContextConfig);
 
                             //Si before, le paso el animation context
                             //TODO: Util is a submodule
-                            if (before && selfish.Util.isFunction(before)) {
-                                before(event, animationContextInstance);
+                            if (before) {
+                                if(selfish.Util.isFunction(before)) {
+                                    before(event, animationContextInstance);
+                                } else if(selfish.Util.beArray(before)) {
+                                    before[0](event, animationContextInstance, selfish._paramsHelper(before));
+                                }
                             } else {
                                 animationContextInstance.run();
                             }
@@ -416,8 +464,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 
                 }
-            } else {
-                console.log('You must define some event');
             }
         };
 
@@ -457,15 +503,15 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             var defaultValue = element,
                 eventTargetList = [defaultValue],
                 rootDOMTravelScope = AniJS.rootDOMTravelScope,
-                eventProviderList;
+                notifierList;
 
             //TODO: We could add other non direct DOM Objects
             if (aniJSParsedSentence.eventTarget) {
 
-                eventProviderList = selfish._eventProviderHelper(aniJSParsedSentence.eventTarget);
+                notifierList = selfish._notifierHelper(aniJSParsedSentence.eventTarget);
 
-                if (eventProviderList.length > 0) {
-                    eventTargetList = eventProviderList;
+                if (notifierList.length > 0) {
+                    eventTargetList = notifierList;
                 } else if (aniJSParsedSentence.eventTarget === 'document') {
                     eventTargetList = [document];
                 } else if (aniJSParsedSentence.eventTarget === 'window') {
@@ -497,21 +543,27 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                 behaviorTarget = aniJSParsedSentence.behaviorTarget;
 
             if (behaviorTarget) {
-                if(behaviorTarget === TARGET && event.currentTarget){
-                    behaviorTargetNodeList = [event.currentTarget];
+                if(!selfish.Util.beArray(behaviorTarget)){
+                    if(behaviorTarget === TARGET && event.currentTarget){
+                        behaviorTargetNodeList = [event.currentTarget];
+                    } else{
+                        //Expression regular remplazar caracteres $ por comas
+                        //TODO: Estudiar si este caracter no esta agarrado
+                        behaviorTarget = behaviorTarget.split(MULTIPLE_CLASS_SEPARATOR).join(',');
+                        try {
+                            behaviorTargetNodeList = rootDOMTravelScope.querySelectorAll(behaviorTarget);
+                        } catch (e) {
+                            behaviorTargetNodeList = [];
+                        }
+                    }
                 } else{
-                    //Expression regular remplazar caracteres $ por comas
-                    //TODO: Estudiar si este caracter no esta agarrado
-                    behaviorTarget = behaviorTarget.split(MULTIPLE_CLASS_SEPARATOR).join(',');
-                    try {
-                        behaviorTargetNodeList = rootDOMTravelScope.querySelectorAll(behaviorTarget);
-                    } catch (e) {
-                        behaviorTargetNodeList = [];
-                        console.log('ugly selector here');
+                    var behaviorObject = this._actionHelper(element, aniJSParsedSentence, behaviorTarget);
+                    if(behaviorObject && selfish.Util.isFunction(behaviorObject[0])){
+                        behaviorTargetNodeList = behaviorObject[0]
+                                                    (event,{dataAniJSOwner:element},
+                                                    selfish._paramsHelper(behaviorObject));
                     }
                 }
-
-
             }
             return behaviorTargetNodeList;
         };
@@ -524,17 +576,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
          * @return defaultValue
          */
         selfish._behaviorHelper = function(aniJSParsedSentence) {
-            var defaultValue = aniJSParsedSentence.behavior || '',
-                executeFunction;
-            if(Array.isArray(defaultValue)){
-                executeFunction = selfish._callbackHelper({}, aniJSParsedSentence, defaultValue[0]);
-                if(executeFunction){
-                    defaultValue[0] = executeFunction;
-                } else {
-                    defaultValue = defaultValue.join(' ');
-                }
-            }
-            return defaultValue;
+            return this._actionHelper({}, aniJSParsedSentence, aniJSParsedSentence.behavior);
         };
 
         /**
@@ -545,8 +587,11 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
          * @return defaultValue
          */
         selfish._afterHelper = function(element, aniJSParsedSentence) {
-            var defaultValue = selfish._callbackHelper(element, aniJSParsedSentence, aniJSParsedSentence.after);
-            return defaultValue;
+            var defaultValue =  aniJSParsedSentence.after;
+            // return defaultValue;
+            if(!selfish.Util.beArray(defaultValue))
+                return selfish._callbackHelper(element, aniJSParsedSentence, defaultValue);
+            return this._actionHelper(element, aniJSParsedSentence, defaultValue);
         };
 
         /**
@@ -557,7 +602,32 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
          * @return defaultValue
          */
         selfish._beforeHelper = function(element, aniJSParsedSentence) {
-            var defaultValue = selfish._callbackHelper(element, aniJSParsedSentence, aniJSParsedSentence.before);
+            var defaultValue =  aniJSParsedSentence.before;
+            if(!selfish.Util.beArray(defaultValue))
+                return selfish._callbackHelper(element, aniJSParsedSentence, defaultValue);
+            return this._actionHelper(element, aniJSParsedSentence, defaultValue);
+        };
+        /**
+         * The executed actions helper
+         * @author Dariel Noel <darielnoel@gmail.com>
+         * @since  2014-09-10
+         * @param  {[type]}   element             [description]
+         * @param  {[type]}   aniJSParsedSentence [description]
+         * @param  {[type]}   action              [description]
+         * @return {[type]}                       [description]
+         */
+        selfish._actionHelper = function(element, aniJSParsedSentence, action) {
+            var defaultValue = action || '',
+                executeFunction;
+            if(selfish.Util.beArray(defaultValue)) {
+                executeFunction = selfish._callbackHelper(element, aniJSParsedSentence, defaultValue[0]);
+                if(executeFunction) {
+                    defaultValue[0] = executeFunction;
+                } else {
+                    defaultValue = defaultValue.join(' ');
+                }
+
+            }
             return defaultValue;
         };
 
@@ -578,7 +648,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                     var helperCollection = selfish._helperCollection,
                         helperInstance = helperCollection[helper];
 
-                    if (helperInstance && helperInstance[defaultValue]) {
+                    if (helperInstance && selfish.Util.isFunction(helperInstance[defaultValue])) {
                         defaultValue = helperInstance[defaultValue];
                     } else {
                         defaultValue = false;
@@ -602,43 +672,43 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         };
 
         /**
-         * Helper to setup the eventProvider
-         * @method _eventProviderHelper
+         * Helper to setup the notifier
+         * @method _notifierHelper
          * @param {} eventTargetDefinition
          * @return defaultValue
          */
-        selfish._eventProviderHelper = function(eventTargetDefinition) {
+        selfish._notifierHelper = function(eventTargetDefinition) {
             var defaultValue = [],
-                eventProviderCollection = AniJS.eventProviderCollection;
+                notifierCollection = AniJS.notifierCollection;
 
             if (eventTargetDefinition) {
-                //{id: eventProviderID, value:eventProviderObject}
+                //{id: notifierID, value:notifierObject}
                 if (eventTargetDefinition.id && AniJS.EventSystem.isEventTarget(eventTargetDefinition.value)) {
 
                     //TODO: In the near future could be an object list
                     defaultValue.push(eventTargetDefinition.value);
 
-                    AniJS.registerEventProvider(eventTargetDefinition);
+                    AniJS.registerNotifier(eventTargetDefinition);
 
                 } else if (eventTargetDefinition.split) {
-                    //Picar por signo de peso y obtener la lista de id de events providers
-                    eventProviderIDList = eventTargetDefinition.split('$');
-                    var size = eventProviderIDList.length,
+                    //Picar por signo de peso y obtener la lista de id de events Notifiers
+                    notifierIDList = eventTargetDefinition.split('$');
+                    var size = notifierIDList.length,
                         i = 1,
-                        eventProviderID;
+                        notifierID;
 
                     for (i; i < size; i++) {
-                        eventProviderID = eventProviderIDList[i];
-                        if (eventProviderID && eventProviderID !== ' ') {
+                        notifierID = notifierIDList[i];
+                        if (notifierID && notifierID !== ' ') {
                             //limpiarle los espacios alante y atras (trim)
-                            eventProviderID = eventProviderID.trim();
+                            notifierID = notifierID.trim();
 
                             //TODO: Big Refactoring here
-                            var value = AniJS.getEventProvider(eventProviderID);
+                            var value = AniJS.getNotifier(notifierID);
                             if (!value) {
                                 value = AniJS.EventSystem.createEventTarget();
-                                AniJS.registerEventProvider({
-                                    id: eventProviderID,
+                                AniJS.registerNotifier({
+                                    id: notifierID,
                                     value: value
                                 });
                             }
@@ -649,6 +719,13 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             }
 
             return defaultValue;
+        };
+
+        selfish._paramsHelper = function(paramsArray){
+            var arr = [],
+                i = paramsArray.length;
+            while(i-- > 1) arr[i - 1] = paramsArray[i];
+            return arr;
         };
 
         /**
@@ -704,8 +781,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
          */
         selfish._endPrefixBrowserDetectionIndex = function() {
             //TODO: Delete de element after create this
-            var el = document.createElement('fakeelement'),
-                animationBrowserDetection = ['animation', 'OAnimation', 'MozAnimation', 'webkitAnimation'];
+            var el = document.createElement('fe'),
+                ANIM = 'Animation',
+                animationBrowserDetection = ['animation', 'O'+ANIM, 'Moz'+ANIM, 'webkit'+ANIM];
 
             for (var i = 0; i < animationBrowserDetection.length; i++) {
                 if (el.style[animationBrowserDetection[i]] !== undefined) {
@@ -750,7 +828,13 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
                 animationContextInstance.eventSystem = config.eventSystem;
 
-            },
+                animationContextInstance.eventTarget = config.eventTarget;
+
+                animationContextInstance.afterFunctionName = config.afterFunctionName;
+
+                animationContextInstance.dataAniJSOwner = config.dataAniJSOwner;
+
+            };
 
             /**
              * Custom AniJS animation behavior
@@ -764,26 +848,35 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                 var instance = animationContextInstance,
                     nodeHelper = instance.nodeHelper,
                     animationEndEvent = instance.animationEndEvent,
-                    after = instance.after;
-
-                nodeHelper.addClass(target, behavior);
+                    after = instance.after,
+                    afterFunctionName = instance.afterFunctionName;
 
                 //create event
                 instance.eventSystem.addEventListenerHelper(target, animationEndEvent, function(e) {
-
                     e.stopPropagation();
                     //remove event
                     instance.eventSystem.removeEventListenerHelper(e.target, e.type, arguments.callee);
-
-                    // callback handler
-                    if (!after) {
+                    // Backguard compatibility
+                    if (afterFunctionName !== "holdAnimClass") {
                         //removing the animation by default if there are not an after function
                         nodeHelper.removeClass(e.target, behavior);
-                    } else if(selfish.Util.isFunction(after)){
-                        after(e, animationContextInstance);
+                    }
+                    if(after){
+                        if(selfish.Util.isFunction(after)){
+                            after(e, animationContextInstance);
+                        } else if(selfish.Util.beArray(after)) {
+                            after[0](e, animationContextInstance, selfish._paramsHelper(after));
+                        }
                     }
                 });
-            },
+                //TODO: We need to improve this urgently
+                // http://css-tricks.com/restart-css-animation/
+                // http://es.slideshare.net/nzakas/javascript-timers-power-consumption-and-performance
+                setTimeout(function () {
+                  nodeHelper.addClass(target, behavior);
+                }, 0);
+
+            };
 
             /**
              * Allows to use a custom helpers function via do definitions
@@ -796,12 +889,16 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             animationContextInstance.doFunctionAction = function(target, behavior){
                 var instance = animationContextInstance,
                     after = instance.after,
-                    e = {};
-                behavior[0](e, animationContextInstance, target, behavior);
+                    e = {target:target};
+                behavior[0](e, animationContextInstance, selfish._paramsHelper(behavior));
                 if(selfish.Util.isFunction(after)){
                     after(e, animationContextInstance);
+                } else {
+                    if(selfish.Util.beArray(after)) {
+                        after[0](e, animationContextInstance, selfish._paramsHelper(after));
+                    }
                 }
-            },
+            };
 
             /**
              * Execute an animation context instance
@@ -818,17 +915,15 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
                 animationContextInstance.hasRunned = 1;
                 for (j; j < behaviorTargetListSize; j++) {
-                    if(Array.isArray(behavior)){
+                    if(selfish.Util.beArray(behavior)){
                         animationContextInstance
                             .doFunctionAction(behaviorTargetList[j], behavior);
                     } else{
                         animationContextInstance
                             .doDefaultAction(behaviorTargetList[j], behavior);
                     }
-
                 }
             };
-
             animationContextInstance.init(config);
         });
 
@@ -898,7 +993,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                     parsedDefinition = this.parseDefinition(definitionCollection[i]);
                     parsedSentence[parsedDefinition.key] = parsedDefinition.value;
                 }
-
                 return parsedSentence;
             },
 
@@ -917,39 +1011,40 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                     definitionValue,
                     EVENT_KEY = 'event',
                     EVENT_TARGET_KEY = 'eventTarget',
-                    BEHAVIOR_KEY = 'behavior',
-                    BEHAVIOR_TARGET_KEY = 'behaviorTarget';
+                    BEHAVIOR_KEY = ['behavior', 'after', 'before', 'behaviorTarget'];
 
                 //Performance reasons
-
                 definitionBody = definition.split(':');
-
                 if (definitionBody.length > 1) {
                     definitionKey = definitionBody[0].trim();
-
                     //CSS3 selectors support
                     if(definitionBody.length > 2){
                         definitionValue = definitionBody.slice(1);
                         definitionValue = definitionValue.join(':');
                         definitionValue = definitionValue.trim();
-
                     } else {
                         definitionValue = definitionBody[1].trim();
                     }
                     parsedDefinition.value = definitionValue;
-
                     //Change by reserved words
                     if (definitionKey === EVENT_RESERVED_WORD) {
                         definitionKey = EVENT_KEY;
                     } else if (definitionKey === EVENT_TARGET_RESERVED_WORD) {
                         definitionKey = EVENT_TARGET_KEY;
-                    } else if (definitionKey === BEHAVIOR_RESERVED_WORD) {
-                        definitionKey = BEHAVIOR_KEY;
-                        definitionValue = this.parseDoDefinition(definitionValue);
-                    } else if (definitionKey === BEHAVIOR_TARGET_RESERVED_WORD) {
-                        definitionKey = BEHAVIOR_TARGET_KEY;
+                    } else {
+                        for (var i = BEHAVIOR_RESERVED_WORD.length - 1; i >= 0; i--) {
+                              if(definitionKey === BEHAVIOR_RESERVED_WORD[i]) {
+                                definitionKey = BEHAVIOR_KEY[i];
+                                /**
+                                 * TODO: This code is deprecated for next version
+                                 */
+                                if((definitionKey === 'after' || definitionKey === 'before') && definitionValue[0]!== '$') {
+                                    definitionValue = '$' + definitionValue;
+                                }
+                                definitionValue = this.parseDoDefinition(definitionValue);
+                              }
+                        }
                     }
-
                     parsedDefinition.key = definitionKey;
                     parsedDefinition.value = definitionValue;
                 }
@@ -963,13 +1058,23 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
              * @since  2014-09-03
              * @param  {[type]}   doDefinition [description]
              */
-            parseDoDefinition: function(doDefinition){
-                var doDefinitionArray = doDefinition.split('$');
-                if(doDefinitionArray.length > 1){
-                    doDefinitionArray = doDefinitionArray[1].split(' ');
+            parseDoDefinition: function(doDefinition) {
+                var reg = /^\$(\w+)\s*/g,
+                    regMatch = reg.exec(doDefinition),
+                    functionName = "",
+                    parametersArray = [], it = 1;
+
+                if(regMatch !== null) {
+                    functionName = regMatch[1];
+                    doDefinitionArray = doDefinition.split(regMatch[0])[1];
+                    doDefinitionArray = doDefinitionArray !== null ? doDefinitionArray.split(PARAMS_SEPARATOR) : [];
                     doDefinition = [];
-                    doDefinition[0] = doDefinitionArray[0];
-                    doDefinition[1] = doDefinitionArray.slice(1).join(' ');
+                    doDefinition[0] = functionName;
+                    for (var i = 0; i < doDefinitionArray.length; i++) {
+                        if(doDefinitionArray[i] !== "")
+                            doDefinition[it++] = doDefinitionArray[i].trim();
+                    }
+                    return doDefinition;
                 }
                 return doDefinition;
             }
@@ -995,7 +1100,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                 }
                 for (var i = 0, len = string.length; i < len; ++i) {
                     if (string[i] && !new RegExp(REGEX_BEGIN + string[i] + REGEX_END).test(elem.className)) {
-                        elem.className = elem.className.trim() + ' ' + string[i];
+                        elem.className = (elem.className === "") ?  string[i] : elem.className.trim() + ' ' + string[i];
                     }
                 }
             },
@@ -1026,6 +1131,19 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             hasClass: function(elem, string) {
                 return string && new RegExp(REGEX_BEGIN + string + REGEX_END).test(elem.className);
             },
+            /**
+             * Clone HTML element
+             * @method removeChild
+             * @param {} element
+             * @param {} parentNode
+             */
+            cloneNode: function(element, parentNode) {
+                if(parentNode === null) return;
+                var clone = element.cloneNode(true);
+                AniJS.purgeEventTarget(clone);
+                clone.removeAttribute("id");
+                parentNode.appendChild(clone);
+            }
         };
 
         /**
@@ -1043,8 +1161,17 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
              */
             isFunction: function(obj) {
                 return !!(obj && obj.constructor && obj.call && obj.apply);
+            },
+            /**
+             * Test if some object is an array
+             * @author Dariel Noel <darielnoel@gmail.com>
+             * @since  2014-09-09
+             * @return {Boolean}  [description]
+             */
+            beArray:function(object){
+                return Array.isArray(object);
             }
-        }
+        };
 
         /////////////////////////////////////////////////////////
         // Public SubModules
@@ -1133,6 +1260,22 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             },
 
             /**
+             * Detach all AniJS subscriptions to the all nodes bellow this
+             * @method purgeAllNodes
+             * @param {} element
+             * @return
+             */
+            purgeAllNodes: function(element){
+                //Dame todos los que tengan data-anijs
+                //a cada uno purgue
+                var nodes = element.querySelectorAll("*");
+                    size = nodes.length;
+                for (var i = size - 1; i >= 0; i--) {
+                    this.purgeEventTarget(nodes[i]);
+                }
+            },
+
+            /**
              * Detach all AniJS subscriptions to this element
              * @method purgeEventTarget
              * @param {} element
@@ -1194,7 +1337,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                 }
             }
 
-        }
+        };
 
 
         /**
@@ -1206,7 +1349,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
          */
         AniJS.EventTarget = function EventTarget() {
             this._listeners = {};
-        }
+        };
 
         AniJS.EventTarget.prototype = {
 

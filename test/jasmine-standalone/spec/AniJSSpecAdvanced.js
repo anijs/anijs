@@ -1,12 +1,10 @@
 YUI().use('node', 'node-event-simulate', function (Y) {
 
 
-    console.log(AniJS);
-
     describe("AniJS Advanced", function() {
 
         //Aqui se pueden poner variables para tener acceso globalmente
-
+        var timerCallback = null;
 
         //Funcion que se ejecuta antes de empezar
         beforeEach(function() {
@@ -59,11 +57,6 @@ YUI().use('node', 'node-event-simulate', function (Y) {
 
                 targetNode.simulate("click");
             });
-
-            //TODO:
-            it("//TODO", function() {
-
-            });
         });
 
         //---------------------------------------------------------------------
@@ -107,11 +100,6 @@ YUI().use('node', 'node-event-simulate', function (Y) {
                     expect(AniJS.EventSystem.eventCollection[i]).not.toBeNull();
                 }
             });
-
-            //TODO:
-            it("//TODO", function() {
-
-            });
         });
 
         //---------------------------------------------------------------------
@@ -126,10 +114,6 @@ YUI().use('node', 'node-event-simulate', function (Y) {
 
             afterEach(function() {
                 Y.one('#testzone .test').remove();
-            });
-            //TODO:
-            it("//TODO", function() {
-
             });
         });
 
@@ -146,10 +130,6 @@ YUI().use('node', 'node-event-simulate', function (Y) {
             afterEach(function() {
                 Y.one('#testzone .test').remove();
             });
-            //TODO:
-            it("//TODO", function() {
-
-            });
         });
 
         //---------------------------------------------------------------------
@@ -160,12 +140,15 @@ YUI().use('node', 'node-event-simulate', function (Y) {
                 //Aqui creo el nodo
                 var htmlNode = '<div class="test">Test</div>';
                 Y.one('#testzone').appendChild(htmlNode);
+
+                jasmine.clock().install();
+
             });
 
             afterEach(function() {
                 Y.one('#testzone .test').remove();
-
                 //Hay que unregister todos los eventsProvides sino hay test que van a fallar
+                jasmine.clock().uninstall();
             });
             it("Simple Custom Event Creation", function() {
                 var dataAnijJS = 'if: customevent, on: $customEventProvider, do: bounce, to: body',
@@ -175,14 +158,12 @@ YUI().use('node', 'node-event-simulate', function (Y) {
                 targetNode.setAttribute('data-anijs', dataAnijJS);
                 AniJS.run();
 
-               
+                expect(AniJS.getNotifier('customEventProvider') !== undefined).toBeTruthy();
 
-                expect(AniJS.getEventProvider('customEventProvider') !== undefined).toBeTruthy();
-
-                var customEventProvider = AniJS.getEventProvider('customEventProvider');
-
+                var customEventProvider = AniJS.getNotifier('customEventProvider');
                 customEventProvider.dispatchEvent('customevent');
 
+                jasmine.clock().tick(101);
                 expect(Y.one('body').hasClass('bounce')).toBeTruthy();
             });
 
@@ -193,11 +174,11 @@ YUI().use('node', 'node-event-simulate', function (Y) {
                 targetNode = Y.one('#testzone .test');
                 targetNode.setAttribute('data-anijs', dataAnijJS);
                 AniJS.run();
-           
 
-                expect(AniJS.getEventProvider('customEventProvider') !== undefined).toBeTruthy();
 
-                var customEventProvider = AniJS.getEventProvider('customEventProvider');
+                expect(AniJS.getNotifier('customEventProvider') !== undefined).toBeTruthy();
+
+                var customEventProvider = AniJS.getNotifier('customEventProvider');
 
                 customEventProvider.dispatchEvent('customevent');
 
@@ -225,6 +206,8 @@ YUI().use('node', 'node-event-simulate', function (Y) {
                     //Creating the second element
                     var htmlNode = '<div class="test2">Test2</div>';
                     Y.one('#testzone').appendChild(htmlNode);
+
+                    jasmine.clock().install();
                 });
 
                 afterEach(function() {
@@ -234,11 +217,12 @@ YUI().use('node', 'node-event-simulate', function (Y) {
 
                     Y.one('body').removeClass('bounce');
                     Y.one('body').removeClass('hinge');
+                    jasmine.clock().uninstall();
 
                     //Hay que unregister todos los eventsProvides sino hay test que van a fallar
                 });
 
-                it("with same eventProvider", function() {
+                it("with same notifier", function() {
                     var dataAnijJS = 'if: customevent, on: $customEventProvider, do: bounce, to: body',
                         targetNode;
 
@@ -252,21 +236,18 @@ YUI().use('node', 'node-event-simulate', function (Y) {
 
                     AniJS.run();
 
-                    
+                    expect(AniJS.getNotifier('customEventProvider') !== undefined).toBeTruthy();
 
-                   
-
-                    expect(AniJS.getEventProvider('customEventProvider') !== undefined).toBeTruthy();
-
-                    var customEventProvider = AniJS.getEventProvider('customEventProvider');
+                    var customEventProvider = AniJS.getNotifier('customEventProvider');
 
                     customEventProvider.dispatchEvent('customevent');
 
+                    jasmine.clock().tick(101);
                     expect(Y.one('body').hasClass('bounce')).toBeTruthy();
                     expect(Y.one('body').hasClass('hinge')).toBeTruthy();
                 });
 
-                it("with same eventProvider differents events", function() {
+                it("with same notifier differents events", function() {
                     var dataAnijJS = 'if: customevent, on: $customEventProvider, do: bounce, to: body',
                         targetNode;
 
@@ -285,16 +266,13 @@ YUI().use('node', 'node-event-simulate', function (Y) {
 
                     AniJS.run();
 
-                    
+                    expect(AniJS.getNotifier('customEventProvider') !== undefined).toBeTruthy();
 
-                   
-
-                    expect(AniJS.getEventProvider('customEventProvider') !== undefined).toBeTruthy();
-
-                    var customEventProvider = AniJS.getEventProvider('customEventProvider');
+                    var customEventProvider = AniJS.getNotifier('customEventProvider');
 
                     customEventProvider.dispatchEvent('customevent');
 
+                    jasmine.clock().tick(101);
                     expect(Y.one('body').hasClass('bounce')).toBeTruthy();
                     expect(Y.one('body').hasClass('hinge')).toBeFalsy();
 
@@ -303,7 +281,7 @@ YUI().use('node', 'node-event-simulate', function (Y) {
                     // expect(Y.one('body').hasClass('hinge')).toBeTruthy();
                 });
 
-                it("with differents eventProvider", function() {
+                it("with differents notifier", function() {
                     var dataAnijJS = 'if: customevent, on: $customEventProvider, do: bounce, to: body',
                         targetNode;
 
@@ -316,33 +294,37 @@ YUI().use('node', 'node-event-simulate', function (Y) {
                     targetNode.setAttribute('data-anijs', dataAnijJS);
 
                     AniJS.run();
-                    
-                    expect(AniJS.getEventProvider('customEventProvider')).not.toBeUndefined();
-                    expect(AniJS.getEventProvider('customEventProvider2')).not.toBeUndefined();
 
-                    var customEventProvider = AniJS.getEventProvider('customEventProvider');
+                    expect(AniJS.getNotifier('customEventProvider')).not.toBeUndefined();
+                    expect(AniJS.getNotifier('customEventProvider2')).not.toBeUndefined();
+
+                    var customEventProvider = AniJS.getNotifier('customEventProvider');
 
                     customEventProvider.dispatchEvent('customevent');
 
+                    jasmine.clock().tick(101);
                     expect(Y.one('body').hasClass('bounce')).toBeTruthy();
 
-                    var customEventProvider2 = AniJS.getEventProvider('customEventProvider2');
+                    var customEventProvider2 = AniJS.getNotifier('customEventProvider2');
 
                     customEventProvider2.dispatchEvent('customevent');
 
+                    jasmine.clock().tick(101);
                     expect(Y.one('body').hasClass('hinge')).toBeTruthy();
                 });
             });
 
             describe("Creating Event Provider Using Javascript", function() {
                 beforeEach(function() {
+                    jasmine.clock().install();
                 });
 
                 afterEach(function() {
                     Y.one('body').removeClass('bounce');
                     Y.one('body').removeClass('hinge');
-                    AniJS.eventProviderCollection['customEventProvider'] = null;
-                    delete AniJS.eventProviderCollection['customEventProvider'];
+                    AniJS.notifierCollection['customEventProvider'] = null;
+                    delete AniJS.notifierCollection['customEventProvider'];
+                    jasmine.clock().uninstall();
                 });
 
                 it("with string", function() {
@@ -362,12 +344,12 @@ YUI().use('node', 'node-event-simulate', function (Y) {
                         }
                     }]);
 
-                    expect(AniJS.getEventProvider('customEventProvider')).not.toBeUndefined();
+                    expect(AniJS.getNotifier('customEventProvider')).not.toBeUndefined();
 
-                    var customEventProvider = AniJS.getEventProvider('customEventProvider');
+                    var customEventProvider = AniJS.getNotifier('customEventProvider');
 
                     customEventProvider.dispatchEvent('customevent');
-
+                    jasmine.clock().tick(101);
                     expect(Y.one('body').hasClass('bounce')).toBeTruthy();
                 });
 
@@ -375,14 +357,14 @@ YUI().use('node', 'node-event-simulate', function (Y) {
                     var dataAnijJS = 'if: customevent, on: $customEventProvider, do: bounce, to: body',
                         targetNode;
 
-                    var eventProvider = {
+                    var notifier = {
                         id: 'customEventProvider',
                         value: AniJS.EventSystem.createEventTarget()
                     }
 
                     AniJS.createAnimation([{
                         event: 'customevent',
-                        eventTarget: eventProvider,
+                        eventTarget: notifier,
                         behaviorTarget: 'body',
                         behavior: 'bounce',
                         before: function(e, animationContext){
@@ -393,11 +375,13 @@ YUI().use('node', 'node-event-simulate', function (Y) {
                         }
                     }]);
 
-                    expect(AniJS.getEventProvider('customEventProvider')).not.toBeUndefined();
+                    expect(AniJS.getNotifier('customEventProvider')).not.toBeUndefined();
 
-                    var customEventProvider = AniJS.getEventProvider('customEventProvider');
+                    var customEventProvider = AniJS.getNotifier('customEventProvider');
 
                     customEventProvider.dispatchEvent('customevent');
+
+                    jasmine.clock().tick(101);
 
                     expect(Y.one('body').hasClass('bounce')).toBeTruthy();
                 });
@@ -406,14 +390,14 @@ YUI().use('node', 'node-event-simulate', function (Y) {
                     var dataAnijJS = 'if: customevent, on: $customEventProvider, do: bounce, to: body',
                         targetNode;
 
-                    var eventProvider = {
+                    var notifier = {
                         id: 'customEventProvider',
                         value: {}
                     }
 
                     AniJS.createAnimation([{
                         event: 'customevent',
-                        eventTarget: eventProvider,
+                        eventTarget: notifier,
                         behaviorTarget: 'body',
                         behavior: 'bounce',
                         before: function(e, animationContext){
@@ -424,9 +408,9 @@ YUI().use('node', 'node-event-simulate', function (Y) {
                         }
                     }]);
 
-                    expect(AniJS.eventProviderCollection['customEventProvider']).toBeUndefined();
+                    expect(AniJS.notifierCollection['customEventProvider']).toBeUndefined();
 
-                    expect(AniJS.getEventProvider('customEventProvider')).toBeUndefined();
+                    expect(AniJS.getNotifier('customEventProvider')).toBeUndefined();
                 });
             });
         });
