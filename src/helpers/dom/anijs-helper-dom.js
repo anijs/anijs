@@ -146,7 +146,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             fnCloneNode = animationContext.nodeHelper.cloneNode,
             repeats = 1;
 
-        if(paramsLength == 0 ) {                //$clone
+        if(paramsLength === 0 ) {                //$clone
             cloneNode(eventTarget, target, repeats, fnCloneNode);
         } else {
             if(paramsLength == 1) {             //$clone 3, to: #clone
@@ -341,7 +341,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                 if(matchesSelector(tmpItems[j], selector)) {
                     mergeArray([ tmpItems[j] ], foundedList);
                 }
-            };
+            }
         }
         return foundedList;
     };
@@ -393,7 +393,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         var found = false;
         for (var i = 0; i < array.length && !found; i++) {
             found = (array[i] === el);
-        };
+        }
         return found;
     }
 
