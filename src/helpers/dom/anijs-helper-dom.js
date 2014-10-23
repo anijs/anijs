@@ -379,7 +379,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         var i = elements.length;
         while (i-- > 0) {
             AniJS.EventSystem.purgeAllNodes(elements[i]);
-            elements[i].remove();
+            elements[i].parentNode.removeChild(elements[i]);
         }
     }
 
