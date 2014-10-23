@@ -40,6 +40,8 @@ Work well in iPad, iPhone, Android and the [modern browsers](http://browsehappy.
 
 Documentation Topics can be founded in the [Wiki Pages](https://github.com/anijs/anijs/wiki).
 
+## Browser Compatibility
+Check the AniJS [browser compatibility table](https://github.com/anijs/anijs/wiki/Browser-Compatibility)
 
 ## History
  
