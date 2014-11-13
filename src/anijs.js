@@ -317,6 +317,10 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                 holdAnimClass: function(e, animationContext) {
                 },
 
+                fireOnce: function(e, animationContext) {
+                    animationContext.eventSystem.removeEventListenerHelper(animationContext.eventTarget, animationContext.event.type, animationContext.listener);
+                },
+
                 /**
                  * Fire custom event
                  *
@@ -433,9 +437,11 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                                 behavior: behavior,
                                 after: after,
                                 eventSystem: AniJS.EventSystem,
-                                eventTarget: event.target,
+                                eventTarget: event.currentTarget,
                                 afterFunctionName: afterFunctionName,
-                                dataAniJSOwner: element
+                                dataAniJSOwner: element,
+                                listener: listener,
+                                event: event
                                 //TODO: eventSystem should be called directly
                             },
 
@@ -834,6 +840,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
                 animationContextInstance.dataAniJSOwner = config.dataAniJSOwner;
 
+                animationContextInstance.listener = config.listener;
+
+                animationContextInstance.event = config.event;
             };
 
             /**
@@ -856,11 +865,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                     e.stopPropagation();
                     //remove event
                     instance.eventSystem.removeEventListenerHelper(e.target, e.type, arguments.callee);
-                    // Backguard compatibility
-                    if (afterFunctionName !== "holdAnimClass") {
-                        //removing the animation by default if there are not an after function
-                        nodeHelper.removeClass(e.target, behavior);
-                    }
                     if(after){
                         if(selfish.Util.isFunction(after)){
                             after(e, animationContextInstance);
@@ -869,6 +873,11 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                         }
                     }
                 });
+                // Backguard compatibility
+                if (afterFunctionName !== "holdAnimClass") {
+                    //removing the animation by default if there are not an after function
+                    nodeHelper.removeClass(target, behavior);
+                }
                 //TODO: We need to improve this urgently
                 // http://css-tricks.com/restart-css-animation/
                 // http://es.slideshare.net/nzakas/javascript-timers-power-consumption-and-performance
@@ -1229,7 +1238,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
              * @return
              */
             removeEventListenerHelper: function(element, type, listener) {
-                element.removeEventListener(type, listener);
+                if(element){
+                    element.removeEventListener(type, listener);
+                }
             },
 
 
