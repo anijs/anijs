@@ -858,7 +858,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                     nodeHelper = instance.nodeHelper,
                     animationEndEvent = instance.animationEndEvent,
                     after = instance.after,
-                    afterFunctionName = instance.afterFunctionName;
+                    afterFunctionName = instance.afterFunctionName,
+                    lastBehavior;
 
                 //create event
                 instance.eventSystem.addEventListenerHelper(target, animationEndEvent, function(e) {
@@ -874,17 +875,19 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                     }
                 });
                 // Backguard compatibility
-                if (afterFunctionName !== "holdAnimClass") {
-                    //removing the animation by default if there are not an after function
-                    nodeHelper.removeClass(target, behavior);
+                if (afterFunctionName !== "holdAnimClass" && afterFunctionName !== "$holdAnimClass") {
+                    lastBehavior = target._ajLastBehavior; 
+                    if(lastBehavior){
+                        // removing the animation by default if there are not hold animClass
+                        nodeHelper.removeClass(target, lastBehavior);
+                    }
+                    target._ajLastBehavior = behavior;
                 }
-                //TODO: We need to improve this urgently
-                // http://css-tricks.com/restart-css-animation/
-                // http://es.slideshare.net/nzakas/javascript-timers-power-consumption-and-performance
-                setTimeout(function () {
-                  nodeHelper.addClass(target, behavior);
-                }, 0);
-
+                
+                // Trigger a reflow in between removing and adding the class name.
+                // http://css-tricks.com/restart-css-animation/ 
+                target.offsetWidth = target.offsetWidth;
+                nodeHelper.addClass(target, behavior);
             };
 
             /**
