@@ -100,19 +100,20 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
              * @return
              */
             setDOMRootTravelScope: function(selector) {
-                var rootDOMTravelScope;
+                var rootDOMTravelScope,
+                    domDocument = document;
                 try {
                     if (selector === 'document') {
-                        rootDOMTravelScope = document;
+                        rootDOMTravelScope = domDocument;
                     } else {
-                        rootDOMTravelScope = document.querySelector(selector);
+                        rootDOMTravelScope = domDocument.querySelector(selector);
                         if (!rootDOMTravelScope) {
-                            rootDOMTravelScope = document;
+                            rootDOMTravelScope = domDocument;
                         }
                     }
 
                 } catch (e) {
-                    rootDOMTravelScope = document;
+                    rootDOMTravelScope = domDocument;
                 }
                 AniJS.rootDOMTravelScope = rootDOMTravelScope;
             },
@@ -163,7 +164,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
              */
             createAnimation: function(aniJSParsedSentenceCollection, element) {
                 var nodeElement = element || '';
-
                 //BEAUTIFY: The params order migth be the same
                 selfish._setupElementAnim(nodeElement, aniJSParsedSentenceCollection);
             },
@@ -317,6 +317,10 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                 holdAnimClass: function(e, animationContext) {
                 },
 
+                fireOnce: function(e, animationContext) {
+                    animationContext.eventSystem.removeEventListenerHelper(animationContext.eventTarget, animationContext.event.type, animationContext.listener);
+                },
+
                 /**
                  * Fire custom event
                  *
@@ -410,7 +414,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                 var size = eventTargetList.length,
                     i = 0,
                     eventTargetItem;
-
                 for (i; i < size; i++) {
                     eventTargetItem = eventTargetList[i];
                     if (AniJS.EventSystem.isEventTarget(eventTargetItem)) {
@@ -433,9 +436,11 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                                 behavior: behavior,
                                 after: after,
                                 eventSystem: AniJS.EventSystem,
-                                eventTarget: event.target,
+                                eventTarget: event.currentTarget,
                                 afterFunctionName: afterFunctionName,
-                                dataAniJSOwner: element
+                                dataAniJSOwner: element,
+                                listener: listener,
+                                event: event
                                 //TODO: eventSystem should be called directly
                             },
 
@@ -460,9 +465,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                         //Register event to feature handle
                         AniJS.EventSystem.registerEventHandle(eventTargetItem, event, listener);
                     }
-
-
-
                 }
             }
         };
@@ -684,12 +686,10 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             if (eventTargetDefinition) {
                 //{id: notifierID, value:notifierObject}
                 if (eventTargetDefinition.id && AniJS.EventSystem.isEventTarget(eventTargetDefinition.value)) {
-
                     //TODO: In the near future could be an object list
                     defaultValue.push(eventTargetDefinition.value);
 
                     AniJS.registerNotifier(eventTargetDefinition);
-
                 } else if (eventTargetDefinition.split) {
                     //Picar por signo de peso y obtener la lista de id de events Notifiers
                     notifierIDList = eventTargetDefinition.split('$');
@@ -834,6 +834,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
                 animationContextInstance.dataAniJSOwner = config.dataAniJSOwner;
 
+                animationContextInstance.listener = config.listener;
+
+                animationContextInstance.event = config.event;
             };
 
             /**
@@ -849,18 +852,14 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                     nodeHelper = instance.nodeHelper,
                     animationEndEvent = instance.animationEndEvent,
                     after = instance.after,
-                    afterFunctionName = instance.afterFunctionName;
+                    afterFunctionName = instance.afterFunctionName,
+                    lastBehavior;
 
                 //create event
                 instance.eventSystem.addEventListenerHelper(target, animationEndEvent, function(e) {
                     e.stopPropagation();
                     //remove event
                     instance.eventSystem.removeEventListenerHelper(e.target, e.type, arguments.callee);
-                    // Backguard compatibility
-                    if (afterFunctionName !== "holdAnimClass") {
-                        //removing the animation by default if there are not an after function
-                        nodeHelper.removeClass(e.target, behavior);
-                    }
                     if(after){
                         if(selfish.Util.isFunction(after)){
                             after(e, animationContextInstance);
@@ -869,13 +868,20 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                         }
                     }
                 });
-                //TODO: We need to improve this urgently
-                // http://css-tricks.com/restart-css-animation/
-                // http://es.slideshare.net/nzakas/javascript-timers-power-consumption-and-performance
-                setTimeout(function () {
-                  nodeHelper.addClass(target, behavior);
-                }, 0);
-
+                // Backguard compatibility
+                if (afterFunctionName !== "holdAnimClass" && afterFunctionName !== "$holdAnimClass") {
+                    lastBehavior = target._ajLastBehavior; 
+                    if(lastBehavior){
+                        // removing the animation by default if there are not hold animClass
+                        nodeHelper.removeClass(target, lastBehavior);
+                    }
+                    target._ajLastBehavior = behavior;
+                }
+                
+                // Trigger a reflow in between removing and adding the class name.
+                // http://css-tricks.com/restart-css-animation/ 
+                target.offsetWidth = target.offsetWidth;
+                nodeHelper.addClass(target, behavior);
             };
 
             /**
@@ -1130,19 +1136,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
              */
             hasClass: function(elem, string) {
                 return string && new RegExp(REGEX_BEGIN + string + REGEX_END).test(elem.className);
-            },
-            /**
-             * Clone HTML element
-             * @method removeChild
-             * @param {} element
-             * @param {} parentNode
-             */
-            cloneNode: function(element, parentNode) {
-                if(parentNode === null) return;
-                var clone = element.cloneNode(true);
-                AniJS.purgeEventTarget(clone);
-                clone.removeAttribute("id");
-                parentNode.appendChild(clone);
             }
         };
 
@@ -1229,7 +1222,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
              * @return
              */
             removeEventListenerHelper: function(element, type, listener) {
-                element.removeEventListener(type, listener);
+                if(element){
+                    element.removeEventListener(type, listener);
+                }
             },
 
 

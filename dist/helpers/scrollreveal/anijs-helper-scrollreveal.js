@@ -27,9 +27,18 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
      * @return
      */
     AniJSDefaultHelper.scrollReveal = function(e, animationContext, params) {
-        var viewportRatio = params[0] || 0.33;
+        var viewportRatio = 0.07;
         //Current elements that will be animated
         animationContextBehaviorTargetList = animationContext.behaviorTargetList;
+
+        // The revealed function will be executed just one time
+        if(params.length < 2 && params[0] !== 'repeat' && animationContext.after.length < 1){
+            animationContext.after = [AniJS.getHelper().fireOnce];
+        }
+
+        if(!isNaN(parseFloat(params[0]))){
+            viewportRatio = params[0];
+        };
 
         //We put in this only the nodes that will be animated
         visibleBehaviorTargetList = [];
@@ -128,6 +137,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             }
         }
     };
-
+    window.scroll(window.scrollX, window.scrollY+1);
 
 }(window));

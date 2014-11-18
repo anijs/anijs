@@ -143,7 +143,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             target = e.target, // para donde va el elemento
             eventTarget = animationContext.eventTarget, //quien origina el evento
             elements = null,
-            fnCloneNode = animationContext.nodeHelper.cloneNode,
+            fnCloneNode = AniJSDefaultHelper.cloneNodeHelper,
             repeats = 1;
 
         if(paramsLength === 0 ) {                //$clone
@@ -346,6 +346,20 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         return foundedList;
     };
 
+    /**
+     * Clone HTML element
+     * @method removeChild
+     * @param {} element
+     * @param {} parentNode
+     */
+    AniJSDefaultHelper.cloneNodeHelper = function(element, parentNode) {
+        if(parentNode === null) return;
+        var clone = element.cloneNode(true);
+        AniJS.purgeEventTarget(clone);
+        clone.removeAttribute("id");
+        parentNode.appendChild(clone);
+    };
+
 
 
     //-----------------------------------------------------------
@@ -492,6 +506,4 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         }
         return receiver;
     }
-
-
 }(window));
