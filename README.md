@@ -1,8 +1,8 @@
 # AniJS
 
-UI interaction Library for Web Designers in plain English.
+A Library to Raise your Web Design without Coding.
 
-_Provides an eloquent, easy to translate, and quick to develop environment._
+The most easy and quick way to Raise your web!!!
 
 
 ## Try It!!

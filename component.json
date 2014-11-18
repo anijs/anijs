@@ -1,12 +1,12 @@
 {
   "name": "anijs",
-  "version": "0.8.1",
+  "version": "0.9.0",
   "main": "dist/anijs.js",
   "scripts": [
     "dist/anijs.js"
   ],
   "homepage": "https://github.com/anijs/anijs",
-  "description": "UI interaction Library for Web Designers in plain English.",
+  "description": "A Library to Raise your Web Design without Coding",
   "authors": [
     "Dariel Noel Vila Plagado <darielnoel@gmail.com>"
   ],

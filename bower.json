@@ -1,8 +1,8 @@
 {
   "name": "AniJS",
-  "version": "0.8.1",
+  "version": "0.9.0",
   "homepage": "http://anijs.github.io/",
-  "description": "UI interaction Library for Web Designers in plain English.",
+  "description": "A Library to Raise your Web Design without Coding.",
   "main": "dist/anijs-min.js",
   "keywords": [
     "declarative",
