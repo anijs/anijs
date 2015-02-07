@@ -65,15 +65,20 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
      * @param  {[string]}   params           [description]
      */
     AniJSDefaultHelper.makeClassAction = function(e, animationContext, params, actionID, target){
-        if(actionID === 0){
-            animationContext.nodeHelper.addClass(target, params[0]);
-        } else if(actionID === 1){
-            animationContext.nodeHelper.removeClass(target, params[0]);
-        } else{
-            if(animationContext.nodeHelper.hasClass(target, params[0])){
-               animationContext.nodeHelper.removeClass(target, params[0]);
-            }else {
-               animationContext.nodeHelper.addClass(target, params[0]);
+        var animationContextBehaviorTargetList = animationContext.behaviorTargetList;
+        for (var i = 0; i < animationContextBehaviorTargetList.length; i++) {
+            element = animationContextBehaviorTargetList[i];
+            target = element;
+            if(actionID === 0){
+                animationContext.nodeHelper.addClass(target, params[0]);
+            } else if(actionID === 1){
+                animationContext.nodeHelper.removeClass(target, params[0]);
+            } else{
+                if(animationContext.nodeHelper.hasClass(target, params[0])){
+                   animationContext.nodeHelper.removeClass(target, params[0]);
+                }else {
+                   animationContext.nodeHelper.addClass(target, params[0]);
+                }
             }
         }
         //Run the animation
