@@ -127,8 +127,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                 var aniJSNodeCollection = [],
                     aniJSParsedSentenceCollection = {};
 
-                //Clear all node listener
-                AniJS.purgeAll();
+                //Clear all node listener (except js created animations)
+                AniJS.purgeAll(true);
 
                 AniJS.notifierCollection = {};
 
@@ -165,7 +165,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             createAnimation: function(aniJSParsedSentenceCollection, element) {
                 var nodeElement = element || '';
                 //BEAUTIFY: The params order migth be the same
-                selfish._setupElementAnim(nodeElement, aniJSParsedSentenceCollection);
+                selfish._setupElementAnim(nodeElement, aniJSParsedSentenceCollection, true);
             },
 
             /**
@@ -214,10 +214,11 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
              * Purge all register elements handle
              * you can use this when you run AniJS again
              * @method purgeAll
+             * @param ignoreJsCreated setting this to true will not purge any js created animations
              * @return
              */
-            purgeAll: function() {
-                AniJS.EventSystem.purgeAll();
+            purgeAll: function(ignoreJsCreated) {
+                AniJS.EventSystem.purgeAll(ignoreJsCreated);
             },
 
             /**
@@ -381,14 +382,14 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
          * @param {} aniJSParsedSentenceCollection
          * @return
          */
-        selfish._setupElementAnim = function(element, aniJSParsedSentenceCollection) {
+        selfish._setupElementAnim = function(element, aniJSParsedSentenceCollection, isJsCreated) {
             var size = aniJSParsedSentenceCollection.length,
                 i = 0,
                 item;
 
             for (i; i < size; i++) {
                 item = aniJSParsedSentenceCollection[i];
-                selfish._setupElementSentenceAnim(element, item);
+                selfish._setupElementSentenceAnim(element, item, isJsCreated);
             }
         };
 
@@ -399,7 +400,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
          * @param {} aniJSParsedSentence
          * @return
          */
-        selfish._setupElementSentenceAnim = function(element, aniJSParsedSentence) {
+        selfish._setupElementSentenceAnim = function(element, aniJSParsedSentence, isJsCreated) {
             //TODO: If the user use animationend or transitionend names to custom events the eventdispach will be not executed
             var event = selfish._eventHelper(aniJSParsedSentence),
                 eventTargetList = selfish._eventTargetHelper(element, aniJSParsedSentence),
@@ -454,7 +455,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                         AniJS.EventSystem.addEventListenerHelper(eventTargetItem, event, listener, false);
 
                         //Register event to feature handle
-                        AniJS.EventSystem.registerEventHandle(eventTargetItem, event, listener);
+                        AniJS.EventSystem.registerEventHandle(eventTargetItem, event, listener, isJsCreated);
                     }
                 }
             }
@@ -1266,7 +1267,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
              * @method purgeAll
              * @return
              */
-            purgeAll: function() {
+            purgeAll: function(ignoreJsCreated) {
                 var instance = this,
                     eventCollection = instance.eventCollection,
                     eventCollectionKeyList = Object.keys(eventCollection),
@@ -1278,6 +1279,10 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                 for (i; i < size; i++) {
                     key = eventCollectionKeyList[i];
                     eventObject = eventCollection[key];
+
+                    // don't purge code created animations unless forced
+                    if(ignoreJsCreated===true && eventObject.isJsCreated === true)
+                        continue;
 
                     if (eventObject && eventObject.handleCollection && eventObject.handleCollection.length > 0) {
                         instance.purgeEventTarget(eventObject.handleCollection[0].element);
@@ -1343,7 +1348,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
              * @param {} listener
              * @return
              */
-            registerEventHandle: function(element, eventType, listener) {
+            registerEventHandle: function(element, eventType, listener, isJsCreated) {
                 var instance = this,
                     aniJSEventID = element._aniJSEventID,
                     eventCollection = instance.eventCollection,
@@ -1357,7 +1362,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                     eventCollection[aniJSEventID].handleCollection.push(elementEventHandle);
                 } else {
                     var tempEventHandle = {
-                        handleCollection: [elementEventHandle]
+                        handleCollection: [elementEventHandle],
+                        isJsCreated: isJsCreated
                     };
 
                     eventCollection[++instance.eventIdCounter] = tempEventHandle;
