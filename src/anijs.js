@@ -911,11 +911,12 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                     j = 0,
                     before = instance.before,
                     simpleAnimationContextInstance,
-                    event = animationContextInstance.event;
+                    event = animationContextInstance.event,
+                    animationContextConfig;
 
                 for (j; j < behaviorTargetListSize; j++) {
 
-                   var animationContextConfig = {
+                    animationContextConfig = {
                         behaviorTargetList: [behaviorTargetList[j]],
                         nodeHelper: animationContextInstance.nodeHelper,
                         animationEndEvent: animationContextInstance.animationEndEvent,
@@ -950,15 +951,15 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             animationContextInstance.run = function() {
                 var instance = animationContextInstance,
                     behavior = instance.behavior,
-                    behaviorTargetList = instance.behaviorTargetList;
+                    behaviorTargetListItem = instance.behaviorTargetList[0];
 
                 animationContextInstance.hasRunned = 1;
                 if(selfish.Util.beArray(behavior)){
                     instance
-                        .doFunctionAction(behaviorTargetList[0], behavior);
+                        .doFunctionAction(behaviorTargetListItem, behavior);
                 } else{
                     instance
-                        .doDefaultAction(behaviorTargetList[0], behavior);
+                        .doDefaultAction(behaviorTargetListItem, behavior);
                 }
             };
 
