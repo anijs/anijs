@@ -38,10 +38,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
         if(!isNaN(parseFloat(params[0]))){
             viewportRatio = params[0];
-        };
-
-        //We put in this only the nodes that will be animated
-        visibleBehaviorTargetList = [];
+        }
 
         for (var i = 0; i < animationContextBehaviorTargetList.length; i++) {
             element = animationContextBehaviorTargetList[i];
@@ -51,20 +48,14 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
                 //The element is not animated again if it's visible
                 if (!element.isRevealed) {
-                    visibleBehaviorTargetList.push(element);
                     element.isRevealed = 1;
+                    animationContext.run();
                 }
 
             } else {
                 element.isRevealed = 0;
             }
         }
-
-        //Overwrite the behaviorTargetList of the animation
-        animationContext.behaviorTargetList = visibleBehaviorTargetList;
-
-        //Run the animation
-        animationContext.run();
     };
 
     /**

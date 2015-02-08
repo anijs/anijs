@@ -440,23 +440,14 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                                 afterFunctionName: afterFunctionName,
                                 dataAniJSOwner: element,
                                 listener: listener,
-                                event: event
+                                event: event,
+                                before: before
                                 //TODO: eventSystem should be called directly
                             },
 
                             animationContextInstance = new AniJS.AnimationContext(animationContextConfig);
 
-                            //Si before, le paso el animation context
-                            //TODO: Util is a submodule
-                            if (before) {
-                                if(selfish.Util.isFunction(before)) {
-                                    before(event, animationContextInstance);
-                                } else if(selfish.Util.beArray(before)) {
-                                    before[0](event, animationContextInstance, selfish._paramsHelper(before));
-                                }
-                            } else {
-                                animationContextInstance.run();
-                            }
+                            animationContextInstance.runAll(animationContextConfig);
                         };
 
                         //TODO: Improve lookup here AniJS.EventSystem
@@ -837,6 +828,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                 animationContextInstance.listener = config.listener;
 
                 animationContextInstance.event = config.event;
+                animationContextInstance.before = config.before;
             };
 
             /**
@@ -870,16 +862,15 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                 });
                 // Backguard compatibility
                 if (afterFunctionName !== "holdAnimClass" && afterFunctionName !== "$holdAnimClass") {
-                    lastBehavior = target._ajLastBehavior; 
+                    lastBehavior = target._ajLastBehavior;
                     if(lastBehavior){
                         // removing the animation by default if there are not hold animClass
                         nodeHelper.removeClass(target, lastBehavior);
                     }
                     target._ajLastBehavior = behavior;
                 }
-                
                 // Trigger a reflow in between removing and adding the class name.
-                // http://css-tricks.com/restart-css-animation/ 
+                // http://css-tricks.com/restart-css-animation/
                 target.offsetWidth = target.offsetWidth;
                 nodeHelper.addClass(target, behavior);
             };
@@ -907,29 +898,71 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             };
 
             /**
+             * Create an animation context instance for every behavior target list
+             * and run it
+             * @method run
+             * @return
+             */
+            animationContextInstance.runAll = function() {
+                var instance = animationContextInstance,
+                    behaviorTargetList = instance.behaviorTargetList,
+                    behaviorTargetListSize = behaviorTargetList.length,
+                    behavior = instance.behavior,
+                    j = 0,
+                    before = instance.before,
+                    simpleAnimationContextInstance,
+                    event = animationContextInstance.event,
+                    animationContextConfig;
+
+                for (j; j < behaviorTargetListSize; j++) {
+
+                    animationContextConfig = {
+                        behaviorTargetList: [behaviorTargetList[j]],
+                        nodeHelper: animationContextInstance.nodeHelper,
+                        animationEndEvent: animationContextInstance.animationEndEvent,
+                        behavior: animationContextInstance.behavior,
+                        after: animationContextInstance.after,
+                        eventSystem: animationContextInstance.eventSystem,
+                        eventTarget: animationContextInstance.eventTarget,
+                        afterFunctionName: animationContextInstance.afterFunctionName,
+                        dataAniJSOwner: animationContextInstance.dataAniJSOwner,
+                        listener: animationContextInstance.listener,
+                        event: event
+                        //TODO: eventSystem should be called directly
+                    };
+
+                    simpleAnimationContextInstance = new AniJS.AnimationContext(animationContextConfig);
+                    if (before) {
+                        if(selfish.Util.isFunction(before)) {
+                            before(event, simpleAnimationContextInstance);
+                        } else if(selfish.Util.beArray(before)) {
+                            before[0](event, simpleAnimationContextInstance, selfish._paramsHelper(before));
+                        }
+                    } else {
+                        simpleAnimationContextInstance.run();
+                    }
+                }
+            };
+            /**
              * Execute an animation context instance
              * @method run
              * @return
              */
             animationContextInstance.run = function() {
                 var instance = animationContextInstance,
-                    behaviorTargetList = instance.behaviorTargetList,
-                    behaviorTargetListSize = behaviorTargetList.length,
                     behavior = instance.behavior,
-                    j = 0,
-                    behaviorTargetListItem;
+                    behaviorTargetListItem = instance.behaviorTargetList[0];
 
                 animationContextInstance.hasRunned = 1;
-                for (j; j < behaviorTargetListSize; j++) {
-                    if(selfish.Util.beArray(behavior)){
-                        animationContextInstance
-                            .doFunctionAction(behaviorTargetList[j], behavior);
-                    } else{
-                        animationContextInstance
-                            .doDefaultAction(behaviorTargetList[j], behavior);
-                    }
+                if(selfish.Util.beArray(behavior)){
+                    instance
+                        .doFunctionAction(behaviorTargetListItem, behavior);
+                } else{
+                    instance
+                        .doDefaultAction(behaviorTargetListItem, behavior);
                 }
             };
+
             animationContextInstance.init(config);
         });
 
