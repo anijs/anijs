@@ -1,6 +1,6 @@
 {
   "name": "anijs",
-  "version": "0.9.2",
+  "version": "0.9.3",
   "main": "dist/anijs.js",
   "scripts": [
     "dist/anijs.js"

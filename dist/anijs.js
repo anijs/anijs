@@ -164,6 +164,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
              */
             createAnimation: function(aniJSParsedSentenceCollection, element) {
                 var nodeElement = element || '';
+
                 //BEAUTIFY: The params order migth be the same
                 selfish._setupElementAnim(nodeElement, aniJSParsedSentenceCollection);
             },
@@ -384,10 +385,26 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         selfish._setupElementAnim = function(element, aniJSParsedSentenceCollection) {
             var size = aniJSParsedSentenceCollection.length,
                 i = 0,
-                item;
+                item,
+                before,
+                after,
+                behavior;
 
             for (i; i < size; i++) {
                 item = aniJSParsedSentenceCollection[i];
+                after = item.after;
+                before = item.before;
+                behavior = item.behavior;
+
+                if(after){
+                    item.after = selfish.Parser.parseDoDefinition(after);
+                }
+                if(before){
+                    item.before = selfish.Parser.parseDoDefinition(before);
+                }
+                if(behavior){
+                    item.behavior = selfish.Parser.parseDoDefinition(behavior);
+                }
                 selfish._setupElementSentenceAnim(element, item);
             }
         };

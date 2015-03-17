@@ -1,6 +1,6 @@
 {
   "name": "AniJS",
-  "version": "0.9.2",
+  "version": "0.9.3",
   "homepage": "http://anijs.github.io/",
   "description": "A Library to Raise your Web Design without Coding.",
   "main": "dist/anijs-min.js",
