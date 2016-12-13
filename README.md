@@ -1,4 +1,5 @@
 # AniJS
+[![CDNJS](https://img.shields.io/cdnjs/v/AniJS.svg)](https://cdnjs.com/libraries/AniJS)
 
 A Library to Raise your Web Design without Coding.
 
