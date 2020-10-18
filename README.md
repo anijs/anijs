@@ -8,7 +8,7 @@ The most easy and quick way to Raise your web!!!
 
 ## Try It!!
 
-Check the online [Demostration](http://anijs.github.io/).
+Check the online [Demonstration](http://anijs.github.io/).
 
 ## Examples
 
