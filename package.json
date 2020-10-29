@@ -9,5 +9,16 @@
   },
   "spm": {
     "main": "dist/anijs.js"
+  },
+  "dependencies": {
+    "opencollective-postinstall": "^2.0.1",
+    "opencollective": "^1.0.3"
+  },
+  "collective": {
+    "type": "opencollective",
+    "url": "https://opencollective.com/anijs"
+  },
+  "scripts": {
+    "postinstall": "opencollective-postinstall"
   }
 }
