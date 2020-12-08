@@ -37,7 +37,7 @@ http://anijs.github.io/#using
 Work well in iPad, iPhone, Android and the [modern browsers](http://browsehappy.com/). **;)**
 
 
-## Documentation
+## Documentation [![Inline docs](http://inch-ci.org/github/anijs/anijs.svg?branch=master)](http://inch-ci.org/github/anijs/anijs)
 
 Documentation Topics can be founded in the [Wiki Pages](https://github.com/anijs/anijs/wiki).
 
